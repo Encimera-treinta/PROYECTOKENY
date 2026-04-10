@@ -1,0 +1,871 @@
+/**************************************/
+/************ General CSS *************/
+/**************************************/
+body {
+    color: #555555;
+    font-family: 'Open Sans', sans-serif;
+    background: #ffffff;
+}
+
+a {
+    color: #FF6F61;
+    transition: 0.3s;
+}
+
+a:hover,
+a:active,
+a:focus {
+    color: #666666;
+    outline: none;
+    text-decoration: none;
+}
+
+p {
+    color: #555555;
+    font-weight: 400;
+    padding: 0;
+    margin: 0 0 15px 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Inconsolata', monospace;
+    font-weight: 700;
+    color: #666666;
+    margin: 0 0 15px 0;
+    padding: 0;
+}
+
+h4,
+h5,
+h6 {
+    font-weight: 400;
+}
+
+img {
+    border-radius: 4px;
+}
+
+
+
+/**************************************/
+/********** Back to Top CSS ***********/
+/**************************************/
+.back-to-top {
+    position: fixed;
+    display: none;
+    background: #111111;
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    font-size: 35px;
+    right: 15px;
+    bottom: 15px;
+    border-radius: 4px;
+    transition: all 0.3s;
+    z-index: 9;
+}
+
+.back-to-top i {
+    color: #FF6F61;
+}
+
+.back-to-top:hover {
+    background: #FF6F61;
+}
+
+.back-to-top:hover i {
+    color: #ffffff;
+}
+
+
+/**************************************/
+/************** Nav CSS ***************/
+/**************************************/
+#nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100px;
+    padding: 20px 0;
+    background: transparent;
+    border-bottom: 1px solid #ff9085;
+    transition: all .3s;
+    z-index: 999;
+}
+
+#nav.nav-sticky {
+    height: inherit;
+    padding: 0;
+    background: #ffffff;
+    transition: all .3s;
+    border-bottom: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+}
+
+#nav .navbar {
+    transition: all .3s;
+    background: transparent !important;
+}
+
+#nav.nav-sticky .navbar {
+    transition: all .3s;
+    background: #ffffff !important;
+}
+
+#nav .navbar-brand {
+    font-size: 35px;
+    font-weight: 700;
+    line-height: 0;
+    font-family: 'Inconsolata', monospace;
+}
+
+#nav .nav-link,
+#nav .nav-link:focus,
+#nav .nav-link:hover,
+#nav .nav-link.active {
+    color: #ffffff;
+}
+
+#nav.nav-sticky .nav-link,
+#nav.nav-sticky .nav-link:focus,
+#nav.nav-sticky .nav-link:hover,
+#nav.nav-sticky .nav-link.active {
+    color: #666666;
+}
+
+#nav .nav-link:hover,
+#nav .nav-link.active {
+    color: #111111;
+}
+
+#nav.nav-sticky .nav-link:hover,
+#nav.nav-sticky .nav-link.active {
+    color: #FF6F61;
+}
+
+#nav .dropdown-menu {
+    margin-top: 0;
+    border: 0;
+    border-radius: 0;
+    background: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    #nav,
+    #nav .container,
+    #nav .navbar {
+        background: #ffffff !important;
+    }
+    
+    #nav .nav-link,
+    #nav .nav-link:focus,
+    #nav .nav-link:hover,
+    #nav .nav-link.active {
+        color: #666666;
+    }
+    
+    #nav .nav-link:hover,
+    #nav .nav-link.active {
+        color: #4F84C4;
+    }
+}
+
+
+
+/**************************************/
+/************* Header CSS *************/
+/**************************************/
+.header {
+    position: relative;
+    padding: 180px 0 100px 0;
+    text-align: center;
+    background: linear-gradient( rgba(255, 111, 97, 0.95), rgba(255, 111, 97, 0.95) ), url(../img/header.jpg) no-repeat top center;
+    background-size: cover;
+}
+
+.header h1 {
+    position: relative;
+    display: inline-block;
+    color: #ffffff;
+    font-size: 80px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    padding-bottom: 45px;
+}
+
+.header h1 span {
+    color: #111111;
+}
+
+.header h1::after {
+    position: absolute;
+    content: "";
+    width: 90%;
+    height: 1px;
+    left: 5%;
+    bottom: 0;
+    background: #ff9085;
+}
+
+.header p {
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 500;
+    margin-bottom: 40px;
+}
+
+.header .btn {
+    padding: 15px 35px;
+    color: #FF6F61;
+    font-size: 22px;
+    font-weight: 500;
+    background: #ffffff;
+}
+
+.header .btn:hover {
+    background: #111111;
+}
+
+.header .btn i {
+    margin-right: 5px;
+}
+
+@media(max-width: 767.98px) {
+    .header h1 {
+        font-size: 60px;
+    }
+    
+    .header p {
+        font-size: 25px;
+    }
+}
+
+@media(max-width: 575.98px) {
+    .header h1 {
+        font-size: 40px;
+    }
+    
+    .header p {
+        font-size: 20px;
+    }
+}
+
+
+
+/**************************************/
+/******** Section Header CSS **********/
+/**************************************/
+.section-header {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto 60px auto;
+    text-align: center;
+}
+
+.section-header h4 {
+    color: #FF6F61;
+    font-size: 18px;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+}
+
+.section-header h2 {
+    display: inline-block;
+    color: #111111;
+    font-size: 45px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+
+.section-header h2::after {
+    position: absolute;
+    content: "";
+    width: 60px;
+    height: 1px;
+    left: calc(50% - 30px);
+    bottom: 0;
+    background: #FF6F61;
+}
+
+@media(max-width: 767.98px) {
+    .section-header h4 {
+        font-size: 17px;
+    }
+    
+    .section-header h2 {
+        font-size: 40px;
+    }
+}
+
+@media(max-width: 575.98px) {
+    .section-header h4 {
+        font-size: 16px;
+    }
+    
+    .section-header h2 {
+        font-size: 35px;
+    }
+}
+
+
+
+/**************************************/
+/************* About CSS **************/
+/**************************************/
+.about {
+    position: relative;
+    padding: 100px 0;
+    background: #ffffff;
+}
+
+.about .about-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.about .about-img img {
+    width: 100%;
+}
+
+.about .about-content {
+    position: relative;
+    width: 100%;
+}
+
+.about .about-content:first-child {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+}
+
+.about .about-content h3 {
+    font-size: 30px;
+    letter-spacing: 1px;
+    text-transform: capitalize;
+}
+
+.about .about-content p {
+    position: relative;
+    font-size: 18px;
+}
+
+.about .btn {
+    position: relative;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: #ffffff;
+    background: #FF6F61;
+}
+
+.about .btn:hover {
+    color: #FF6F61;
+    background: #111111;
+}
+
+@media(max-width: 767.98px) {
+    .about .about-img {
+        margin-bottom: 30px;
+    }
+}
+
+
+
+/**************************************/
+/*************** Team CSS *************/
+/**************************************/
+.team {
+    position: relative;
+    padding: 100px 0 70px 0;
+    background: #f6f8fa;
+}
+
+.team .team-item {
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.team .team-item .team-img {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    
+}
+
+.team .team-item .team-link {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 111, 97, .95);
+    transition: 0.3s;
+    opacity: 0;
+}
+
+.team .team-item .team-link a {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    margin: 0 2px -100px 2px;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 16px;
+    color: #FF6F61;
+    background: #ffffff;
+    border-radius: 4px;
+}
+
+.team .team-item:hover .team-link {
+    opacity: 1;
+}
+
+.team .team-item:hover .team-link a {
+    margin: 0 2px;
+}
+
+.team .team-item .team-link a:hover {
+    color: #ffffff;
+    background: #111111;
+}
+
+.team .team-item .team-info {
+    position: relative;
+    width: 100%;
+    padding-top: 15px;
+}
+
+.team .team-item .team-info h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.team .team-item .team-info p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+
+
+/**************************************/
+/************ Services CSS ************/
+/**************************************/
+.service {
+    position: relative;
+    padding: 100px 0 40px 0;
+    background: #ffffff;
+}
+
+.service .row {
+    margin-bottom: 60px;
+}
+
+.service .service-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.service .service-img img {
+    width: 100%;
+}
+
+.service .service-detail h3 {
+    font-size: 30px;
+    letter-spacing: 1px;
+    text-transform: capitalize;
+}
+
+.service .service-detail h3 i {
+    margin-right: 20px;
+}
+
+@media(max-width: 767.98px) {
+    .service .service-img {
+        margin-bottom: 30px;
+    }
+}
+
+
+
+/**************************************/
+/********* Call To Action CSS *********/
+/**************************************/
+.call-to-action {
+    position: relative;
+    padding: 100px 0;
+    background: #FF6F61;
+}
+
+.call-to-action .container {
+    max-width: 700px;
+}
+
+.call-to-action .section-header h4 {
+    color: #ffffff;
+}
+
+.call-to-action .section-header h2::after {
+    background: #111111;
+}
+
+.call-to-action .section-header p {
+    color: #ffffff;
+}
+
+.call-to-action .btn {
+    padding: 15px 30px;
+    color: #FF6F61;
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: #ffffff;
+}
+
+.call-to-action .btn:hover {
+    color: #FF6F61;
+    background: #111111;
+}
+
+.call-to-action .btn i {
+    margin-right: 5px;
+}
+
+
+
+/**************************************/
+/************ Portfolio CSS ***********/
+/**************************************/
+.portfolio {
+    position: relative;
+    padding: 100px 0 70px 0;
+    background: #ffffff;
+}
+
+.portfolio .portfolio-item {
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.portfolio .portfolio-item .portfolio-img {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    
+}
+
+.portfolio .portfolio-item .portfolio-link {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 111, 97, .95);
+    transition: 0.3s;
+    opacity: 0;
+}
+
+.portfolio .portfolio-item .portfolio-link a {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 0 5px -100px 5px;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 18px;
+    color: #FF6F61;
+    background: #ffffff;
+    border-radius: 4px;
+}
+
+.portfolio .portfolio-item:hover .portfolio-link {
+    opacity: 1;
+}
+
+.portfolio .portfolio-item:hover .portfolio-link a {
+    margin: 0 5px;
+}
+
+.portfolio .portfolio-item .portfolio-link a:hover {
+    color: #ffffff;
+    background: #111111;
+}
+
+.portfolio .portfolio-item .portfolio-info {
+    position: relative;
+    width: 100%;
+    padding-top: 15px;
+}
+
+.portfolio .portfolio-item .portfolio-info h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.portfolio .portfolio-item .portfolio-info p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+
+
+/**************************************/
+/************* Pricing CSS ************/
+/**************************************/
+.pricing {
+    position: relative;
+    padding: 100px 0 70px 0;
+    background: #f6f8fa;
+}
+
+.pricing .price-content {
+    position: relative;
+    background: #ffffff;
+    text-align: center;
+    margin-bottom: 30px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.pricing .price-plan {
+    position: relative;
+    background: #FF6F61;
+    padding: 30px;
+}
+
+.pricing .price-plan h3 {
+    color: #111111;
+    font-size: 35px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.pricing .price-plan p {
+    color: #ffffff;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.pricing .price-plan i {
+    color: #ffffff;
+    font-size: 45px;
+}
+
+.pricing .price-details {
+    padding: 30px 0;
+    font-size: 16px;
+    list-style: none;
+    text-align: center;
+}
+
+.pricing .price-details li {
+    padding: 6px 30px;
+    border-bottom: 1px solid #f6f8fa;
+}
+
+.pricing .price-details li:last-child {
+    border: none;
+}
+
+.pricing .price-content .btn {
+    margin-bottom: 30px;
+    padding: 10px 30px;
+    color: #ffffff;
+    background: #FF6F61;
+    border: none;
+}
+
+.pricing .price-content .btn:hover {
+    color: #FF6F61;
+    background: #111111;
+}
+
+
+
+/**************************************/
+/************* Contact CSS ************/
+/**************************************/
+.contact {
+    position: relative;
+    padding: 100px 0;
+    text-align: center;
+    background: linear-gradient( rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7) ), url(../img/contact.jpg) no-repeat top left;
+}
+
+.contact .contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact .form-control:focus {
+    border: 1px solid #FF6F61;
+    box-shadow: none;
+}
+
+.contact .btn {
+    display: block;
+    width: 100%;
+    color: #ffffff;
+    background: #FF6F61;
+}
+
+.contact .btn:hover {
+    color: #FF6F61;
+    background: #111111;
+}
+
+
+
+/**************************************/
+/************* Footer CSS *************/
+/**************************************/
+.footer {
+    position: relative;
+    background: #FF6F61;
+}
+
+.footer .footer-top {
+    padding: 60px 0;
+    border-bottom: 1px solid #ff9085;
+}
+
+.footer .footer-top h2 {
+    position: relative;
+    color: #ffffff;
+    font-size: 30px;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+.footer .footer-top h2::after {
+    position: absolute;
+    content: "";
+    width: 100px;
+    height: 1px;
+    left: 0;
+    bottom: 0;
+    background: #ff9085;
+}
+
+.footer .contact-info h4 {
+    color: #ffffff;
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+.footer .contact-info p {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.footer .contact-info p:last-child {
+    margin-bottom: 0;
+}
+
+.footer .social-links a {
+    display: inline-block;
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    line-height: 1;
+    padding: 11px 0;
+    margin-right: 4px;
+    text-align: center;
+    background: #ffffff;
+    color: #FF6F61;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.footer .social-links a:hover {
+    background: #111111;
+    color: #FF6F61;
+}
+
+.footer .subscribe {
+    position: relative;
+    width: 100%;
+}
+
+.footer .subscribe .form-control {
+    float: left;
+    width: calc(100% - 115px);
+    margin-right: 15px;
+    border: none;
+}
+
+.footer .subscribe .form-control:focus {
+    box-shadow: none;
+    color: #ffffff;
+    background: #111111;
+}
+
+.footer .subscribe .btn {
+    width: 100px;
+    color: #FF6F61;
+    background: #111111;
+}
+
+.footer .subscribe .btn:hover {
+    color: #FF6F61;
+    background: #ffffff;
+}
+
+.footer .subscribe label {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.footer .footer-bottom {
+    padding: 30px 0;
+}
+
+.footer .copyright {
+    color: #ffffff;
+    text-align: left;
+}
+
+.footer .credit {
+    color: #ffffff;
+    text-align: right;
+}
+
+.footer .copyright a,
+.footer .credit a {
+    color: #111111;
+    font-weight: 600;
+}
+
+.footer .copyright a:hover,
+.footer .credit a:hover {
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .footer .contact-info,
+    .footer .social-links {
+        margin-bottom: 30px;
+    }
+    
+    .footer .copyright,
+    .footer .credit {
+        text-align: center;
+    }
+}
