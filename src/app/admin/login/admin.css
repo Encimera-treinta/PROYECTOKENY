@@ -1,0 +1,703 @@
+/* ==========================================
+   SPORTCRZ ADMIN
+========================================== */
+
+.admin-page {
+  width: 100%;
+  min-width: 0;
+
+  min-height: 100vh;
+  min-height: 100svh;
+
+  overflow-x: hidden;
+
+  background: #f1f1ee;
+
+  color: #090909;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+.admin-page *,
+.admin-page *::before,
+.admin-page *::after {
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   TOPBAR
+========================================== */
+
+.admin-topbar {
+  min-height:
+    calc(
+      110px +
+      env(safe-area-inset-top)
+    );
+
+  padding:
+    calc(
+      25px +
+      env(safe-area-inset-top)
+    )
+    4%
+    25px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 40px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+}
+
+.admin-topbar > div:first-child {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.admin-topbar span {
+  color: #999995;
+
+  font-size: 0.48rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.25em;
+}
+
+.admin-topbar strong {
+  font-size: 0.72rem;
+
+  letter-spacing: 0.16em;
+}
+
+.admin-top-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 30px;
+
+  flex-shrink: 0;
+}
+
+.admin-top-actions form {
+  margin: 0;
+}
+
+.admin-top-actions a,
+.admin-top-actions button {
+  min-height: 44px;
+
+  padding: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  background: transparent;
+
+  color: #090909;
+
+  border: 0;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  font-size: 0.52rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.2em;
+
+  touch-action: manipulation;
+
+  transition:
+    opacity 0.2s ease;
+}
+
+.admin-top-actions a:hover,
+.admin-top-actions button:hover {
+  opacity: 0.45;
+}
+
+
+/* ==========================================
+   HERO
+========================================== */
+
+.admin-hero {
+  padding:
+    clamp(
+      80px,
+      8vw,
+      110px
+    )
+    4%
+    clamp(
+      70px,
+      7vw,
+      90px
+    );
+}
+
+.admin-hero > span {
+  display: block;
+
+  margin-bottom: 40px;
+
+  color: #999995;
+
+  font-size: 0.52rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.28em;
+}
+
+.admin-hero h1 {
+  max-width: 100%;
+
+  margin: 0;
+
+  overflow-wrap: anywhere;
+
+  font-size:
+    clamp(
+      6rem,
+      15vw,
+      14rem
+    );
+
+  font-weight: 900;
+
+  line-height: 0.73;
+
+  letter-spacing: -0.085em;
+}
+
+.admin-hero p {
+  margin:
+    45px
+    0
+    0;
+
+  color: #777773;
+
+  font-size: 0.65rem;
+
+  font-weight: 700;
+
+  line-height: 1.6;
+
+  letter-spacing: 0.18em;
+
+  text-transform: uppercase;
+}
+
+
+/* ==========================================
+   GRID
+========================================== */
+
+.admin-grid {
+  width: 92%;
+
+  margin:
+    0
+    auto;
+
+  padding-bottom:
+    120px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  border-top:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+
+  border-left:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+}
+
+
+/* ==========================================
+   CARD
+========================================== */
+
+.admin-card {
+  min-width: 0;
+
+  min-height: 430px;
+
+  padding: 28px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  gap: 40px;
+
+  border-right:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+
+  border-bottom:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+.admin-card > span {
+  color: #999995;
+
+  font-size: 0.52rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.25em;
+}
+
+.admin-card h2 {
+  margin:
+    0
+    0
+    20px;
+
+  overflow-wrap: anywhere;
+
+  font-size:
+    clamp(
+      2.6rem,
+      4vw,
+      5rem
+    );
+
+  font-weight: 900;
+
+  line-height: 0.85;
+
+  letter-spacing: -0.065em;
+}
+
+.admin-card p {
+  max-width: 300px;
+
+  margin: 0;
+
+  color: #777773;
+
+  font-size: 0.72rem;
+
+  line-height: 1.7;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.08em;
+}
+
+.admin-card button {
+  min-height: 44px;
+
+  align-self: flex-start;
+
+  padding:
+    0
+    0
+    7px;
+
+  background: transparent;
+
+  color: #999995;
+
+  border: 0;
+
+  border-bottom:
+    1px solid
+    #999995;
+
+  font-family: inherit;
+
+  font-size: 0.5rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.2em;
+}
+
+
+/* ==========================================
+   PRIMARY CARD
+========================================== */
+
+.admin-card-primary {
+  background: #090909;
+
+  color: #ffffff;
+}
+
+.admin-card-primary p {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.5
+    );
+}
+
+.admin-card-primary > span {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.35
+    );
+}
+
+.admin-card-primary button {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.4
+    );
+
+  border-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.25
+    );
+}
+
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.admin-footer {
+  padding:
+    30px
+    4%
+    calc(
+      30px +
+      env(safe-area-inset-bottom)
+    );
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 25px;
+
+  border-top:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+
+  color: #999995;
+
+  font-size: 0.5rem;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.2em;
+}
+
+.admin-footer strong {
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+
+  color: #090909;
+}
+
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 1000px) {
+  .admin-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .admin-card {
+    min-height: 330px;
+  }
+
+  .admin-card h2 {
+    font-size:
+      clamp(
+        2.8rem,
+        8vw,
+        4.8rem
+      );
+  }
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 700px) {
+  .admin-topbar {
+    min-height: 0;
+
+    padding:
+      calc(
+        22px +
+        env(safe-area-inset-top)
+      )
+      5%
+      22px;
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 22px;
+  }
+
+  .admin-topbar span {
+    font-size: 0.42rem;
+
+    letter-spacing: 0.18em;
+  }
+
+  .admin-topbar strong {
+    font-size: 0.65rem;
+  }
+
+  .admin-top-actions {
+    width: 100%;
+
+    justify-content: space-between;
+
+    gap: 20px;
+  }
+
+  .admin-top-actions a,
+  .admin-top-actions button {
+    font-size: 0.46rem;
+
+    letter-spacing: 0.16em;
+  }
+
+  .admin-hero {
+    padding:
+      75px
+      5%
+      65px;
+  }
+
+  .admin-hero > span {
+    margin-bottom: 28px;
+
+    font-size: 0.45rem;
+
+    letter-spacing: 0.2em;
+  }
+
+  .admin-hero h1 {
+    font-size:
+      clamp(
+        4.5rem,
+        23vw,
+        7rem
+      );
+
+    line-height: 0.76;
+  }
+
+  .admin-hero p {
+    margin-top: 35px;
+
+    font-size: 0.56rem;
+
+    letter-spacing: 0.15em;
+  }
+
+  .admin-grid {
+    width: 90%;
+
+    padding-bottom: 85px;
+  }
+
+  .admin-card {
+    min-height: 310px;
+
+    padding: 24px;
+  }
+
+  .admin-card h2 {
+    font-size:
+      clamp(
+        2.7rem,
+        13vw,
+        4.2rem
+      );
+  }
+
+  .admin-card p {
+    font-size: 0.66rem;
+  }
+
+  .admin-card button {
+    font-size: 0.45rem;
+  }
+
+  .admin-footer {
+    padding:
+      25px
+      5%
+      calc(
+        25px +
+        env(safe-area-inset-bottom)
+      );
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    font-size: 0.44rem;
+  }
+}
+
+
+/* ==========================================
+   SMALL PHONES
+========================================== */
+
+@media (max-width: 430px) {
+  .admin-hero h1 {
+    font-size:
+      clamp(
+        4rem,
+        21vw,
+        6rem
+      );
+  }
+
+  .admin-card {
+    min-height: 290px;
+
+    padding: 20px;
+  }
+
+  .admin-card h2 {
+    font-size:
+      clamp(
+        2.5rem,
+        12vw,
+        3.8rem
+      );
+  }
+}
+
+
+/* ==========================================
+   VERY SMALL PHONES
+========================================== */
+
+@media (max-width: 360px) {
+  .admin-topbar,
+  .admin-hero,
+  .admin-footer {
+    padding-left: 4%;
+    padding-right: 4%;
+  }
+
+  .admin-grid {
+    width: 92%;
+  }
+
+  .admin-hero h1 {
+    font-size:
+      clamp(
+        3.7rem,
+        20vw,
+        5.4rem
+      );
+  }
+}
+
+
+/* ==========================================
+   TOUCH
+========================================== */
+
+@media (hover: none) {
+  .admin-top-actions a:hover,
+  .admin-top-actions button:hover {
+    opacity: 1;
+  }
+}

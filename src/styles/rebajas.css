@@ -1,0 +1,30 @@
+ :root { --sale-red: #ff0000; --sale-yellow: #faff00; }
+        .side-panel { background: linear-gradient(180deg, #000 0%, #4a0000 100%) !important; }
+        
+        .badge-sale {
+            position: absolute; top: 10px; left: 10px;
+            background: var(--sale-red); color: white;
+            padding: 8px 15px; font-weight: 900; font-size: 1rem;
+            transform: rotate(-5deg); z-index: 10;
+            box-shadow: 3px 3px 0px var(--sale-yellow);
+        }
+
+        .price-old {
+            text-decoration: line-through; color: #ff4d4d;
+            font-size: 1rem; margin-right: 10px; opacity: 0.7;
+        }
+
+        .price-new { color: var(--sale-yellow) !important; font-size: 1.5rem !important; font-weight: 900 !important; }
+
+        .section-title { 
+            color: var(--sale-red) !important; 
+            text-transform: uppercase; 
+            font-style: italic; 
+            margin-top: 50px; 
+            border-bottom: 3px solid var(--sale-red); 
+            display: inline-block;
+        }
+        
+        .product-item { border: 2px solid #330000 !important; background: #0a0a0a; position: relative; }
+        .product-item:hover { border-color: var(--sale-red) !important; }
+        .stock-warning { color: var(--sale-yellow); font-size: 0.7rem; font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase; }

@@ -1,0 +1,684 @@
+/* ==========================================
+   SPORTCRZ ADMIN LOGIN
+========================================== */
+
+.admin-login-page {
+  width: 100%;
+  min-width: 0;
+
+  min-height: 100vh;
+  min-height: 100svh;
+
+  margin: 0;
+
+  overflow-x: hidden;
+
+  background: #080808;
+
+  color: #ffffff;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+.admin-login-page *,
+.admin-login-page *::before,
+.admin-login-page *::after {
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   SHELL
+========================================== */
+
+.admin-login-shell {
+  width: 100%;
+
+  min-height: 100vh;
+  min-height: 100svh;
+
+  padding:
+    calc(
+      38px +
+      env(safe-area-inset-top)
+    )
+    4%
+    calc(
+      38px +
+      env(safe-area-inset-bottom)
+    );
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  gap: 40px;
+}
+
+
+/* ==========================================
+   TOP
+========================================== */
+
+.admin-login-top {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 30px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.4
+    );
+
+  font-size: 0.52rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.28em;
+}
+
+.admin-login-top span {
+  min-width: 0;
+}
+
+.admin-login-top a {
+  flex-shrink: 0;
+
+  min-height: 44px;
+
+  display: flex;
+
+  align-items: center;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.55
+    );
+
+  text-decoration: none;
+
+  touch-action: manipulation;
+
+  transition:
+    color 0.2s ease;
+}
+
+.admin-login-top a:hover {
+  color: #ffffff;
+}
+
+
+/* ==========================================
+   CONTENT
+========================================== */
+
+.admin-login-content {
+  width:
+    min(
+      620px,
+      100%
+    );
+
+  margin:
+    clamp(
+      50px,
+      8vw,
+      90px
+    )
+    auto;
+
+  align-self: center;
+}
+
+.admin-login-index {
+  display: block;
+
+  margin-bottom: 35px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.35
+    );
+
+  font-size: 0.52rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.28em;
+}
+
+.admin-login-content h1 {
+  margin:
+    0
+    0
+    35px;
+
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(
+      5rem,
+      11vw,
+      9rem
+    );
+
+  font-weight: 900;
+
+  line-height: 0.76;
+
+  letter-spacing: -0.08em;
+}
+
+.admin-login-description {
+  margin:
+    0
+    0
+    60px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.45
+    );
+
+  font-size: 0.68rem;
+
+  line-height: 1.8;
+
+  letter-spacing: 0.18em;
+
+  text-transform: uppercase;
+}
+
+
+/* ==========================================
+   FORM
+========================================== */
+
+.admin-login-form {
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 34px;
+}
+
+.admin-field {
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.admin-field label {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.35
+    );
+
+  font-size: 0.48rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.25em;
+}
+
+.admin-field input {
+  width: 100%;
+
+  min-height: 52px;
+
+  padding:
+    15px
+    0;
+
+  background: transparent;
+
+  color: #ffffff;
+
+  border: 0;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.22
+    );
+
+  border-radius: 0;
+
+  outline: none;
+
+  font-family: inherit;
+
+  font-size: 1rem;
+
+  -webkit-appearance: none;
+
+  appearance: none;
+
+  transition:
+    border-color 0.25s ease;
+}
+
+.admin-field input::placeholder {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.22
+    );
+}
+
+.admin-field input:focus {
+  border-color: #ffffff;
+}
+
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.admin-login-error {
+  padding:
+    17px
+    18px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.16
+    );
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.04
+    );
+}
+
+.admin-login-error span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #ff007a;
+
+  font-size: 0.46rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.22em;
+}
+
+.admin-login-error p {
+  margin: 0;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.68
+    );
+
+  font-size: 0.62rem;
+
+  font-weight: 700;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.12em;
+}
+
+
+/* ==========================================
+   SUBMIT
+========================================== */
+
+.admin-login-submit {
+  width: 100%;
+
+  min-height: 64px;
+
+  margin-top: 15px;
+
+  padding:
+    0
+    22px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 30px;
+
+  background: #ffffff;
+
+  color: #080808;
+
+  border: 0;
+
+  border-radius: 0;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  font-size: 0.58rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.25em;
+
+  touch-action: manipulation;
+
+  transition:
+    padding 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.admin-login-submit:hover {
+  padding-left: 32px;
+
+  background: #e8e8e4;
+}
+
+.admin-login-submit:active {
+  transform: scale(0.99);
+}
+
+.admin-login-submit span:last-child {
+  font-size: 1rem;
+}
+
+
+/* ==========================================
+   STATUS
+========================================== */
+
+.admin-login-status {
+  display: block;
+
+  margin-top: 25px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.18
+    );
+
+  font-size: 0.44rem;
+
+  letter-spacing: 0.22em;
+}
+
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.admin-login-footer {
+  padding-top: 25px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 25px;
+
+  border-top:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.1
+    );
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.25
+    );
+
+  font-size: 0.48rem;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.25em;
+}
+
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 900px) {
+  .admin-login-content {
+    width:
+      min(
+        560px,
+        100%
+      );
+  }
+
+  .admin-login-content h1 {
+    font-size:
+      clamp(
+        4.8rem,
+        14vw,
+        7.5rem
+      );
+  }
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 700px) {
+  .admin-login-shell {
+    padding:
+      calc(
+        24px +
+        env(safe-area-inset-top)
+      )
+      5%
+      calc(
+        24px +
+        env(safe-area-inset-bottom)
+      );
+
+    gap: 30px;
+  }
+
+  .admin-login-top {
+    gap: 15px;
+
+    font-size: 0.42rem;
+
+    letter-spacing: 0.15em;
+  }
+
+  .admin-login-content {
+    margin:
+      40px
+      auto;
+  }
+
+  .admin-login-index {
+    margin-bottom: 25px;
+
+    font-size: 0.45rem;
+  }
+
+  .admin-login-content h1 {
+    margin-bottom: 28px;
+
+    font-size:
+      clamp(
+        3.8rem,
+        19vw,
+        6.3rem
+      );
+
+    line-height: 0.8;
+  }
+
+  .admin-login-description {
+    margin-bottom: 42px;
+
+    font-size: 0.58rem;
+
+    line-height: 1.7;
+  }
+
+  .admin-login-form {
+    gap: 28px;
+  }
+
+  .admin-field input {
+    font-size: 16px;
+  }
+
+  .admin-login-submit {
+    min-height: 58px;
+
+    font-size: 0.54rem;
+  }
+
+  .admin-login-footer {
+    flex-direction: column;
+
+    gap: 8px;
+
+    font-size: 0.42rem;
+  }
+}
+
+
+/* ==========================================
+   SMALL PHONES
+========================================== */
+
+@media (max-width: 430px) {
+  .admin-login-content h1 {
+    font-size:
+      clamp(
+        3.4rem,
+        18vw,
+        5.3rem
+      );
+  }
+
+  .admin-login-top span {
+    max-width: 65%;
+  }
+
+  .admin-login-description {
+    font-size: 0.55rem;
+  }
+}
+
+
+/* ==========================================
+   VERY SMALL PHONES
+========================================== */
+
+@media (max-width: 360px) {
+  .admin-login-shell {
+    padding-left: 4%;
+    padding-right: 4%;
+  }
+
+  .admin-login-content h1 {
+    font-size:
+      clamp(
+        3.1rem,
+        17vw,
+        4.7rem
+      );
+  }
+
+  .admin-login-submit {
+    min-height: 56px;
+
+    padding:
+      0
+      16px;
+  }
+}
+
+
+/* ==========================================
+   TOUCH
+========================================== */
+
+@media (hover: none) {
+  .admin-login-top a:hover {
+    color:
+      rgba(
+        255,
+        255,
+        255,
+        0.55
+      );
+  }
+
+  .admin-login-submit:hover {
+    padding-left: 22px;
+
+    background: #ffffff;
+  }
+}
