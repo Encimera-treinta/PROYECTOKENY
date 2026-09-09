@@ -1,9 +1,25 @@
 import CatalogPage from "@/components/CatalogPage";
-import { catalog } from "@/data/catalog";
+import { listProductsByCategory } from "@/lib/database";
+import { toCatalogProduct } from "@/lib/catalog-mapper";
 import "@/styles/shop.css";
 
 export const metadata = { title: "Hombres | SportCrz" };
 
+export const dynamic = "force-dynamic";
+
 export default function HombresPage() {
-  return <CatalogPage {...catalog.hombres} />;
+  const products = listProductsByCategory("hombres");
+
+  return (
+    <CatalogPage
+      label="Hombres"
+      sections={[
+        {
+          id: "hombres-destacados",
+          title: "Destacados",
+          products: products.map(toCatalogProduct),
+        },
+      ]}
+    />
+  );
 }
