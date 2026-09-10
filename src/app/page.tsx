@@ -1,9 +1,11 @@
 import Link from "next/link";
+import HomeAnimations from "@/components/HomeAnimations";
 import "@/styles/home.css";
 
 export default function HomePage() {
   return (
     <main className="home-page">
+      <HomeAnimations />
       {/* ==============================
           HERO
       ============================== */}
@@ -14,6 +16,8 @@ export default function HomePage() {
           muted
           loop
           playsInline
+          preload="auto"
+          poster="/img/about2.jpeg"
         >
           <source
             src="/img/Video_Fondo.mp4"

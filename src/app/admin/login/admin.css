@@ -720,8 +720,54 @@
 
 
 /* ==========================================
+   TABBAR MÓVIL (navegación inferior admin)
+========================================= */
+
+.admin-tabbar {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .admin-tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: #090909;
+    padding: 6px 0 calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .admin-tab {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    font-size: 0.52rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    touch-action: manipulation;
+  }
+
+  .admin-tab.active {
+    color: #ffffff;
+    border-bottom: 2px solid #ffffff;
+  }
+
+  .admin-footer {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  }
+}
+
+
+/* ==========================================
    TOUCH
-========================================== */
+========================================= */
 
 @media (hover: none) {
   .admin-top-actions a:hover,

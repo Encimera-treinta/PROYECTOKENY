@@ -193,11 +193,67 @@ export default async function AdminProductosPage({
         </table>
       </section>
 
+      {/* CARDS MÓVIL */}
+      <section className="admin-products-cards">
+        {products.map((product) => (
+          <ProductCard key={`card-${product.id}`} product={product} />
+        ))}
+      </section>
+
       <footer className="admin-footer">
         <span>SESIÓN ACTIVA / PRODUCTOS</span>
         <strong>{products.length} REGISTROS</strong>
       </footer>
+
+      <nav className="admin-tabbar">
+        <Link href="/admin" className="admin-tab">
+          <span>PANEL</span>
+        </Link>
+        <Link href="/admin/productos" className="admin-tab active">
+          <span>PRODUCTOS</span>
+        </Link>
+        <Link href="/admin/pedidos" className="admin-tab">
+          <span>PEDIDOS</span>
+        </Link>
+      </nav>
     </main>
+  );
+}
+
+function ProductCard({ product }: { product: Product }) {
+  return (
+    <article className="admin-product-card">
+      <div className="admin-product-card-top">
+        <img src={product.image} alt={product.name} />
+        <div className="admin-product-card-info">
+          <h3>{product.name}</h3>
+          <div className="admin-product-card-meta">
+            <span className="admin-product-card-price">
+              ${product.price.toFixed(2)}
+              {product.old_price != null && (
+                <span className="admin-price-old"> ${product.old_price.toFixed(2)}</span>
+              )}
+            </span>
+            <span className={`admin-pill ${product.active === 1 ? "on" : "off"}`}>
+              {product.active === 1 ? "ACTIVO" : "OCULTO"}
+            </span>
+          </div>
+          <div className="admin-product-card-meta">
+            <span>{CATEGORY_LABELS[product.category] ?? product.category.toUpperCase()}</span>
+            <span className={product.stock === 0 ? "admin-stock-zero" : ""}>
+              STOCK: {product.stock}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="admin-product-card-actions">
+        <Link href={`/admin/productos?edit=${product.id}`}>EDITAR</Link>
+        <form action={deleteProductAction}>
+          <input type="hidden" name="id" value={product.id} />
+          <button type="submit">ELIMINAR</button>
+        </form>
+      </div>
+    </article>
   );
 }
 

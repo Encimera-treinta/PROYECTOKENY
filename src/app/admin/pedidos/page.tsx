@@ -77,11 +77,67 @@ export default async function AdminPedidosPage({
         </table>
       </section>
 
+      {/* CARDS MÓVIL */}
+      <section className="admin-orders-cards">
+        {orders.map((order) => (
+          <OrderCard key={`card-${order.id}`} order={order} />
+        ))}
+      </section>
+
       <footer className="admin-footer">
         <span>SESIÓN ACTIVA / PEDIDOS</span>
         <strong>{orders.length} REGISTROS</strong>
       </footer>
+
+      <nav className="admin-tabbar">
+        <Link href="/admin" className="admin-tab">
+          <span>PANEL</span>
+        </Link>
+        <Link href="/admin/productos" className="admin-tab">
+          <span>PRODUCTOS</span>
+        </Link>
+        <Link href="/admin/pedidos" className="admin-tab active">
+          <span>PEDIDOS</span>
+        </Link>
+      </nav>
     </main>
+  );
+}
+
+function OrderCard({ order }: { order: Order & { item_count: number } }) {
+  return (
+    <article className="admin-order-card">
+      <div className="admin-order-card-head">
+        <strong>{order.order_code}</strong>
+        <span className={`admin-status-pill ${order.status}`}>
+          {STATUS_LABELS[order.status] ?? order.status.toUpperCase()}
+        </span>
+      </div>
+      <div className="admin-order-card-meta">
+        <span>
+          <strong>{order.customer_name}</strong>
+        </span>
+        <span>{order.customer_email}</span>
+      </div>
+      <div className="admin-order-card-meta">
+        <span>{order.item_count} ARTÍCULO(S)</span>
+        <span>TOTAL: ${order.total.toFixed(2)}</span>
+        <span>{order.payment_method.toUpperCase()}</span>
+      </div>
+      <div className="admin-order-card-actions">
+        <form action={updateOrderStatusAction}>
+          <input type="hidden" name="id" value={order.id} />
+          <select name="status" defaultValue={order.status}>
+            <option value="pending">PENDIENTE</option>
+            <option value="paid">PAGADO</option>
+            <option value="shipped">ENVIADO</option>
+            <option value="delivered">ENTREGADO</option>
+            <option value="cancelled">CANCELADO</option>
+          </select>
+          <button type="submit">GUARDAR</button>
+        </form>
+      </div>
+    </article>
   );
 }
 

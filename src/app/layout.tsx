@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   description: "Tienda SportCrz",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#090909",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -18,6 +24,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
+      <head>
+        <link
+          rel="preload"
+          as="video"
+          href="/img/Video_Fondo.mp4"
+          type="video/mp4"
+          fetchPriority="high"
+        />
+      </head>
       <body>
         <CartProvider>
           <Navbar />
