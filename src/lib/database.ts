@@ -312,6 +312,145 @@ export function listOrders(): Array<Order & { item_count: number }> {
     .all() as Array<Order & { item_count: number }>;
 }
 
+export function getOrderByCode(code: string): Order | undefined {
+  return database
+    .prepare("SELECT * FROM orders WHERE order_code = ?")
+    .get(code) as Order | undefined;
+}
+
+export function generateOrderCode(): string {
+  const random = Math.random().toString(36).slice(2, 8).toUpperCase();
+  const timestamp = Date.now().toString(36).toUpperCase();
+  return `SCZ-${timestamp}${random}`;
+}
+
+export type NewOrderItem = {
+  product_id: number | null;
+  product_name: string;
+  unit_price: number;
+  quantity: number;
+};
+
+export function createOrder(data: {
+  order_code: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string | null;
+  delivery_address: string | null;
+  subtotal: number;
+  total: number;
+  notes: string | null;
+  items: NewOrderItem[];
+}): number {
+  const insertOrder = database.prepare(`
+    INSERT INTO orders (order_code, customer_name, customer_email, customer_phone, delivery_address, subtotal, total, status, payment_method, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', ?)
+  `);
+
+  const insertItem = database.prepare(`
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+
+  let orderId: number;
+
+  try {
+    database.exec("BEGIN");
+
+    const result = insertOrder.run(
+      data.order_code,
+      data.customer_name,
+      data.customer_email,
+      data.customer_phone,
+      data.delivery_address,
+      data.subtotal,
+      data.total,
+      data.notes
+    );
+
+    orderId = Number(result.lastInsertRowid);
+
+    for (const item of data.items) {
+      insertItem.run(
+        orderId,
+        item.product_id,
+        item.product_name,
+        item.unit_price,
+        item.quantity
+      );
+    }
+
+    database.exec("COMMIT");
+  } catch (error) {
+    database.exec("ROLLBACK");
+    throw error;
+  }
+
+  return orderId;
+}
+
+export function markOrderPaid(
+  orderCode: string,
+  paymentMethod: string,
+  paymentReference: string
+) {
+  let success = false;
+
+  try {
+    database.exec("BEGIN");
+
+    const order = database
+      .prepare("SELECT id, status FROM orders WHERE order_code = ?")
+      .get(orderCode) as { id: number; status: string } | undefined;
+
+    if (!order) {
+      database.exec("ROLLBACK");
+      return false;
+    }
+
+    if (order.status === "paid") {
+      database.exec("ROLLBACK");
+      return true;
+    }
+
+    const items = database
+      .prepare(
+        "SELECT product_id, quantity FROM order_items WHERE order_id = ? AND product_id IS NOT NULL"
+      )
+      .all(order.id) as Array<{ product_id: number; quantity: number }>;
+
+    const updateStock = database.prepare(
+      "UPDATE products SET stock = MAX(stock - ?, 0), updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+    );
+
+    for (const item of items) {
+      updateStock.run(item.quantity, item.product_id);
+    }
+
+    database
+      .prepare(
+        "UPDATE orders SET status = 'paid', payment_method = ?, payment_reference = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+      )
+      .run(paymentMethod, paymentReference, order.id);
+
+    database.exec("COMMIT");
+    success = true;
+  } catch (error) {
+    database.exec("ROLLBACK");
+    throw error;
+  }
+
+  return success;
+}
+
+export function markOrderCancelled(orderCode: string) {
+  database
+    .prepare(
+      "UPDATE orders SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE order_code = ? AND status = 'pending'"
+    )
+    .run(orderCode);
+}
+
 export function getOrderWithItems(
   orderId: number
 ): { order: Order; items: OrderItem[] } | undefined {

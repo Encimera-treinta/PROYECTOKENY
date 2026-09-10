@@ -7,8 +7,10 @@ import {
   useMemo,
   useState,
 } from "react";
+import Link from "next/link";
 
 export type CartItem = {
+  id: number | null;
   name: string;
   price: number;
   image: string;
@@ -579,16 +581,17 @@ function CartDrawer() {
               checkout.
             </p>
 
-            <button
-              type="button"
+            <Link
+              href="/checkout"
               className="checkout-btn"
+              onClick={() => cart.setOpen(false)}
             >
               <span>
                 FINALIZAR COMPRA
               </span>
 
               <span>↗</span>
-            </button>
+            </Link>
 
             <button
               type="button"

@@ -39,9 +39,30 @@ archivo `.env.local` ni el archivo `data/sportcrz.db`.
 - Carrito React persistente en localStorage
 - Assets locales en public/img
 
+## Pagos con TiloPay (tarjetas y Yappy)
+
+El checkout usa la plataforma **TiloPay**, que procesa tarjetas, Yappy y
+Banco General en Panamá. El cliente paga en la página segura de TiloPay;
+los datos de tarjeta nunca pasan por este servidor.
+
+1. Crea tu cuenta en [admin.tilopay.com](https://admin.tilopay.com/) y
+   obtén tus credenciales en *Admin · Tilopay Checkout*.
+2. Añade a `.env.local`:
+
+```
+TILOPAY_CHECKOUT_KEY=tu_key
+TILOPAY_API_USER=tu_usuario
+TILOPAY_API_PASSWORD=tu_password
+TILOPAY_CURRENCY=USD
+```
+
+3. Reinicia la app. El carrito → *Finalizar compra* → `/checkout`
+   completa los datos y redirige a TiloPay.
+
+Al aprobarse el pago, TiloPay redirige a `/checkout/resultado`, la
+orden queda `paid`, se guarda la referencia y se descuenta el stock.
+Si el pago falla, la orden se cancela y el stock no cambia.
+
 ## Pendiente para la siguiente fase
-- Base de datos
-- Inventario real y variantes
-- Checkout y órdenes únicas
-- Panel admin
-- Integración Yappy
+- Webhooks de TiloPay (confirmación servidor a servidor)
+- Envío de correos de confirmación

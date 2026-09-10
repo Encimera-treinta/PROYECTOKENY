@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCart } from "./CartProvider";
 
 type Product = {
+  id: number;
   name: string;
   price: number;
   oldPrice: number | null;
@@ -175,6 +176,7 @@ export default function CatalogPage({
                         className="experimental-add"
                         onClick={() => {
                           cart.add({
+                            id: product.id,
                             name: product.name,
                             price: product.price,
                             image: product.image,
