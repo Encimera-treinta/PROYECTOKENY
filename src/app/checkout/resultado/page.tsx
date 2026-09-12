@@ -60,15 +60,15 @@ export default async function CheckoutResultPage({
   if (orderCode) {
     if (approved) {
       const reference = params.auth || params.tilopay_transaction || "";
-      const ok = markOrderPaid(orderCode, "card", reference);
+      const ok = await markOrderPaid(orderCode, "card", reference);
       orderState = ok ? "paid" : "unknown";
     } else {
-      markOrderCancelled(orderCode);
+      await markOrderCancelled(orderCode);
       orderState = "cancelled";
     }
   }
 
-  const order = orderCode ? getOrderByCode(orderCode) : undefined;
+  const order = orderCode ? await getOrderByCode(orderCode) : undefined;
 
   return (
     <main className="checkout-result">

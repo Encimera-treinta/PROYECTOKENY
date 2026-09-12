@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const session = await requireAdmin();
-  const databaseStatus = getDatabaseStatus();
+  const databaseStatus = await getDatabaseStatus();
   return (
     <main className="admin-page">
       <header className="admin-topbar">

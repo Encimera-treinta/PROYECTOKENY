@@ -26,7 +26,7 @@ export async function updateOrderStatusAction(formData: FormData) {
     redirect("/admin/pedidos?error=status");
   }
 
-  updateOrderStatus(id, status);
+  await updateOrderStatus(id, status);
   revalidatePath("/admin/pedidos");
   redirect("/admin/pedidos?updated=1");
 }

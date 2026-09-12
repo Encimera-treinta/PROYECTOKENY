@@ -1,11 +1,10 @@
 import type { NextConfig } from "next";
-import { loadEnvConfig } from "@next/env";
-import path from "node:path";
-
-// Conserva la configuración del proyecto migrado, ubicada un nivel arriba.
-loadEnvConfig(path.resolve(process.cwd(), ".."));
 
 const nextConfig: NextConfig = {
+  /* Necesario porque el repo vive dentro de un subdirectorio
+     del monorepo de escritorio; en Vercel no afecta. */
   outputFileTracingRoot: __dirname,
+  serverExternalPackages: ["sharp"],
 };
+
 export default nextConfig;

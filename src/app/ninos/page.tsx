@@ -1,18 +1,18 @@
-import CatalogPage from "@/components/CatalogPage";
+﻿import CatalogPage from "@/components/CatalogPage";
 import { listProductsByCategory } from "@/lib/database";
 import { toCatalogProduct } from "@/lib/catalog-mapper";
 import "@/styles/shop.css";
 
-export const metadata = { title: "Niños | SportCrz" };
+export const metadata = { title: "NiÃ±os | SportCrz" };
 
 export const dynamic = "force-dynamic";
 
-export default function NinosPage() {
-  const products = listProductsByCategory("ninos");
+export default async function NinosPage() {
+  const products = await listProductsByCategory("ninos");
 
   return (
     <CatalogPage
-      label="Niños"
+      label="NiÃ±os"
       sections={[
         {
           id: "ninos-destacados",

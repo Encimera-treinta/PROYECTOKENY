@@ -113,8 +113,8 @@ export function verifyPasswordHash(password: string, stored: string) {
   }
 }
 
-export function authenticateAdmin(email: string, password: string) {
-  const user = findActiveAdminByEmail(email);
+export async function authenticateAdmin(email: string, password: string) {
+  const user = await findActiveAdminByEmail(email);
 
   if (!user || !verifyPasswordHash(password, user.password_hash)) {
     return null;
@@ -247,7 +247,7 @@ export async function getAdminSession() {
     return null;
   }
 
-  if (!findActiveAdminByEmail(payload.email)) {
+  if (!(await findActiveAdminByEmail(payload.email))) {
     return null;
   }
 

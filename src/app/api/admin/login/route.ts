@@ -30,7 +30,7 @@ export async function POST(
     );
   }
 
-  const admin = authenticateAdmin(email, password);
+  const admin = await authenticateAdmin(email, password);
 
   if (!admin) {
     redirect(

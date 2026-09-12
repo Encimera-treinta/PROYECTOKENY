@@ -1,4 +1,4 @@
-import CatalogPage from "@/components/CatalogPage";
+﻿import CatalogPage from "@/components/CatalogPage";
 import { listProductsByCategory } from "@/lib/database";
 import { toCatalogProduct } from "@/lib/catalog-mapper";
 import "@/styles/shop.css";
@@ -7,8 +7,8 @@ export const metadata = { title: "Hombres | SportCrz" };
 
 export const dynamic = "force-dynamic";
 
-export default function HombresPage() {
-  const products = listProductsByCategory("hombres");
+export default async function HombresPage() {
+  const products = await listProductsByCategory("hombres");
 
   return (
     <CatalogPage

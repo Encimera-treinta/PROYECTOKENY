@@ -20,7 +20,7 @@ export default async function AdminPedidosPage({
 }) {
   await requireAdmin();
   const params = await searchParams;
-  const orders = listOrders();
+  const orders = await listOrders();
 
   return (
     <main className="admin-page">

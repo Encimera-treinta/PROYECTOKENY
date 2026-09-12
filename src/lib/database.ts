@@ -1,31 +1,43 @@
 import "server-only";
 
-import { mkdirSync } from "fs";
-import path from "path";
-import { DatabaseSync } from "node:sqlite";
+import { createClient, type Client } from "@libsql/client";
 
-const databasePath =
-  process.env.DATABASE_PATH ||
-  path.join(process.cwd(), "data", "sportcrz.db");
+/* Conexión unificada:
+   - Local: file:./data/sportcrz.db (DATABASE_PATH)
+   - Turso (Vercel): TURSO_DATABASE_URL + TURSO_AUTH_TOKEN */
 
-mkdirSync(path.dirname(databasePath), { recursive: true });
+function createDatabase(): Client {
+  const tursoUrl = process.env.TURSO_DATABASE_URL;
+
+  if (tursoUrl) {
+    const token = process.env.TURSO_AUTH_TOKEN;
+    if (!token) {
+      throw new Error("TURSO_AUTH_TOKEN no está configurado.");
+    }
+    return createClient({
+      url: tursoUrl,
+      authToken: token,
+    });
+  }
+
+  const localPath = process.env.DATABASE_PATH || "file:data/sportcrz.db";
+  return createClient({ url: localPath.startsWith("file:") ? localPath : `file:${localPath}` });
+}
 
 const globalDatabase = globalThis as typeof globalThis & {
-  sportcrzDatabase?: DatabaseSync;
+  sportcrzDatabase?: Client;
 };
 
 export const database =
-  globalDatabase.sportcrzDatabase || new DatabaseSync(databasePath);
+  globalDatabase.sportcrzDatabase || createDatabase();
 
 if (process.env.NODE_ENV !== "production") {
   globalDatabase.sportcrzDatabase = database;
 }
 
-database.exec(`
-  PRAGMA busy_timeout = 5000;
-  PRAGMA foreign_keys = ON;
-  PRAGMA journal_mode = WAL;
+let schemaReady: Promise<void> | null = null;
 
+const SCHEMA_SQL = `
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT NOT NULL UNIQUE COLLATE NOCASE,
@@ -84,58 +96,126 @@ database.exec(`
   );
 
   CREATE INDEX IF NOT EXISTS order_items_order_idx ON order_items(order_id);
-`);
 
-// Migra una sola vez las credenciales de la versión anterior basada en .env.
-const legacyAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-const legacyAdminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+  CREATE TABLE IF NOT EXISTS uploads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    content_type TEXT NOT NULL,
+    data BLOB NOT NULL,
+    bytes INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`;
 
-if (legacyAdminEmail && legacyAdminPasswordHash) {
-  database
-    .prepare(`
-      INSERT OR IGNORE INTO users (email, password_hash, role)
-      VALUES (?, ?, 'admin')
-    `)
-    .run(legacyAdminEmail, legacyAdminPasswordHash);
-}
+/* Ejecuta el esquema una sola vez por proceso. */
+export function ensureSchema(): Promise<void> {
+  if (!schemaReady) {
+    schemaReady = (async () => {
+      const statements = SCHEMA_SQL
+        .split(";")
+        .map((s) => s.trim())
+        .filter(Boolean);
 
-/* Siembra inicial: inserta el catálogo estático la primera vez que
-   la tabla products queda vacía, para que la tienda arranque con datos. */
-const productCount = database
-  .prepare("SELECT COUNT(*) AS count FROM products")
-  .get() as { count: number };
+      for (const statement of statements) {
+        await database.execute(statement + ";");
+      }
 
-if (productCount.count === 0) {
-  const insert = database.prepare(`
-    INSERT INTO products (name, category, price, old_price, image, badge, stock, sort_order)
-    VALUES (?, ?, ?, ?, ?, ?, 0, ?)
-  `);
+      /* Migra credenciales de la versión anterior basada en .env. */
+      const legacyAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+      const legacyAdminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-  const seed: Array<{
-    name: string;
-    category: string;
-    price: number;
-    old_price: number | null;
-    image: string;
-    badge: string | null;
-    sort_order: number;
-  }> = [
-    { name: "Urban Black", category: "hombres", price: 29.99, old_price: null, image: "/img/portfolio-1.jpg", badge: null, sort_order: 1 },
-    { name: "Street White", category: "hombres", price: 34.99, old_price: null, image: "/img/portfolio-2.jpg", badge: null, sort_order: 2 },
-    { name: "Performance", category: "hombres", price: 39.99, old_price: null, image: "/img/portfolio-3.jpg", badge: null, sort_order: 3 },
-    { name: "Active Pink", category: "mujeres", price: 27.99, old_price: null, image: "/img/portfolio-4.jpg", badge: null, sort_order: 1 },
-    { name: "Urban Fit", category: "mujeres", price: 31.99, old_price: null, image: "/img/portfolio-5.jpg", badge: null, sort_order: 2 },
-    { name: "Sport Essential", category: "mujeres", price: 36.99, old_price: null, image: "/img/portfolio-6.jpg", badge: null, sort_order: 3 },
-    { name: "Kids Sport", category: "ninos", price: 19.99, old_price: null, image: "/img/service-1.jpg", badge: null, sort_order: 1 },
-    { name: "Junior Urban", category: "ninos", price: 22.99, old_price: null, image: "/img/service-2.jpg", badge: null, sort_order: 2 },
-    { name: "Urban Sale", category: "rebajas", price: 19.99, old_price: 39.99, image: "/img/portfolio-1.jpg", badge: "-50%", sort_order: 1 },
-    { name: "Performance Sale", category: "rebajas", price: 24.99, old_price: 44.99, image: "/img/portfolio-3.jpg", badge: "SALE", sort_order: 2 },
-  ];
+      if (legacyAdminEmail && legacyAdminPasswordHash) {
+        await database.execute({
+          sql: "INSERT OR IGNORE INTO users (email, password_hash, role) VALUES (?, ?, 'admin')",
+          args: [legacyAdminEmail, legacyAdminPasswordHash],
+        });
+      }
 
-  for (const p of seed) {
-    insert.run(p.name, p.category, p.price, p.old_price, p.image, p.badge, p.sort_order);
+      /* Siembra inicial del catálogo si la tabla está vacía. */
+      const countResult = await database.execute("SELECT COUNT(*) AS count FROM products");
+      const productCount = Number(countResult.rows[0]?.count ?? 0);
+
+      if (productCount === 0) {
+        const seed: Array<{
+          name: string;
+          category: string;
+          price: number;
+          old_price: number | null;
+          image: string;
+          badge: string | null;
+          sort_order: number;
+        }> = [
+          { name: "Urban Black", category: "hombres", price: 29.99, old_price: null, image: "/img/portfolio-1.jpg", badge: null, sort_order: 1 },
+          { name: "Street White", category: "hombres", price: 34.99, old_price: null, image: "/img/portfolio-2.jpg", badge: null, sort_order: 2 },
+          { name: "Performance", category: "hombres", price: 39.99, old_price: null, image: "/img/portfolio-3.jpg", badge: null, sort_order: 3 },
+          { name: "Active Pink", category: "mujeres", price: 27.99, old_price: null, image: "/img/portfolio-4.jpg", badge: null, sort_order: 1 },
+          { name: "Urban Fit", category: "mujeres", price: 31.99, old_price: null, image: "/img/portfolio-5.jpg", badge: null, sort_order: 2 },
+          { name: "Sport Essential", category: "mujeres", price: 36.99, old_price: null, image: "/img/portfolio-6.jpg", badge: null, sort_order: 3 },
+          { name: "Kids Sport", category: "ninos", price: 19.99, old_price: null, image: "/img/service-1.jpg", badge: null, sort_order: 1 },
+          { name: "Junior Urban", category: "ninos", price: 22.99, old_price: null, image: "/img/service-2.jpg", badge: null, sort_order: 2 },
+          { name: "Urban Sale", category: "rebajas", price: 19.99, old_price: 39.99, image: "/img/portfolio-1.jpg", badge: "-50%", sort_order: 1 },
+          { name: "Performance Sale", category: "rebajas", price: 24.99, old_price: 44.99, image: "/img/portfolio-3.jpg", badge: "SALE", sort_order: 2 },
+        ];
+
+        for (const p of seed) {
+          await database.execute({
+            sql: "INSERT INTO products (name, category, price, old_price, image, badge, stock, sort_order) VALUES (?, ?, ?, ?, ?, ?, 0, ?)",
+            args: [p.name, p.category, p.price, p.old_price, p.image, p.badge, p.sort_order],
+          });
+        }
+      }
+    })();
   }
+
+  return schemaReady;
 }
+
+/* =====================================
+   UPLOADS (fotos de productos)
+===================================== */
+
+export async function saveUpload(
+  name: string,
+  contentType: string,
+  data: Uint8Array
+): Promise<void> {
+  await database.execute({
+    sql: "INSERT INTO uploads (name, content_type, data, bytes) VALUES (?, ?, ?, ?)",
+    args: [name, contentType, data, data.byteLength],
+  });
+}
+
+export async function getUploadByName(name: string): Promise<
+  { name: string; content_type: string; data: Uint8Array } | undefined
+> {
+  const result = await database.execute({
+    sql: "SELECT name, content_type, data FROM uploads WHERE name = ?",
+    args: [name],
+  });
+
+  const row = result.rows[0];
+
+  if (!row) return undefined;
+
+  return {
+    name: String(row.name),
+    content_type: String(row.content_type),
+    data: row.data instanceof Uint8Array
+      ? row.data
+      : new Uint8Array((row.data as ArrayBuffer) ?? new ArrayBuffer(0)),
+  };
+}
+
+export async function deleteUploadByName(name: string): Promise<void> {
+  await database.execute({
+    sql: "DELETE FROM uploads WHERE name = ?",
+    args: [name],
+  });
+}
+
+/* =====================================
+   USUARIOS
+===================================== */
 
 export type DatabaseUser = {
   id: number;
@@ -145,15 +225,28 @@ export type DatabaseUser = {
   active: number;
 };
 
-export function findActiveAdminByEmail(email: string) {
-  return database
-    .prepare(`
+export async function findActiveAdminByEmail(email: string) {
+  const result = await database.execute({
+    sql: `
       SELECT id, email, password_hash, role, active
       FROM users
       WHERE email = ? AND role = 'admin' AND active = 1
       LIMIT 1
-    `)
-    .get(email.trim().toLowerCase()) as DatabaseUser | undefined;
+    `,
+    args: [email.trim().toLowerCase()],
+  });
+
+  const row = result.rows[0];
+
+  if (!row) return undefined;
+
+  return {
+    id: Number(row.id),
+    email: String(row.email),
+    password_hash: String(row.password_hash),
+    role: (row.role === "customer" ? "customer" : "admin") as "admin" | "customer",
+    active: Number(row.active),
+  } satisfies DatabaseUser;
 }
 
 /* =====================================
@@ -177,34 +270,56 @@ const PRODUCT_COLUMNS = `
   id, name, category, price, old_price, image, badge, stock, active, sort_order
 `;
 
-export function listProductsByCategory(category: string): Product[] {
-  return database
-    .prepare(`
+function rowToProduct(row: Record<string, unknown>): Product {
+  return {
+    id: Number(row.id),
+    name: String(row.name),
+    category: row.category as Product["category"],
+    price: Number(row.price),
+    old_price: row.old_price === null || row.old_price === undefined ? null : Number(row.old_price),
+    image: String(row.image),
+    badge: row.badge === null || row.badge === undefined ? null : String(row.badge),
+    stock: Number(row.stock),
+    active: Number(row.active),
+    sort_order: Number(row.sort_order),
+  };
+}
+
+export async function listProductsByCategory(category: string): Promise<Product[]> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: `
       SELECT ${PRODUCT_COLUMNS}
       FROM products
       WHERE category = ? AND active = 1
       ORDER BY sort_order ASC, id ASC
-    `)
-    .all(category) as Product[];
+    `,
+    args: [category],
+  });
+  return result.rows.map((row) => rowToProduct(row as Record<string, unknown>));
 }
 
-export function listAllProducts(): Product[] {
-  return database
-    .prepare(`
-      SELECT ${PRODUCT_COLUMNS}
-      FROM products
-      ORDER BY category ASC, sort_order ASC, id ASC
-    `)
-    .all() as Product[];
+export async function listAllProducts(): Promise<Product[]> {
+  await ensureSchema();
+  const result = await database.execute(`
+    SELECT ${PRODUCT_COLUMNS}
+    FROM products
+    ORDER BY category ASC, sort_order ASC, id ASC
+  `);
+  return result.rows.map((row) => rowToProduct(row as Record<string, unknown>));
 }
 
-export function getProductById(id: number): Product | undefined {
-  return database
-    .prepare(`SELECT ${PRODUCT_COLUMNS} FROM products WHERE id = ?`)
-    .get(id) as Product | undefined;
+export async function getProductById(id: number): Promise<Product | undefined> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: `SELECT ${PRODUCT_COLUMNS} FROM products WHERE id = ?`,
+    args: [id],
+  });
+  const row = result.rows[0];
+  return row ? rowToProduct(row as Record<string, unknown>) : undefined;
 }
 
-export function createProduct(data: {
+export async function createProduct(data: {
   name: string;
   category: string;
   price: number;
@@ -213,13 +328,14 @@ export function createProduct(data: {
   badge: string | null;
   stock: number;
   sort_order: number;
-}): number {
-  const result = database
-    .prepare(`
+}): Promise<number> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: `
       INSERT INTO products (name, category, price, old_price, image, badge, stock, sort_order)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `)
-    .run(
+    `,
+    args: [
       data.name,
       data.category,
       data.price,
@@ -227,13 +343,14 @@ export function createProduct(data: {
       data.image,
       data.badge,
       data.stock,
-      data.sort_order
-    );
+      data.sort_order,
+    ],
+  });
 
   return Number(result.lastInsertRowid);
 }
 
-export function updateProduct(
+export async function updateProduct(
   id: number,
   data: {
     name: string;
@@ -246,14 +363,15 @@ export function updateProduct(
     active: number;
     sort_order: number;
   }
-) {
-  database
-    .prepare(`
+): Promise<void> {
+  await ensureSchema();
+  await database.execute({
+    sql: `
       UPDATE products
       SET name = ?, category = ?, price = ?, old_price = ?, image = ?, badge = ?, stock = ?, active = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `)
-    .run(
+    `,
+    args: [
       data.name,
       data.category,
       data.price,
@@ -263,16 +381,21 @@ export function updateProduct(
       data.stock,
       data.active,
       data.sort_order,
-      id
-    );
+      id,
+    ],
+  });
 }
 
-export function deleteProduct(id: number) {
-  database.prepare("DELETE FROM products WHERE id = ?").run(id);
+export async function deleteProduct(id: number): Promise<void> {
+  await ensureSchema();
+  await database.execute({
+    sql: "DELETE FROM products WHERE id = ?",
+    args: [id],
+  });
 }
 
 /* =====================================
-   PEDIDOS (preparado para TiloPay/Yappy)
+   PEDIDOS (TiloPay/Yappy)
 ===================================== */
 
 export type Order = {
@@ -300,22 +423,63 @@ export type OrderItem = {
   quantity: number;
 };
 
-export function listOrders(): Array<Order & { item_count: number }> {
-  return database
-    .prepare(`
-      SELECT o.*, COUNT(oi.id) AS item_count
-      FROM orders o
-      LEFT JOIN order_items oi ON oi.order_id = o.id
-      GROUP BY o.id
-      ORDER BY o.created_at DESC, o.id DESC
-    `)
-    .all() as Array<Order & { item_count: number }>;
+export async function listOrders(): Promise<Array<Order & { item_count: number }>> {
+  await ensureSchema();
+  const result = await database.execute(`
+    SELECT o.*, COUNT(oi.id) AS item_count
+    FROM orders o
+    LEFT JOIN order_items oi ON oi.order_id = o.id
+    GROUP BY o.id
+    ORDER BY o.created_at DESC, o.id DESC
+  `);
+
+  return result.rows.map((row) => {
+    const r = row as Record<string, unknown>;
+    return {
+      id: Number(r.id),
+      order_code: String(r.order_code),
+      customer_name: String(r.customer_name),
+      customer_email: String(r.customer_email),
+      customer_phone: r.customer_phone == null ? null : String(r.customer_phone),
+      delivery_address: r.delivery_address == null ? null : String(r.delivery_address),
+      subtotal: Number(r.subtotal),
+      total: Number(r.total),
+      status: String(r.status),
+      payment_method: String(r.payment_method),
+      payment_reference: r.payment_reference == null ? null : String(r.payment_reference),
+      notes: r.notes == null ? null : String(r.notes),
+      created_at: String(r.created_at),
+      item_count: Number(r.item_count),
+    };
+  });
 }
 
-export function getOrderByCode(code: string): Order | undefined {
-  return database
-    .prepare("SELECT * FROM orders WHERE order_code = ?")
-    .get(code) as Order | undefined;
+export async function getOrderByCode(code: string): Promise<Order | undefined> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: "SELECT * FROM orders WHERE order_code = ?",
+    args: [code],
+  });
+
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+
+  if (!row) return undefined;
+
+  return {
+    id: Number(row.id),
+    order_code: String(row.order_code),
+    customer_name: String(row.customer_name),
+    customer_email: String(row.customer_email),
+    customer_phone: row.customer_phone == null ? null : String(row.customer_phone),
+    delivery_address: row.delivery_address == null ? null : String(row.delivery_address),
+    subtotal: Number(row.subtotal),
+    total: Number(row.total),
+    status: String(row.status),
+    payment_method: String(row.payment_method),
+    payment_reference: row.payment_reference == null ? null : String(row.payment_reference),
+    notes: row.notes == null ? null : String(row.notes),
+    created_at: String(row.created_at),
+  };
 }
 
 export function generateOrderCode(): string {
@@ -331,7 +495,7 @@ export type NewOrderItem = {
   quantity: number;
 };
 
-export function createOrder(data: {
+export async function createOrder(data: {
   order_code: string;
   customer_name: string;
   customer_email: string;
@@ -341,158 +505,196 @@ export function createOrder(data: {
   total: number;
   notes: string | null;
   items: NewOrderItem[];
-}): number {
-  const insertOrder = database.prepare(`
+}): Promise<number> {
+  await ensureSchema();
+
+  const insertOrder = `
     INSERT INTO orders (order_code, customer_name, customer_email, customer_phone, delivery_address, subtotal, total, status, payment_method, notes)
     VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', ?)
-  `);
+  `;
 
-  const insertItem = database.prepare(`
+  const insertItem = `
     INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity)
     VALUES (?, ?, ?, ?, ?)
-  `);
+  `;
 
-  let orderId: number;
+  /* Transacción real de libsql (multi-statement atómica). */
+  const tx = await database.transaction("write");
 
   try {
-    database.exec("BEGIN");
+    const orderResult = await tx.execute({
+      sql: insertOrder,
+      args: [
+        data.order_code,
+        data.customer_name,
+        data.customer_email,
+        data.customer_phone,
+        data.delivery_address,
+        data.subtotal,
+        data.total,
+        data.notes,
+      ],
+    });
 
-    const result = insertOrder.run(
-      data.order_code,
-      data.customer_name,
-      data.customer_email,
-      data.customer_phone,
-      data.delivery_address,
-      data.subtotal,
-      data.total,
-      data.notes
-    );
-
-    orderId = Number(result.lastInsertRowid);
+    const orderId = Number(orderResult.lastInsertRowid);
 
     for (const item of data.items) {
-      insertItem.run(
-        orderId,
-        item.product_id,
-        item.product_name,
-        item.unit_price,
-        item.quantity
-      );
+      await tx.execute({
+        sql: insertItem,
+        args: [orderId, item.product_id, item.product_name, item.unit_price, item.quantity],
+      });
     }
 
-    database.exec("COMMIT");
+    await tx.commit();
+    return orderId;
   } catch (error) {
-    database.exec("ROLLBACK");
+    await tx.rollback();
     throw error;
   }
-
-  return orderId;
 }
 
-export function markOrderPaid(
+export async function markOrderPaid(
   orderCode: string,
   paymentMethod: string,
   paymentReference: string
-) {
-  let success = false;
+): Promise<boolean> {
+  await ensureSchema();
+
+  const tx = await database.transaction("write");
 
   try {
-    database.exec("BEGIN");
+    const result = await tx.execute({
+      sql: "SELECT id, status FROM orders WHERE order_code = ?",
+      args: [orderCode],
+    });
 
-    const order = database
-      .prepare("SELECT id, status FROM orders WHERE order_code = ?")
-      .get(orderCode) as { id: number; status: string } | undefined;
+    const row = result.rows[0] as Record<string, unknown> | undefined;
+
+    const order =
+      row == null
+        ? undefined
+        : { id: Number(row.id), status: String(row.status) };
 
     if (!order) {
-      database.exec("ROLLBACK");
+      await tx.rollback();
       return false;
     }
 
     if (order.status === "paid") {
-      database.exec("ROLLBACK");
+      await tx.rollback();
       return true;
     }
 
-    const items = database
-      .prepare(
-        "SELECT product_id, quantity FROM order_items WHERE order_id = ? AND product_id IS NOT NULL"
-      )
-      .all(order.id) as Array<{ product_id: number; quantity: number }>;
+    const orderId = order.id;
 
-    const updateStock = database.prepare(
-      "UPDATE products SET stock = MAX(stock - ?, 0), updated_at = CURRENT_TIMESTAMP WHERE id = ?"
-    );
+    const itemsResult = await tx.execute({
+      sql: "SELECT product_id, quantity FROM order_items WHERE order_id = ? AND product_id IS NOT NULL",
+      args: [orderId],
+    });
 
-    for (const item of items) {
-      updateStock.run(item.quantity, item.product_id);
+    for (const row of itemsResult.rows) {
+      const r = row as Record<string, unknown>;
+      await tx.execute({
+        sql: "UPDATE products SET stock = MAX(stock - ?, 0), updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        args: [Number(r.quantity), Number(r.product_id)],
+      });
     }
 
-    database
-      .prepare(
-        "UPDATE orders SET status = 'paid', payment_method = ?, payment_reference = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
-      )
-      .run(paymentMethod, paymentReference, order.id);
+    await tx.execute({
+      sql: "UPDATE orders SET status = 'paid', payment_method = ?, payment_reference = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      args: [paymentMethod, paymentReference, orderId],
+    });
 
-    database.exec("COMMIT");
-    success = true;
+    await tx.commit();
+    return true;
   } catch (error) {
-    database.exec("ROLLBACK");
+    await tx.rollback();
     throw error;
   }
-
-  return success;
 }
 
-export function markOrderCancelled(orderCode: string) {
-  database
-    .prepare(
-      "UPDATE orders SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE order_code = ? AND status = 'pending'"
-    )
-    .run(orderCode);
+export async function markOrderCancelled(orderCode: string): Promise<void> {
+  await ensureSchema();
+  await database.execute({
+    sql: "UPDATE orders SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE order_code = ? AND status = 'pending'",
+    args: [orderCode],
+  });
 }
 
-export function getOrderWithItems(
+export async function getOrderWithItems(
   orderId: number
-): { order: Order; items: OrderItem[] } | undefined {
-  const order = database
-    .prepare("SELECT * FROM orders WHERE id = ?")
-    .get(orderId) as Order | undefined;
+): Promise<{ order: Order; items: OrderItem[] } | undefined> {
+  await ensureSchema();
 
-  if (!order) return undefined;
+  const orderResult = await database.execute({
+    sql: "SELECT * FROM orders WHERE id = ?",
+    args: [orderId],
+  });
 
-  const items = database
-    .prepare("SELECT * FROM order_items WHERE order_id = ? ORDER BY id ASC")
-    .all(orderId) as OrderItem[];
+  const orderRow = orderResult.rows[0] as Record<string, unknown> | undefined;
+
+  if (!orderRow) return undefined;
+
+  const itemsResult = await database.execute({
+    sql: "SELECT * FROM order_items WHERE order_id = ? ORDER BY id ASC",
+    args: [orderId],
+  });
+
+  const order: Order = {
+    id: Number(orderRow.id),
+    order_code: String(orderRow.order_code),
+    customer_name: String(orderRow.customer_name),
+    customer_email: String(orderRow.customer_email),
+    customer_phone: orderRow.customer_phone == null ? null : String(orderRow.customer_phone),
+    delivery_address: orderRow.delivery_address == null ? null : String(orderRow.delivery_address),
+    subtotal: Number(orderRow.subtotal),
+    total: Number(orderRow.total),
+    status: String(orderRow.status),
+    payment_method: String(orderRow.payment_method),
+    payment_reference: orderRow.payment_reference == null ? null : String(orderRow.payment_reference),
+    notes: orderRow.notes == null ? null : String(orderRow.notes),
+    created_at: String(orderRow.created_at),
+  };
+
+  const items: OrderItem[] = itemsResult.rows.map((row) => {
+    const r = row as Record<string, unknown>;
+    return {
+      id: Number(r.id),
+      order_id: Number(r.order_id),
+      product_id: r.product_id == null ? null : Number(r.product_id),
+      product_name: String(r.product_name),
+      unit_price: Number(r.unit_price),
+      quantity: Number(r.quantity),
+    };
+  });
 
   return { order, items };
 }
 
-export function updateOrderStatus(orderId: number, status: string) {
-  database
-    .prepare(`
-      UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
-    `)
-    .run(status, orderId);
+export async function updateOrderStatus(orderId: number, status: string): Promise<void> {
+  await ensureSchema();
+  await database.execute({
+    sql: "UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    args: [status, orderId],
+  });
 }
 
-export function getDatabaseStatus() {
-  const users = database
-    .prepare("SELECT COUNT(*) AS count FROM users")
-    .get() as { count: number };
+export async function getDatabaseStatus() {
+  await ensureSchema();
 
-  const products = database
-    .prepare("SELECT COUNT(*) AS count FROM products")
-    .get() as { count: number };
+  const usersResult = await database.execute("SELECT COUNT(*) AS count FROM users");
+  const productsResult = await database.execute("SELECT COUNT(*) AS count FROM products");
+  const ordersResult = await database.execute("SELECT COUNT(*) AS count FROM orders");
 
-  const orders = database
-    .prepare("SELECT COUNT(*) AS count FROM orders")
-    .get() as { count: number };
+  const users = Number(usersResult.rows[0]?.count ?? 0);
+  const products = Number(productsResult.rows[0]?.count ?? 0);
+  const orders = Number(ordersResult.rows[0]?.count ?? 0);
 
   return {
     connected: true,
-    engine: "SQLite",
-    users: users.count,
-    products: products.count,
-    orders: orders.count,
+    engine: process.env.TURSO_DATABASE_URL ? "Turso (libSQL)" : "SQLite",
+    users,
+    products,
+    orders,
   };
 }

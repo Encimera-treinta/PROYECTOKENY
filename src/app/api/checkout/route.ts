@@ -98,7 +98,7 @@ export async function POST(request: Request) {
       return badRequest("Artículo inválido.");
     }
 
-    const product = getProductById(item.id);
+    const product = await getProductById(item.id);
 
     if (!product || product.active !== 1) {
       return badRequest(
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
 
   const orderCode = generateOrderCode();
 
-  const orderId = createOrder({
+  const orderId = await createOrder({
     order_code: orderCode,
     customer_name: `${firstName} ${lastName}`.trim(),
     customer_email: email,

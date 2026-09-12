@@ -44,7 +44,7 @@ export default async function AdminProductosPage({
 }) {
   await requireAdmin();
   const params = await searchParams;
-  const products = listAllProducts();
+  const products = await listAllProducts();
 
   const editing: FormProduct | null = params.edit
     ? (products.find((p) => String(p.id) === params.edit) ?? null)

@@ -1,4 +1,4 @@
-import CatalogPage from "@/components/CatalogPage";
+﻿import CatalogPage from "@/components/CatalogPage";
 import { listProductsByCategory } from "@/lib/database";
 import { toCatalogProduct } from "@/lib/catalog-mapper";
 import "@/styles/shop.css";
@@ -7,8 +7,8 @@ export const metadata = { title: "Rebajas | SportCrz" };
 
 export const dynamic = "force-dynamic";
 
-export default function RebajasPage() {
-  const products = listProductsByCategory("rebajas");
+export default async function RebajasPage() {
+  const products = await listProductsByCategory("rebajas");
 
   return (
     <CatalogPage
@@ -17,7 +17,7 @@ export default function RebajasPage() {
       sections={[
         {
           id: "rebajas",
-          title: "Últimas unidades",
+          title: "Ãšltimas unidades",
           products: products.map(toCatalogProduct),
         },
       ]}

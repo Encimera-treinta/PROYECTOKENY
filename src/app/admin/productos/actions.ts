@@ -2,19 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { mkdirSync, writeFileSync, existsSync } from "fs";
-import path from "path";
 import { requireAdmin } from "@/lib/admin-auth";
 import {
   createProduct,
   updateProduct,
   deleteProduct,
   getProductById,
+  saveUpload,
+  deleteUploadByName,
 } from "@/lib/database";
 
 const CATEGORIES = ["mujeres", "hombres", "ninos", "rebajas"] as const;
 
-const UPLOADS_DIR = path.join(process.cwd(), "data", "uploads");
 const MAX_UPLOAD_MB = 8;
 
 /* Guarda la imagen enviada como data URL (base64), la
@@ -46,13 +45,11 @@ async function saveUploadedImage(
     .jpeg({ quality: 82 })
     .toBuffer();
 
-  mkdirSync(UPLOADS_DIR, { recursive: true });
-
   const fileName = `p-${Date.now()}-${Math.random()
     .toString(36)
     .slice(2, 8)}.jpg`;
 
-  writeFileSync(path.join(UPLOADS_DIR, fileName), processed);
+  await saveUpload(fileName, "image/jpeg", new Uint8Array(processed));
 
   return `/uploads/${fileName}`;
 }
@@ -126,7 +123,7 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
 export async function createProductAction(formData: FormData) {
   await requireAdmin();
   const data = await parseProductForm(formData);
-  createProduct(data);
+  await createProduct(data);
   revalidatePath("/admin/productos");
   revalidatePath(`/${data.category}`);
   redirect("/admin/productos?created=1");
@@ -138,11 +135,11 @@ export async function updateProductAction(formData: FormData) {
   if (!Number.isInteger(id) || id <= 0) {
     redirect("/admin/productos?error=id");
   }
-  if (!getProductById(id)) {
+  if (!(await getProductById(id))) {
     redirect("/admin/productos?error=missing");
   }
   const data = await parseProductForm(formData);
-  updateProduct(id, data);
+  await updateProduct(id, data);
   revalidatePath("/admin/productos");
   revalidatePath(`/${data.category}`);
   redirect("/admin/productos?updated=1");
@@ -154,20 +151,13 @@ export async function deleteProductAction(formData: FormData) {
   if (!Number.isInteger(id) || id <= 0) {
     redirect("/admin/productos?error=id");
   }
-  const product = getProductById(id);
-  deleteProduct(id);
+  const product = await getProductById(id);
+  await deleteProduct(id);
 
-  /* Borra también el archivo si era una imagen subida. */
+  /* Borra también la foto si era una imagen subida. */
   if (product?.image?.startsWith("/uploads/")) {
-    const filePath = path.join(process.cwd(), "data", "uploads", path.basename(product.image));
-    if (existsSync(filePath)) {
-      const { unlinkSync } = await import("fs");
-      try {
-        unlinkSync(filePath);
-      } catch {
-        // El archivo puede estar bloqueado en Windows; no es crítico.
-      }
-    }
+    const fileName = product.image.replace("/uploads/", "");
+    await deleteUploadByName(fileName);
   }
 
   revalidatePath("/admin/productos");
