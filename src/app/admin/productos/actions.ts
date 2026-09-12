@@ -66,27 +66,40 @@ type ProductInput = {
   sort_order: number;
 };
 
+/* Acepta "25,99" (coma) o "25.99" (punto) y devuelve number. */
+function parsePrice(raw: string): number {
+  const cleaned = raw.trim().replace(",", ".");
+  return Number(cleaned);
+}
+
 async function parseProductForm(formData: FormData): Promise<ProductInput> {
   const name = String(formData.get("name") || "").trim();
   const category = String(formData.get("category") || "").trim();
-  const price = Number(formData.get("price"));
+  const priceRaw = String(formData.get("price") || "").trim();
+  const price = parsePrice(priceRaw);
   const oldPriceRaw = String(formData.get("old_price") || "").trim();
+  const oldPrice = oldPriceRaw ? parsePrice(oldPriceRaw) : null;
   const imageRaw = String(formData.get("image") || "").trim();
   const imageFileData = String(formData.get("image_file_data") || "").trim();
   const badgeRaw = String(formData.get("badge") || "").trim();
-  const stock = Number(formData.get("stock"));
-  const sortOrder = Number(formData.get("sort_order"));
+  const stockRaw = String(formData.get("stock") || "").trim();
+  const stock = Number(stockRaw.replace(",", "."));
+  const sortOrderRaw = String(formData.get("sort_order") || "").trim();
+  const sortOrder = Number(sortOrderRaw.replace(",", "."));
   const active = formData.get("active") === "on" ? 1 : 0;
 
-  if (!name) redirect("/admin/productos?error=name");
+  if (!name) redirect("/admin/productos?new=1&error=name");
   if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) {
-    redirect("/admin/productos?error=category");
+    redirect("/admin/productos?new=1&error=category");
   }
-  if (!Number.isFinite(price) || price < 0) {
-    redirect("/admin/productos?error=price");
+  if (!priceRaw || !Number.isFinite(price) || price < 0) {
+    redirect("/admin/productos?new=1&error=price");
   }
-  if (!Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock)) {
-    redirect("/admin/productos?error=stock");
+  if (oldPrice !== null && (!Number.isFinite(oldPrice) || oldPrice < 0)) {
+    redirect("/admin/productos?new=1&error=old_price");
+  }
+  if (!stockRaw || !Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock)) {
+    redirect("/admin/productos?new=1&error=stock");
   }
 
   /* Si subieron foto nueva, tiene prioridad sobre la ruta manual. */
@@ -98,20 +111,15 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
     if (saved) {
       image = saved;
     } else {
-      redirect("/admin/productos?error=image");
+      redirect("/admin/productos?new=1&error=image");
     }
   }
-
-  const oldPrice =
-    oldPriceRaw && Number.isFinite(Number(oldPriceRaw)) && Number(oldPriceRaw) > 0
-      ? Number(oldPriceRaw)
-      : null;
 
   return {
     name,
     category,
     price: Math.round(price * 100) / 100,
-    old_price: oldPrice ? Math.round(oldPrice * 100) / 100 : null,
+    old_price: oldPrice && oldPrice > 0 ? Math.round(oldPrice * 100) / 100 : null,
     image,
     badge: badgeRaw || null,
     stock,
@@ -123,17 +131,19 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
 export async function createProductAction(formData: FormData) {
   await requireAdmin();
   const data = await parseProductForm(formData);
-  await createProduct(data);
+  const newId = await createProduct(data);
   revalidatePath("/admin/productos");
   revalidatePath(`/${data.category}`);
-  redirect("/admin/productos?created=1");
+  /* Redirige directo al formulario del producto creado,
+     con su foto y datos cargados para verificarlo. */
+  redirect(`/admin/productos?edit=${newId}&created=1`);
 }
 
 export async function updateProductAction(formData: FormData) {
   await requireAdmin();
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id) || id <= 0) {
-    redirect("/admin/productos?error=id");
+    redirect(`/admin/productos?edit=${id || ""}&error=id`);
   }
   if (!(await getProductById(id))) {
     redirect("/admin/productos?error=missing");
@@ -142,7 +152,7 @@ export async function updateProductAction(formData: FormData) {
   await updateProduct(id, data);
   revalidatePath("/admin/productos");
   revalidatePath(`/${data.category}`);
-  redirect("/admin/productos?updated=1");
+  redirect(`/admin/productos?edit=${id}&updated=1`);
 }
 
 export async function deleteProductAction(formData: FormData) {

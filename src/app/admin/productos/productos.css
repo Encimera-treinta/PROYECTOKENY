@@ -645,6 +645,79 @@
   text-transform: uppercase;
 }
 
+.admin-image-busy {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.admin-image-preview {
+  position: relative;
+}
+
+.admin-image-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.admin-image-ok {
+  margin: 0;
+  color: #1a7f37;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* ==========================================
+   FLASH DE VERIFICACIÓN (crear/actualizar)
+========================================= */
+
+.admin-flash-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  border: 1px solid #1a7f37;
+  background: #f0faf2;
+}
+
+.admin-flash-box .admin-flash {
+  margin: 0;
+}
+
+.admin-flash-detail {
+  margin: 0;
+  color: #33332f;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+.admin-flash-detail a {
+  color: #0f62d1;
+  text-decoration: underline;
+  font-weight: 800;
+}
+
+.admin-form-head-actions {
+  display: inline-flex;
+  gap: 14px;
+}
+
+.admin-form-head-actions a {
+  color: #0f62d1;
+  text-decoration: underline;
+  font-weight: 800;
+}
+
 /* ==========================================
    RESPONSIVE
 ========================================= */

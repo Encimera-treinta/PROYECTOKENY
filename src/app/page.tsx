@@ -17,7 +17,6 @@ export default function HomePage() {
           loop
           playsInline
           preload="auto"
-          poster="/img/about2.jpeg"
         >
           <source
             src="/img/Video_Fondo.mp4"

@@ -52,6 +52,19 @@ export default async function AdminProductosPage({
 
   const showForm = Boolean(params.new || editing);
 
+  const ERROR_MESSAGES: Record<string, string> = {
+    name: "ERROR: Falta el NOMBRE del producto.",
+    category: "ERROR: Categoría inválida.",
+    price: "ERROR: El PRECIO debe ser un número mayor o igual a 0 (usa punto o coma, ej. 25.99).",
+    old_price: "ERROR: El PRECIO ANTERIOR debe ser un número válido.",
+    stock: "ERROR: El STOCK debe ser un número entero (ej. 10).",
+    image: "ERROR: La foto no se pudo procesar. Prueba otra imagen o máx. 8 MB.",
+    id: "ERROR: Producto no encontrado.",
+    missing: "ERROR: Ese producto ya no existe.",
+  };
+
+  const errorText = params.error ? (ERROR_MESSAGES[params.error] ?? "REVISA LOS DATOS DEL FORMULARIO.") : null;
+
   return (
     <main className="admin-page">
       <header className="admin-topbar">
@@ -77,10 +90,39 @@ export default async function AdminProductosPage({
       </section>
 
       <section className="admin-products-toolbar">
-        {(params.created && <p className="admin-flash ok">PRODUCTO CREADO.</p>) ||
-          (params.updated && <p className="admin-flash ok">PRODUCTO ACTUALIZADO.</p>) ||
-          (params.deleted && <p className="admin-flash ok">PRODUCTO ELIMINADO.</p>) ||
-          (params.error && <p className="admin-flash err">REVISA LOS DATOS DEL FORMULARIO.</p>)}
+        {(params.created && (
+          <div className="admin-flash-box ok">
+            <p className="admin-flash ok">PRODUCTO CREADO Y VERIFICADO ✓</p>
+            <p className="admin-flash-detail">
+              Se guardó en la base de datos con ID #{editing?.id ?? "?"} · Categoría: {editing ? (CATEGORY_LABELS[editing.category ?? ""] ?? "") : ""} · Precio: ${editing?.price?.toFixed(2) ?? ""}
+            </p>
+            {editing?.image?.startsWith("/uploads/") && (
+              <p className="admin-flash-detail">
+                Foto subida: <a href={editing.image} target="_blank" rel="noreferrer">VER FOTO SUBIDA ↗</a>
+              </p>
+            )}
+            {editing && (
+              <p className="admin-flash-detail">
+                <a href={`/${editing.category}`} target="_blank" rel="noreferrer">VER EN LA TIENDA ↗</a>
+              </p>
+            )}
+          </div>
+        )) ||
+          (params.updated && (
+            <div className="admin-flash-box ok">
+              <p className="admin-flash ok">CAMBIOS GUARDADOS ✓</p>
+              <p className="admin-flash-detail">
+                Producto #{editing?.id ?? "?"} actualizado en la base de datos.
+              </p>
+              {editing && (
+                <p className="admin-flash-detail">
+                  <a href={`/${editing.category}`} target="_blank" rel="noreferrer">VER EN LA TIENDA ↗</a>
+                </p>
+              )}
+            </div>
+          )) ||
+          (params.deleted && <p className="admin-flash ok">PRODUCTO ELIMINADO DE LA BASE DE DATOS.</p>) ||
+          (errorText && <p className="admin-flash err">{errorText}</p>)}
 
         {!showForm && (
           <Link className="admin-new-btn" href="/admin/productos?new=1">
@@ -93,7 +135,12 @@ export default async function AdminProductosPage({
         <section className="admin-form-card">
           <div className="admin-form-head">
             <span>{editing ? `EDITANDO #${editing.id}` : "NUEVO PRODUCTO"}</span>
-            <Link href="/admin/productos">CANCELAR ✕</Link>
+            <span className="admin-form-head-actions">
+              {editing?.image && (
+                <a href={editing.image} target="_blank" rel="noreferrer">VER FOTO ↗</a>
+              )}
+              <Link href="/admin/productos">CANCELAR ✕</Link>
+            </span>
           </div>
 
           <form
