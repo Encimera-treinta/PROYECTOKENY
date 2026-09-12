@@ -720,6 +720,45 @@
 
 
 /* ==========================================
+   FIXES iOS SAFARI / ANDROID
+========================================= */
+
+.admin-page {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.admin-page button,
+.admin-page a,
+.admin-page input,
+.admin-page select,
+.admin-page label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.admin-page button:active,
+.admin-page a:active {
+  opacity: 0.6;
+}
+
+/* Sin zoom automático en iOS al enfocar cualquier control */
+@media (max-width: 700px) {
+  .admin-page input,
+  .admin-page select,
+  .admin-page textarea {
+    font-size: 16px !important;
+  }
+
+  .admin-top-actions a,
+  .admin-top-actions button {
+    min-height: 44px;
+    padding: 8px 0;
+  }
+}
+
+/* ==========================================
    TABBAR MÓVIL (navegación inferior admin)
 ========================================= */
 

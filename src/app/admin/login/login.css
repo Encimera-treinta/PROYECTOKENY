@@ -682,3 +682,26 @@
     background: #ffffff;
   }
 }
+
+/* ==========================================
+   FIXES iOS SAFARI / ANDROID (LOGIN)
+========================================= */
+
+.admin-login-page {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.admin-login-page input,
+.admin-login-page button,
+.admin-login-page a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.admin-field input {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}

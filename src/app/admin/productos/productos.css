@@ -551,8 +551,130 @@
 }
 
 /* ==========================================
+   IMAGE PICKER (cámara / galería móvil)
+========================================= */
+
+.admin-image-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: #f7f7f4;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.admin-image-preview {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+  background: #ffffff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.admin-image-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-image-actions .admin-image-btn {
+  flex: 1;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  color: #090909;
+  font-family: inherit;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.admin-image-actions .admin-image-btn.primary {
+  background: #090909;
+  border-color: #090909;
+  color: #ffffff;
+}
+
+.admin-image-actions .admin-image-btn input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.admin-image-name {
+  margin: 0;
+  color: #777773;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  overflow-wrap: anywhere;
+}
+
+.admin-image-error {
+  margin: 0;
+  color: #b3261e;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.admin-image-hint {
+  margin: 0;
+  color: #999995;
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ==========================================
    RESPONSIVE
 ========================================= */
+
+/* ==========================================
+   FIXES iOS SAFARI / ANDROID
+   - 16px mínimo en inputs/selects: evita el
+     auto-zoom de Safari al enfocar.
+   - tap-highlight transparente.
+   - -webkit-input-placeholder visible.
+========================================= */
+
+.admin-product-form input,
+.admin-product-form select,
+.admin-order-status-form select,
+.admin-order-card-actions select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.admin-product-form input::placeholder {
+  color: #999995;
+  opacity: 1;
+  -webkit-text-fill-color: #999995;
+}
+
+.admin-product-form input,
+.admin-product-form select {
+  -webkit-appearance: none;
+  appearance: none;
+}
 
 @media (max-width: 700px) {
   .admin-products-toolbar,
@@ -568,11 +690,26 @@
     grid-template-columns: 1fr;
   }
 
+  /* 16px = sin zoom automático en iOS Safari */
+  .admin-product-form input,
+  .admin-product-form select,
+  .admin-order-card-actions select,
+  .admin-order-status-form select {
+    font-size: 16px;
+    min-height: 52px;
+  }
+
   .admin-field-check {
     padding: 14px 16px;
     background: #f7f7f4;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px;
+  }
+
+  .admin-field-check input {
+    width: 26px !important;
+    height: 26px !important;
+    min-height: 26px !important;
   }
 
   /* Oculta tabla, muestra cards táctiles */

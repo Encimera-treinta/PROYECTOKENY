@@ -29,8 +29,8 @@ export default async function AdminLoginPage({
           <p className="admin-login-description">Ingresa tus credenciales para acceder al panel.</p>
           <form className="admin-login-form" action="/api/admin/login" method="post">
             {error && <div className="admin-login-error"><span>ERROR</span><p>{messages[error] || "No fue posible iniciar sesión."}</p></div>}
-            <div className="admin-field"><label htmlFor="email">CORREO</label><input id="email" name="email" type="email" autoComplete="username" required /></div>
-            <div className="admin-field"><label htmlFor="password">CONTRASEÑA</label><input id="password" name="password" type="password" autoComplete="current-password" required /></div>
+            <div className="admin-field"><label htmlFor="email">CORREO</label><input id="email" name="email" type="email" inputMode="email" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" required /></div>
+            <div className="admin-field"><label htmlFor="password">CONTRASEÑA</label><input id="password" name="password" type="password" autoComplete="current-password" enterKeyHint="go" required /></div>
             <button className="admin-login-submit" type="submit"><span>ENTRAR AL PANEL</span><span>↗</span></button>
           </form>
         </section>

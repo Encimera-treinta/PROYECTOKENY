@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/admin-auth";
 import { listAllProducts, type Product } from "@/lib/database";
+import ImagePicker from "@/components/ImagePicker";
 import {
   createProductAction,
   updateProductAction,
@@ -101,9 +102,23 @@ export default async function AdminProductosPage({
           >
             {editing && <input type="hidden" name="id" value={editing.id} />}
 
+            <ImagePicker defaultImage={editing?.image} />
+
             <div className="admin-field">
               <label htmlFor="name">NOMBRE</label>
-              <input id="name" name="name" type="text" defaultValue={editing?.name ?? ""} required maxLength={120} />
+              <input
+                id="name"
+                name="name"
+                type="text"
+                defaultValue={editing?.name ?? ""}
+                required
+                maxLength={120}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="words"
+                spellCheck={false}
+                enterKeyHint="next"
+              />
             </div>
 
             <div className="admin-form-row">
@@ -119,31 +134,86 @@ export default async function AdminProductosPage({
 
               <div className="admin-field">
                 <label htmlFor="price">PRECIO (USD)</label>
-                <input id="price" name="price" type="number" step="0.01" min="0" defaultValue={editing?.price ?? ""} required />
+                <input
+                  id="price"
+                  name="price"
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  min="0"
+                  defaultValue={editing?.price ?? ""}
+                  required
+                  autoComplete="off"
+                  enterKeyHint="next"
+                />
               </div>
 
               <div className="admin-field">
                 <label htmlFor="old_price">PRECIO ANTERIOR (OPCIONAL)</label>
-                <input id="old_price" name="old_price" type="number" step="0.01" min="0" defaultValue={editing?.old_price ?? ""} />
+                <input
+                  id="old_price"
+                  name="old_price"
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  min="0"
+                  defaultValue={editing?.old_price ?? ""}
+                  autoComplete="off"
+                  enterKeyHint="next"
+                />
               </div>
             </div>
 
             <div className="admin-form-row">
               <div className="admin-field">
-                <label htmlFor="image">IMAGEN (RUTA /IMG/...)</label>
-                <input id="image" name="image" type="text" defaultValue={editing?.image ?? "/img/portfolio-1.jpg"} placeholder="/img/portfolio-1.jpg" />
+                <label htmlFor="image">IMAGEN POR RUTA (OPCIONAL SI SUBES FOTO)</label>
+                <input
+                  id="image"
+                  name="image"
+                  type="text"
+                  defaultValue={editing?.image ?? "/img/portfolio-1.jpg"}
+                  placeholder="/img/portfolio-1.jpg"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  enterKeyHint="next"
+                />
               </div>
 
               <div className="admin-field">
                 <label htmlFor="badge">ETIQUETA (OPCIONAL)</label>
-                <input id="badge" name="badge" type="text" defaultValue={editing?.badge ?? ""} placeholder="-50% / SALE" maxLength={20} />
+                <input
+                  id="badge"
+                  name="badge"
+                  type="text"
+                  defaultValue={editing?.badge ?? ""}
+                  placeholder="-50% / SALE"
+                  maxLength={20}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  enterKeyHint="next"
+                />
               </div>
             </div>
 
             <div className="admin-form-row">
               <div className="admin-field">
                 <label htmlFor="stock">STOCK</label>
-                <input id="stock" name="stock" type="number" min="0" step="1" defaultValue={editing?.stock ?? 0} required />
+                <input
+                  id="stock"
+                  name="stock"
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  step="1"
+                  defaultValue={editing?.stock ?? 0}
+                  required
+                  autoComplete="off"
+                  enterKeyHint="next"
+                />
               </div>
 
               <div className="admin-field">
