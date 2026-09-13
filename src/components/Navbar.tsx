@@ -35,10 +35,6 @@ export default function Navbar() {
       href: "/cuenta",
       label: "Mi Cuenta",
     },
-    {
-      href: "/carrito",
-      label: "Carrito",
-    },
   ];
 
   useEffect(() => {

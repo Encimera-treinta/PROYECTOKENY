@@ -10,6 +10,7 @@ import { CartProvider } from "@/components/CartProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import UserChip from "@/components/UserChip";
+import CartButton from "@/components/CartButton";
 
 const barlowCond = Barlow_Condensed({
   subsets: ["latin"],
@@ -62,6 +63,7 @@ export default function RootLayout({
             <Navbar />
             {children}
             <UserChip />
+            <CartButton />
             <ThemeToggle className="theme-toggle-float" />
           </CartProvider>
         </ThemeProvider>
