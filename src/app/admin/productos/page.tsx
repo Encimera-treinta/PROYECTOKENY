@@ -75,7 +75,7 @@ export default async function AdminProductosPage({
         </div>
         <div className="admin-top-actions">
           <Link href="/admin">DASHBOARD</Link>
-          <Link href="/">VER TIENDA ↗</Link>
+          <Link href="/">VER TIENDA</Link>
           <form action="/api/admin/logout" method="post">
             <button type="submit">CERRAR SESIÓN</button>
           </form>
@@ -93,31 +93,31 @@ export default async function AdminProductosPage({
       <section className="admin-products-toolbar">
         {(params.created && (
           <div className="admin-flash-box ok">
-            <p className="admin-flash ok">PRODUCTO CREADO Y VERIFICADO ✓</p>
+            <p className="admin-flash ok">PRODUCTO CREADO Y VERIFICADO</p>
             <p className="admin-flash-detail">
               Se guardó en la base de datos con ID #{editing?.id ?? "?"} · Categoría: {editing ? (CATEGORY_LABELS[editing.category ?? ""] ?? "") : ""} · Precio: ${editing?.price?.toFixed(2) ?? ""}
             </p>
             {editing?.image?.startsWith("/uploads/") && (
               <p className="admin-flash-detail">
-                Foto subida: <a href={editing.image} target="_blank" rel="noreferrer">VER FOTO SUBIDA ↗</a>
+                Foto subida: <a href={editing.image} target="_blank" rel="noreferrer">VER FOTO SUBIDA</a>
               </p>
             )}
             {editing && (
               <p className="admin-flash-detail">
-                <a href={`/${editing.category}`} target="_blank" rel="noreferrer">VER EN LA TIENDA ↗</a>
+                <a href={`/${editing.category}`} target="_blank" rel="noreferrer">VER EN LA TIENDA</a>
               </p>
             )}
           </div>
         )) ||
           (params.updated && (
             <div className="admin-flash-box ok">
-              <p className="admin-flash ok">CAMBIOS GUARDADOS ✓</p>
+              <p className="admin-flash ok">CAMBIOS GUARDADOS</p>
               <p className="admin-flash-detail">
                 Producto #{editing?.id ?? "?"} actualizado en la base de datos.
               </p>
               {editing && (
                 <p className="admin-flash-detail">
-                  <a href={`/${editing.category}`} target="_blank" rel="noreferrer">VER EN LA TIENDA ↗</a>
+                  <a href={`/${editing.category}`} target="_blank" rel="noreferrer">VER EN LA TIENDA</a>
                 </p>
               )}
             </div>
@@ -138,9 +138,9 @@ export default async function AdminProductosPage({
             <span>{editing ? `EDITANDO #${editing.id}` : "NUEVO PRODUCTO"}</span>
             <span className="admin-form-head-actions">
               {editing?.image && (
-                <a href={editing.image} target="_blank" rel="noreferrer">VER FOTO ↗</a>
+                <a href={editing.image} target="_blank" rel="noreferrer">VER FOTO</a>
               )}
-              <Link href="/admin/productos">CANCELAR ✕</Link>
+              <Link href="/admin/productos">CANCELAR</Link>
             </span>
           </div>
 
@@ -293,7 +293,7 @@ export default async function AdminProductosPage({
 
             <button className="admin-form-submit" type="submit">
               <span>{editing ? "GUARDAR CAMBIOS" : "CREAR PRODUCTO"}</span>
-              <span>↗</span>
+              <span></span>
             </button>
           </form>
         </section>

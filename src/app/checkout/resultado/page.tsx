@@ -74,7 +74,7 @@ export default async function CheckoutResultPage({
     <main className="checkout-result">
       <header className="checkout-result-topbar">
         <span>SPORTCRZ / RESULTADO</span>
-        <Link href="/">VOLVER A LA TIENDA ↗</Link>
+        <Link href="/">VOLVER A LA TIENDA</Link>
       </header>
 
       <section className="checkout-result-body">
@@ -114,7 +114,7 @@ export default async function CheckoutResultPage({
           )}
 
           <div className="checkout-result-actions">
-            <Link href="/">SEGUIR COMPRANDO ↗</Link>
+            <Link href="/">SEGUIR COMPRANDO</Link>
             {orderState !== "paid" && (
               <Link href="/carrito" className="secondary">
                 VOLVER AL CARRITO

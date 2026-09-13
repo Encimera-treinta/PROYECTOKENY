@@ -96,7 +96,7 @@ export default function ImagePicker({
 
         setPreview(compressed);
         setSizeInfo(
-          `Original ${formatSize(originalKb * 1024)} → optimizada ${formatSize(compressedBytes)} ✓ lista para subir`
+          `Original ${formatSize(originalKb * 1024)} optimizada ${formatSize(compressedBytes)} lista para subir`
         );
         setBusy(false);
       } catch {

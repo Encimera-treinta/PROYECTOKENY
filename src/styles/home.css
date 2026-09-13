@@ -1296,7 +1296,7 @@
 }
 
 .admin-secret-entry::before {
-  content: "ADMIN LOGIN →";
+  content: "ADMIN LOGIN";
 }
 
 .admin-secret-entry span {

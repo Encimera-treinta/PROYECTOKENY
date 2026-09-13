@@ -21,7 +21,7 @@ export default async function AdminLoginPage({
       <div className="admin-login-shell">
         <header className="admin-login-top">
           <span>SPORTCRZ / CONTROL</span>
-          <Link href="/">VOLVER A LA TIENDA ↗</Link>
+          <Link href="/">VOLVER A LA TIENDA</Link>
         </header>
         <section className="admin-login-content">
           <span className="admin-login-index">01 / ACCESO RESTRINGIDO</span>
@@ -31,7 +31,7 @@ export default async function AdminLoginPage({
             {error && <div className="admin-login-error"><span>ERROR</span><p>{messages[error] || "No fue posible iniciar sesión."}</p></div>}
             <div className="admin-field"><label htmlFor="email">CORREO</label><input id="email" name="email" type="email" inputMode="email" autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" required /></div>
             <div className="admin-field"><label htmlFor="password">CONTRASEÑA</label><input id="password" name="password" type="password" autoComplete="current-password" enterKeyHint="go" required /></div>
-            <button className="admin-login-submit" type="submit"><span>ENTRAR AL PANEL</span><span>↗</span></button>
+            <button className="admin-login-submit" type="submit"><span>ENTRAR AL PANEL</span><span></span></button>
           </form>
         </section>
         <footer className="admin-login-footer"><span>SPORTCRZ / 2026</span><span>CONEXIÓN SEGURA</span></footer>

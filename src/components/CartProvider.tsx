@@ -432,7 +432,7 @@ function CartDrawer() {
                 }
               >
                 SEGUIR EXPLORANDO
-                ↗
+               
               </button>
             </div>
           ) : (
@@ -590,7 +590,7 @@ function CartDrawer() {
                 FINALIZAR COMPRA
               </span>
 
-              <span>↗</span>
+              <span></span>
             </Link>
 
             <button

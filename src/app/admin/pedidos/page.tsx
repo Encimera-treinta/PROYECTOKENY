@@ -31,7 +31,7 @@ export default async function AdminPedidosPage({
         </div>
         <div className="admin-top-actions">
           <Link href="/admin">DASHBOARD</Link>
-          <Link href="/">VER TIENDA ↗</Link>
+          <Link href="/">VER TIENDA</Link>
           <form action="/api/admin/logout" method="post">
             <button type="submit">CERRAR SESIÓN</button>
           </form>

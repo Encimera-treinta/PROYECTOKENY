@@ -17,7 +17,7 @@ export default function CarritoPage() {
       </p>
       <div>
         <button type="button" onClick={() => cart.setOpen(true)}>
-          VER CARRITO <span>↗</span>
+          VER CARRITO <span></span>
         </button>
         <Link href="/mujeres">SEGUIR COMPRANDO</Link>
       </div>

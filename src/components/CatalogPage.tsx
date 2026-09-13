@@ -262,7 +262,7 @@ export default function CatalogPage({
           </p>
 
           <Link href="/">
-            VOLVER A SPORTCRZ ↗
+            VOLVER A SPORTCRZ
           </Link>
         </div>
       </section>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/lib/database";
 import { useCart } from "./CartProvider";
 
@@ -12,6 +12,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   rebajas: "REBAJAS",
 };
 
+const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL"];
+
 export default function ProductDetail({
   product,
 }: {
@@ -19,6 +21,8 @@ export default function ProductDetail({
 }) {
   const cart = useCart();
   const [added, setAdded] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [sizeError, setSizeError] = useState(false);
 
   const categoryLabel =
     CATEGORY_LABELS[product.category] ?? product.category.toUpperCase();
@@ -26,173 +30,271 @@ export default function ProductDetail({
     product.old_price != null && product.old_price > product.price;
   const outOfStock = product.stock <= 0;
 
+  /* GSAP: entrada tipo Apple/Pagani — imagen revelada,
+     texto escalonado, parallax sutil al scroll. */
+  useEffect(() => {
+    let ctx: { revert: () => void } | undefined;
+
+    (async () => {
+      const { gsap } = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap.registerPlugin(ScrollTrigger);
+
+      ctx = gsap.context(() => {
+        const prefersReduced = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        if (prefersReduced) return;
+
+        /* 1. Revelado inicial */
+        gsap.set(".pd-media-frame", { clipPath: "inset(0 0 100% 0)" });
+        gsap.set(".pd-info > *", { y: 34, opacity: 0 });
+
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        tl.to(".pd-media-frame", {
+          clipPath: "inset(0 0 0% 0)",
+          duration: 1.15,
+          ease: "expo.out",
+        }).to(
+          ".pd-info > *",
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.85,
+            stagger: 0.085,
+          },
+          "-=0.72"
+        );
+
+        /* 2. Parallax de imagen al scroll */
+        gsap.to(".pd-media-img", {
+          yPercent: 9,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".pd-stage",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+
+        /* 3. Contenido post-stage entra al viewport */
+        gsap.from(".pd-section", {
+          y: 46,
+          opacity: 0,
+          duration: 0.9,
+          stagger: 0.12,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".pd-after",
+            start: "top 78%",
+          },
+        });
+
+        /* 4. Contador de precio dramático */
+        const priceEl = document.querySelector<HTMLElement>(".pd-price-final");
+        if (priceEl && hasDiscount) {
+          const obj = { v: product.old_price ?? product.price };
+          gsap.to(obj, {
+            v: product.price,
+            duration: 1.4,
+            delay: 0.9,
+            ease: "power2.out",
+            onUpdate: () => {
+              priceEl.textContent = `$${obj.v.toFixed(2)}`;
+            },
+          });
+        }
+      });
+    })();
+
+    return () => ctx?.revert();
+  }, [hasDiscount, product.old_price, product.price]);
+
   function handleAdd() {
+    if (!selectedSize) {
+      setSizeError(true);
+      return;
+    }
+    setSizeError(false);
     cart.add({
       id: product.id,
-      name: product.name,
+      name: `${product.name} · TALLE ${selectedSize}`,
       price: product.price,
       image: product.image,
     });
     setAdded(true);
     cart.setOpen(true);
-    setTimeout(() => setAdded(false), 2500);
+    setTimeout(() => setAdded(false), 2200);
   }
 
   return (
-    <main className="product-detail-page">
+    <main className="pd-page">
       {/* ==============================
-          TOPBAR
+          STAGE (hero a pantalla completa
+          bajo el navbar global)
       ============================== */}
-      <header className="product-detail-topbar">
-        <span>SPORTCRZ / {categoryLabel}</span>
-        <Link href={`/${product.category}`} className="product-detail-back">
-          ← VOLVER A {categoryLabel}
-        </Link>
-      </header>
+      <section className="pd-stage">
+        <div className="pd-stage-grid">
+          {/* IMAGEN */}
+          <figure className="pd-media">
+            <div className="pd-media-frame">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="pd-media-img"
+              />
+            </div>
+            {product.badge && (
+              <span className="pd-badge">{product.badge}</span>
+            )}
+            <figcaption className="pd-ref">
+              SCZ-{String(product.id).padStart(4, "0")} / {categoryLabel}
+            </figcaption>
+          </figure>
 
-      {/* ==============================
-          CUERPO
-      ============================== */}
-      <section className="product-detail-body">
-        {/* IMAGEN */}
-        <div className="product-detail-media">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="product-detail-img"
-          />
-          {product.badge && (
-            <span className="product-detail-badge">{product.badge}</span>
-          )}
-          <span className="product-detail-code">
-            REF. SCZ-{String(product.id).padStart(4, "0")}
-          </span>
-        </div>
+          {/* INFO */}
+          <div className="pd-info">
+            <p className="pd-kicker">
+              SPORTCRZ / {categoryLabel} / 2026
+            </p>
 
-        {/* INFO */}
-        <div className="product-detail-info">
-          <span className="product-detail-kicker">
-            SPORTCRZ / {categoryLabel} / 2026
-          </span>
+            <h1 className="pd-title">{product.name}</h1>
 
-          <h1 className="product-detail-title">{product.name}</h1>
-
-          <div className="product-detail-price">
-            {hasDiscount ? (
-              <>
-                <span className="price-old">
+            <div className="pd-price">
+              {hasDiscount && (
+                <span className="pd-price-old">
                   ${product.old_price?.toFixed(2)}
                 </span>
-                <span className="price-new">
-                  ${product.price.toFixed(2)}
-                </span>
-                <span className="product-detail-save">
-                  AHORRAS $
-                  {(product.old_price! - product.price).toFixed(2)}
-                </span>
-              </>
-            ) : (
-              <span className="price-new">${product.price.toFixed(2)}</span>
-            )}
-          </div>
-
-          <p className="product-detail-stock">
-            {outOfStock ? (
-              <span className="stock-out">AGOTADO</span>
-            ) : (
-              <span className="stock-in">
-                EN EXISTENCIA · {product.stock} UNIDAD(ES)
+              )}
+              <span className="pd-price-final">
+                ${product.price.toFixed(2)}
               </span>
-            )}
-          </p>
+              {hasDiscount && (
+                <span className="pd-save">
+                  −${(product.old_price! - product.price).toFixed(2)}
+                </span>
+              )}
+            </div>
 
-          <div className="product-detail-actions">
-            <button
-              type="button"
-              className="product-detail-add"
-              onClick={handleAdd}
-              disabled={outOfStock}
-            >
-              <span>{added ? "AÑADIDO ✓" : outOfStock ? "SIN STOCK" : "AÑADIR AL CARRITO"}</span>
-              <span>{added ? "" : "+"}</span>
-            </button>
+            <p className={`pd-stock ${outOfStock ? "out" : "in"}`}>
+              {outOfStock
+                ? "AGOTADO"
+                : `EN EXISTENCIA — ${product.stock} UNIDADES`}
+            </p>
 
-            <Link
-              href="/carrito"
-              className="product-detail-cart-link"
-            >
-              VER CARRITO ({String(cart.count).padStart(2, "0")}) ↗
-            </Link>
-          </div>
-
-          {/* DESCRIPCIÓN */}
-          <div className="product-detail-description">
-            <span>01 / DESCRIPCIÓN</span>
-
-            {product.description ? (
-              <p>{product.description}</p>
-            ) : (
-              <p className="product-detail-empty">
-                Todavía no hay descripción para esta prenda.
-                Consigue esta y más piezas en la colección {categoryLabel} de
-                SportCrz.
+            {/* TALLES */}
+            <div className={`pd-sizes ${sizeError ? "error" : ""}`}>
+              <p className="pd-sizes-label">
+                TALLE {selectedSize ? `— ${selectedSize}` : ""}
               </p>
-            )}
-          </div>
+              <div className="pd-sizes-row">
+                {SIZE_ORDER.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    className={`pd-size ${
+                      selectedSize === size ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedSize(size);
+                      setSizeError(false);
+                    }}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+              {sizeError && (
+                <p className="pd-sizes-hint">SELECCIONA UN TALLE</p>
+              )}
+            </div>
 
-          {/* FICHA */}
-          <div className="product-detail-specs">
-            <span>02 / FICHA TÉCNICA</span>
+            {/* CTA */}
+            <div className="pd-cta">
+              <button
+                type="button"
+                className="pd-add"
+                onClick={handleAdd}
+                disabled={outOfStock}
+              >
+                {added
+                  ? "AÑADIDO AL CARRITO"
+                  : outOfStock
+                    ? "SIN STOCK"
+                    : "AÑADIR AL CARRITO"}
+                <span className="pd-add-dot" aria-hidden="true" />
+              </button>
+              <Link href="/carrito" className="pd-cart-link">
+                VER CARRITO — {String(cart.count).padStart(2, "0")}
+              </Link>
+            </div>
 
-            <dl>
-              <div>
-                <dt>REFERENCIA</dt>
-                <dd>SCZ-{String(product.id).padStart(4, "0")}</dd>
-              </div>
-              <div>
-                <dt>CATEGORÍA</dt>
-                <dd>{categoryLabel}</dd>
-              </div>
-              <div>
-                <dt>PRECIO</dt>
-                <dd>${product.price.toFixed(2)} USD</dd>
-              </div>
-              <div>
-                <dt>DISPONIBILIDAD</dt>
-                <dd>
-                  {outOfStock
-                    ? "AGOTADO"
-                    : `${product.stock} EN EXISTENCIA`}
-                </dd>
-              </div>
-            </dl>
+            <p className="pd-back">
+              <Link href={`/${product.category}`}>
+                VOLVER A {categoryLabel}
+              </Link>
+            </p>
           </div>
         </div>
       </section>
 
       {/* ==============================
-          MANIFESTO
+          CONTENIDO DESPUÉS DEL STAGE
       ============================== */}
-      <section className="product-detail-manifesto">
-        <span>SPORTCRZ / MOVEMENT</span>
-        <h2>
-          WEAR
-          <br />
-          YOUR
-          <br />
-          ATTITUDE.
-        </h2>
-        <div className="product-detail-manifesto-bottom">
-          <p>
-            NO ES SUERTE.
+      <div className="pd-after">
+        {/* DESCRIPCIÓN */}
+        <section className="pd-section pd-desc">
+          <span className="pd-index">01 / DESCRIPCIÓN</span>
+          {product.description ? (
+            <p className="pd-desc-text">{product.description}</p>
+          ) : (
+            <p className="pd-desc-text pd-desc-empty">
+              Esta pieza aún no tiene descripción. Explora la colección{" "}
+              {categoryLabel} completa en SportCrz.
+            </p>
+          )}
+        </section>
+
+        {/* FICHA */}
+        <section className="pd-section pd-specs">
+          <span className="pd-index">02 / FICHA TÉCNICA</span>
+          <dl>
+            <div>
+              <dt>REFERENCIA</dt>
+              <dd>SCZ-{String(product.id).padStart(4, "0")}</dd>
+            </div>
+            <div>
+              <dt>CATEGORÍA</dt>
+              <dd>{categoryLabel}</dd>
+            </div>
+            <div>
+              <dt>PRECIO</dt>
+              <dd>${product.price.toFixed(2)} USD</dd>
+            </div>
+            <div>
+              <dt>DISPONIBILIDAD</dt>
+              <dd>{outOfStock ? "AGOTADO" : `${product.stock} EN EXISTENCIA`}</dd>
+            </div>
+          </dl>
+        </section>
+
+        {/* CIERRE */}
+        <section className="pd-section pd-close">
+          <h2>
+            WEAR
             <br />
-            ES SPORTCRZ.
-          </p>
-          <Link href={`/${product.category}`}>
-            MÁS EN {categoryLabel} ↗
+            YOUR
+            <br />
+            ATTITUDE.
+          </h2>
+          <Link href={`/${product.category}`} className="pd-close-link">
+            MÁS EN {categoryLabel}
           </Link>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }

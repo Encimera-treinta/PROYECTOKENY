@@ -2,15 +2,32 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import "./checkout.css";
+
+type Me = {
+  authenticated: boolean;
+  email?: string;
+  phone?: string | null;
+  firstName?: string;
+  lastName?: string;
+};
 
 export default function CheckoutPage() {
   const cart = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [me, setMe] = useState<Me | null>(null);
+
+  /* Precarga los datos del cliente con sesión iniciada. */
+  useEffect(() => {
+    fetch("/api/customer/me")
+      .then((r) => r.json())
+      .then((data: Me) => setMe(data))
+      .catch(() => setMe({ authenticated: false }));
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -71,7 +88,7 @@ export default function CheckoutPage() {
     <main className="checkout-page">
       <header className="checkout-topbar">
         <span>SPORTCRZ / CHECKOUT</span>
-        <Link href="/carrito">VOLVER AL CARRITO ↗</Link>
+        <Link href="/carrito">VOLVER AL CARRITO</Link>
       </header>
 
       <section className="checkout-hero">
@@ -92,26 +109,34 @@ export default function CheckoutPage() {
               </div>
             )}
 
+            {me !== null && !me.authenticated && (
+              <p className="checkout-account-hint">
+                ¿TIENES CUENTA?{" "}
+                <Link href="/cuenta/login">INGRESA AQUÍ</Link>{" "}
+                Y TUS DATOS SE CARGAN SOLOS.
+              </p>
+            )}
+
             <div className="checkout-row">
               <div className="checkout-field">
                 <label htmlFor="firstName">NOMBRE</label>
-                <input id="firstName" name="firstName" type="text" required maxLength={80} autoComplete="given-name" />
+                <input id="firstName" name="firstName" type="text" required maxLength={80} autoComplete="given-name" defaultValue={me?.authenticated ? (me.firstName ?? "") : ""} />
               </div>
               <div className="checkout-field">
                 <label htmlFor="lastName">APELLIDOS</label>
-                <input id="lastName" name="lastName" type="text" required maxLength={80} autoComplete="family-name" />
+                <input id="lastName" name="lastName" type="text" required maxLength={80} autoComplete="family-name" defaultValue={me?.authenticated ? (me.lastName ?? "") : ""} />
               </div>
             </div>
 
             <div className="checkout-field">
               <label htmlFor="email">CORREO</label>
-              <input id="email" name="email" type="email" required maxLength={120} autoComplete="email" />
+              <input id="email" name="email" type="email" required maxLength={120} autoComplete="email" defaultValue={me?.authenticated ? (me.email ?? "") : ""} />
             </div>
 
             <div className="checkout-row">
               <div className="checkout-field">
                 <label htmlFor="phone">TELÉFONO</label>
-                <input id="phone" name="phone" type="tel" maxLength={20} autoComplete="tel" />
+                <input id="phone" name="phone" type="tel" maxLength={20} autoComplete="tel" defaultValue={me?.authenticated && me.phone ? me.phone : ""} />
               </div>
               <div className="checkout-field">
                 <label htmlFor="zip">CÓDIGO POSTAL</label>
@@ -135,7 +160,7 @@ export default function CheckoutPage() {
               disabled={loading || cart.items.length === 0}
             >
               <span>{loading ? "PROCESANDO..." : `PAGAR $${cart.total.toFixed(2)}`}</span>
-              <span>↗</span>
+              <span></span>
             </button>
 
             <p className="checkout-note">

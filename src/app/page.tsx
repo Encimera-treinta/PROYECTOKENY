@@ -48,7 +48,7 @@ export default function HomePage() {
               className="hero-shop-link"
             >
               VER COLECCIÓN
-              <span>↗</span>
+              <span></span>
             </Link>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function HomePage() {
                 href="/mujeres"
                 className="text-link"
               >
-                DESCUBRIR SPORTCRZ ↗
+                DESCUBRIR SPORTCRZ
               </Link>
             </div>
           </div>
@@ -134,7 +134,7 @@ export default function HomePage() {
               <div className="category-content">
                 <span>01</span>
                 <h3>MUJERES</h3>
-                <p>VER COLECCIÓN ↗</p>
+                <p>VER COLECCIÓN</p>
               </div>
             </Link>
 
@@ -152,7 +152,7 @@ export default function HomePage() {
               <div className="category-content">
                 <span>02</span>
                 <h3>HOMBRES</h3>
-                <p>VER COLECCIÓN ↗</p>
+                <p>VER COLECCIÓN</p>
               </div>
             </Link>
 
@@ -170,7 +170,7 @@ export default function HomePage() {
               <div className="category-content">
                 <span>03</span>
                 <h3>NIÑOS</h3>
-                <p>VER COLECCIÓN ↗</p>
+                <p>VER COLECCIÓN</p>
               </div>
             </Link>
           </div>
@@ -215,7 +215,7 @@ export default function HomePage() {
                 href="/mujeres"
                 className="text-link"
               >
-                VER TODO ↗
+                VER TODO
               </Link>
             </div>
           </div>
@@ -326,7 +326,7 @@ export default function HomePage() {
             className="sale-link"
           >
             EXPLORAR REBAJAS
-            <span>↗</span>
+            <span></span>
           </Link>
         </div>
       </section>
@@ -397,7 +397,7 @@ export default function HomePage() {
               href="/mujeres"
               className="dark-link"
             >
-              CONOCER LA COLECCIÓN ↗
+              CONOCER LA COLECCIÓN
             </Link>
           </div>
         </div>

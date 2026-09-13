@@ -35,6 +35,10 @@ export default function Navbar() {
       label: "Rebajas",
     },
     {
+      href: "/cuenta",
+      label: "Mi Cuenta",
+    },
+    {
       href: "/carrito",
       label: "Carrito",
     },

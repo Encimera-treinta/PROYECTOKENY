@@ -106,6 +106,35 @@ const SCHEMA_SQL = `
     bytes INTEGER NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    password_hash TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    phone TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS customers_email_idx ON customers(email);
+
+  CREATE TABLE IF NOT EXISTS payment_methods (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+    method TEXT NOT NULL CHECK (method IN ('card', 'yappy')),
+    label TEXT NOT NULL,
+    card_last4 TEXT,
+    card_brand TEXT,
+    card_holder TEXT,
+    card_exp_month INTEGER,
+    card_exp_year INTEGER,
+    yappy_phone TEXT,
+    is_default INTEGER NOT NULL DEFAULT 0 CHECK (is_default IN (0, 1)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS payment_methods_customer_idx ON payment_methods(customer_id);
 `;
 
 /* Ejecuta el esquema una sola vez por proceso. */
@@ -714,4 +743,271 @@ export async function getDatabaseStatus() {
     products,
     orders,
   };
+}
+
+/* =====================================
+   CLIENTES (cuentas de usuario tienda)
+===================================== */
+
+export type Customer = {
+  id: number;
+  email: string;
+  full_name: string;
+  phone: string | null;
+};
+
+export async function findCustomerByEmail(
+  email: string
+): Promise<{ id: number; email: string; password_hash: string } | undefined> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: "SELECT id, email, password_hash FROM customers WHERE email = ? LIMIT 1",
+    args: [email.trim().toLowerCase()],
+  });
+
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+
+  if (!row) return undefined;
+
+  return {
+    id: Number(row.id),
+    email: String(row.email),
+    password_hash: String(row.password_hash),
+  };
+}
+
+export async function getCustomerById(id: number): Promise<Customer | undefined> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: "SELECT id, email, full_name, phone FROM customers WHERE id = ? LIMIT 1",
+    args: [id],
+  });
+
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+
+  if (!row) return undefined;
+
+  return {
+    id: Number(row.id),
+    email: String(row.email),
+    full_name: String(row.full_name),
+    phone: row.phone == null ? null : String(row.phone),
+  };
+}
+
+export async function createCustomer(data: {
+  email: string;
+  password_hash: string;
+  full_name: string;
+  phone: string | null;
+}): Promise<number> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: "INSERT INTO customers (email, password_hash, full_name, phone) VALUES (?, ?, ?, ?)",
+    args: [
+      data.email.trim().toLowerCase(),
+      data.password_hash,
+      data.full_name.trim(),
+      data.phone,
+    ],
+  });
+
+  return Number(result.lastInsertRowid);
+}
+
+export async function updateCustomerProfile(
+  id: number,
+  data: { full_name: string; phone: string | null }
+): Promise<void> {
+  await ensureSchema();
+  await database.execute({
+    sql: "UPDATE customers SET full_name = ?, phone = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    args: [data.full_name.trim(), data.phone, id],
+  });
+}
+
+export async function updateCustomerPassword(
+  id: number,
+  passwordHash: string
+): Promise<void> {
+  await ensureSchema();
+  await database.execute({
+    sql: "UPDATE customers SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    args: [passwordHash, id],
+  });
+}
+
+/* =====================================
+   MÉTODOS DE PAGO DEL CLIENTE
+   Tarjetas: solo se guardan últimos 4,
+   marca, titular y vencimiento (sin el
+   número completo por seguridad).
+   Yappy: teléfono vinculado.
+===================================== */
+
+export type PaymentMethod = {
+  id: number;
+  method: "card" | "yappy";
+  label: string;
+  card_last4: string | null;
+  card_brand: string | null;
+  card_holder: string | null;
+  card_exp_month: number | null;
+  card_exp_year: number | null;
+  yappy_phone: string | null;
+  is_default: number;
+};
+
+export async function listPaymentMethods(
+  customerId: number
+): Promise<PaymentMethod[]> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: `
+      SELECT id, method, label, card_last4, card_brand, card_holder,
+             card_exp_month, card_exp_year, yappy_phone, is_default
+      FROM payment_methods
+      WHERE customer_id = ?
+      ORDER BY is_default DESC, id DESC
+    `,
+    args: [customerId],
+  });
+
+  return result.rows.map((row) => {
+    const r = row as Record<string, unknown>;
+    return {
+      id: Number(r.id),
+      method: (r.method === "yappy" ? "yappy" : "card") as "card" | "yappy",
+      label: String(r.label),
+      card_last4: r.card_last4 == null ? null : String(r.card_last4),
+      card_brand: r.card_brand == null ? null : String(r.card_brand),
+      card_holder: r.card_holder == null ? null : String(r.card_holder),
+      card_exp_month:
+        r.card_exp_month == null ? null : Number(r.card_exp_month),
+      card_exp_year: r.card_exp_year == null ? null : Number(r.card_exp_year),
+      yappy_phone: r.yappy_phone == null ? null : String(r.yappy_phone),
+      is_default: Number(r.is_default),
+    };
+  });
+}
+
+export async function addPaymentMethod(data: {
+  customer_id: number;
+  method: "card" | "yappy";
+  label: string;
+  card_last4?: string | null;
+  card_brand?: string | null;
+  card_holder?: string | null;
+  card_exp_month?: number | null;
+  card_exp_year?: number | null;
+  yappy_phone?: string | null;
+}): Promise<number> {
+  await ensureSchema();
+
+  /* Si es el primer método del cliente, se marca como predeterminado. */
+  const existing = await database.execute({
+    sql: "SELECT COUNT(*) AS count FROM payment_methods WHERE customer_id = ?",
+    args: [data.customer_id],
+  });
+  const isFirst = Number(existing.rows[0]?.count ?? 0) === 0;
+
+  const result = await database.execute({
+    sql: `
+      INSERT INTO payment_methods
+        (customer_id, method, label, card_last4, card_brand, card_holder,
+         card_exp_month, card_exp_year, yappy_phone, is_default)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    args: [
+      data.customer_id,
+      data.method,
+      data.label,
+      data.card_last4 ?? null,
+      data.card_brand ?? null,
+      data.card_holder ?? null,
+      data.card_exp_month ?? null,
+      data.card_exp_year ?? null,
+      data.yappy_phone ?? null,
+      isFirst ? 1 : 0,
+    ],
+  });
+
+  return Number(result.lastInsertRowid);
+}
+
+export async function setDefaultPaymentMethod(
+  customerId: number,
+  methodId: number
+): Promise<void> {
+  await ensureSchema();
+
+  const tx = await database.transaction("write");
+  try {
+    await tx.execute({
+      sql: "UPDATE payment_methods SET is_default = 0 WHERE customer_id = ?",
+      args: [customerId],
+    });
+    await tx.execute({
+      sql: "UPDATE payment_methods SET is_default = 1 WHERE id = ? AND customer_id = ?",
+      args: [methodId, customerId],
+    });
+    await tx.commit();
+  } catch (error) {
+    await tx.rollback();
+    throw error;
+  }
+}
+
+export async function deletePaymentMethod(
+  customerId: number,
+  methodId: number
+): Promise<void> {
+  await ensureSchema();
+  await database.execute({
+    sql: "DELETE FROM payment_methods WHERE id = ? AND customer_id = ?",
+    args: [methodId, customerId],
+  });
+}
+
+/* =====================================
+   PEDIDOS DEL CLIENTE
+===================================== */
+
+export async function listOrdersByCustomerEmail(
+  email: string
+): Promise<Array<Order & { item_count: number }>> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: `
+      SELECT o.*, COUNT(oi.id) AS item_count
+      FROM orders o
+      LEFT JOIN order_items oi ON oi.order_id = o.id
+      WHERE o.customer_email = ?
+      GROUP BY o.id
+      ORDER BY o.created_at DESC, o.id DESC
+    `,
+    args: [email.trim().toLowerCase()],
+  });
+
+  return result.rows.map((row) => {
+    const r = row as Record<string, unknown>;
+    return {
+      id: Number(r.id),
+      order_code: String(r.order_code),
+      customer_name: String(r.customer_name),
+      customer_email: String(r.customer_email),
+      customer_phone: r.customer_phone == null ? null : String(r.customer_phone),
+      delivery_address:
+        r.delivery_address == null ? null : String(r.delivery_address),
+      subtotal: Number(r.subtotal),
+      total: Number(r.total),
+      status: String(r.status),
+      payment_method: String(r.payment_method),
+      payment_reference:
+        r.payment_reference == null ? null : String(r.payment_reference),
+      notes: r.notes == null ? null : String(r.notes),
+      created_at: String(r.created_at),
+      item_count: Number(r.item_count),
+    };
+  });
 }
