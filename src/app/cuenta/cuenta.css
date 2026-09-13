@@ -1,13 +1,14 @@
-/* ==========================================
-   CUENTA CLIENTE — estilo SportCrz premium
+﻿/* ==========================================
+   CUENTA CLIENTE â€” estilo SportCrz premium
 ========================================= */
 
 .cuenta-page,
 .cuenta-login-page {
   min-height: 100vh;
-  background: #0a0a08;
-  color: #f5f2ea;
+  background: var(--sys-bg);
+  color: var(--sys-label);
   padding-top: calc(84px + env(safe-area-inset-top));
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
 /* =====================
@@ -28,7 +29,7 @@
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.26em;
-  color: #8b8878;
+  color: var(--sys-label-2);
 }
 
 .cuenta-topbar button,
@@ -37,7 +38,7 @@
   border: none;
   border-bottom: 1px solid rgba(139, 136, 120, 0.6);
   padding: 0 0 3px;
-  color: #f5f2ea;
+  color: var(--sys-bg);
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
@@ -56,12 +57,12 @@
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   align-items: stretch;
-  border-top: 1px solid rgba(245, 242, 234, 0.08);
+  border-top: 1px solid var(--sys-sep);
 }
 
 .cuenta-login-card {
   padding: clamp(40px, 7vh, 90px) 5vw;
-  border-right: 1px solid rgba(245, 242, 234, 0.08);
+  border-right: 1px solid var(--sys-sep);
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -69,7 +70,7 @@
 
 .cuenta-login-kicker {
   margin: 0;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.34em;
@@ -99,7 +100,7 @@
   gap: 18px;
   max-width: 460px;
   padding: 28px 26px;
-  background: rgba(245, 242, 234, 0.06);
+  background: var(--sys-fill);
 
   backdrop-filter:
     blur(24px)
@@ -108,10 +109,10 @@
     blur(24px)
     saturate(170%);
 
-  border: 1px solid rgba(245, 242, 234, 0.14);
+  border: 1px solid var(--sys-sep);
 
   box-shadow:
-    inset 0 1px 0 0 rgba(245, 242, 234, 0.16),
+    inset 0 1px 0 0 var(--sys-glass-inner),
     0 16px 48px rgba(0, 0, 0, 0.22);
 }
 
@@ -119,7 +120,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 0.28em;
@@ -128,9 +129,9 @@
 .cuenta-login-form input {
   min-height: 54px;
   padding: 0 16px;
-  background: rgba(245, 242, 234, 0.04);
-  border: 1px solid rgba(245, 242, 234, 0.22);
-  color: #f5f2ea;
+  background: var(--sys-fill);
+  border: 1px solid var(--sys-sep);
+  color: var(--sys-bg);
   font-family: inherit;
   font-size: 16px;
   letter-spacing: normal;
@@ -141,7 +142,7 @@
 
 .cuenta-login-form input:focus {
   outline: none;
-  border-color: #e8ff4a;
+  border-color: var(--sys-tint);
 }
 
 .cuenta-login-form input:disabled {
@@ -151,9 +152,9 @@
 .cuenta-login-form button {
   min-height: 60px;
   margin-top: 6px;
-  background: #f5f2ea;
+  background: var(--sys-bg);
   border: none;
-  color: #0a0a08;
+  color: var(--sys-label);
   font-family: inherit;
   font-size: 0.72rem;
   font-weight: 900;
@@ -164,7 +165,7 @@
 }
 
 .cuenta-login-form button:hover {
-  background: #e8ff4a;
+  background: var(--sys-tint);
 }
 
 .cuenta-login-form button:active {
@@ -176,7 +177,7 @@
 }
 
 .cuenta-login-switch a {
-  color: #8b8878;
+  color: var(--sys-label-2);
   text-decoration: none;
   font-size: 0.62rem;
   font-weight: 800;
@@ -188,7 +189,7 @@
 }
 
 .cuenta-login-switch a:hover {
-  color: #f5f2ea;
+  color: var(--sys-bg);
 }
 
 .cuenta-login-side {
@@ -202,7 +203,7 @@
 .cuenta-login-side p {
   margin: 0;
   max-width: 420px;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.78rem;
   font-weight: 600;
   line-height: 1.9;
@@ -219,7 +220,7 @@
 
 .cuenta-kicker {
   margin: 0 0 14px;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.34em;
@@ -235,7 +236,7 @@
 
 .cuenta-meta {
   margin: 16px 0 0;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -269,13 +270,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
   gap: 1px;
-  background: rgba(245, 242, 234, 0.08);
-  border-top: 1px solid rgba(245, 242, 234, 0.08);
-  border-bottom: 1px solid rgba(245, 242, 234, 0.08);
+  background: var(--sys-sep);
+  border-top: 1px solid var(--sys-sep);
+  border-bottom: 1px solid var(--sys-sep);
 }
 
 .cuenta-block {
-  background: #0a0a08;
+  background: var(--sys-label);
   padding: clamp(28px, 4.5vh, 52px) clamp(22px, 4vw, 48px);
 }
 
@@ -288,7 +289,7 @@
 }
 
 .cuenta-block-head span {
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.3em;
@@ -296,7 +297,7 @@
 
 .cuenta-empty {
   margin: 0;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.86rem;
   line-height: 1.8;
   letter-spacing: 0.02em;
@@ -308,11 +309,11 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  background: rgba(245, 242, 234, 0.08);
+  background: var(--sys-sep);
 }
 
 .cuenta-order {
-  background: #0a0a08;
+  background: var(--sys-label);
   padding: 18px 16px;
   display: flex;
   flex-direction: column;
@@ -364,14 +365,14 @@
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.2em;
 }
 
 .cuenta-order-total {
-  color: #f5f2ea;
+  color: var(--sys-bg);
   font-size: 0.86rem;
   font-variant-numeric: tabular-nums;
 }
@@ -397,10 +398,10 @@
     blur(22px)
     saturate(170%);
 
-  border: 1px solid rgba(245, 242, 234, 0.16);
+  border: 1px solid var(--sys-glass-inner);
 
   box-shadow:
-    inset 0 1px 0 0 rgba(245, 242, 234, 0.14),
+    inset 0 1px 0 0 var(--sys-sep),
     0 12px 36px rgba(0, 0, 0, 0.24);
 
   display: flex;
@@ -428,8 +429,8 @@
 
 .cuenta-card-default {
   padding: 5px 8px;
-  background: #e8ff4a;
-  color: #0a0a08;
+  background: var(--sys-tint);
+  color: var(--sys-label);
   font-size: 0.5rem;
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -448,7 +449,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -470,8 +471,8 @@
   width: 100%;
   min-height: 44px;
   background: transparent;
-  border: 1px solid rgba(245, 242, 234, 0.25);
-  color: #f5f2ea;
+  border: 1px solid var(--sys-sep);
+  color: var(--sys-bg);
   font-family: inherit;
   font-size: 0.56rem;
   font-weight: 900;
@@ -482,7 +483,7 @@
 }
 
 .cuenta-card-actions button:hover {
-  background: rgba(245, 242, 234, 0.12);
+  background: var(--sys-fill);
 }
 
 .cuenta-card-actions button.danger {
@@ -498,7 +499,7 @@
 
 .cuenta-yappy {
   padding: 20px;
-  border: 1px solid rgba(245, 242, 234, 0.14);
+  border: 1px solid var(--sys-sep);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -517,8 +518,8 @@
 
 .cuenta-yappy-label {
   padding: 5px 10px;
-  background: #f5f2ea;
-  color: #0a0a08;
+  background: var(--sys-bg);
+  color: var(--sys-label);
   font-size: 0.56rem;
   font-weight: 900;
   letter-spacing: 0.2em;
@@ -537,12 +538,12 @@
   flex-direction: column;
   gap: 16px;
   padding: 22px 20px;
-  border: 1px dashed rgba(245, 242, 234, 0.25);
+  border: 1px dashed var(--sys-sep);
 }
 
 .cuenta-form-title {
   margin: 0;
-  color: #e8ff4a;
+  color: var(--sys-tint);
   font-size: 0.62rem;
   font-weight: 900;
   letter-spacing: 0.28em;
@@ -552,7 +553,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.56rem;
   font-weight: 800;
   letter-spacing: 0.26em;
@@ -561,9 +562,9 @@
 .cuenta-card-form input {
   min-height: 52px;
   padding: 0 14px;
-  background: rgba(245, 242, 234, 0.04);
-  border: 1px solid rgba(245, 242, 234, 0.22);
-  color: #f5f2ea;
+  background: var(--sys-fill);
+  border: 1px solid var(--sys-sep);
+  color: var(--sys-bg);
   font-family: inherit;
   font-size: 16px;
   letter-spacing: normal;
@@ -574,7 +575,7 @@
 
 .cuenta-card-form input:focus {
   outline: none;
-  border-color: #e8ff4a;
+  border-color: var(--sys-tint);
 }
 
 .cuenta-card-form input:disabled {
@@ -589,9 +590,9 @@
 
 .cuenta-card-form button {
   min-height: 54px;
-  background: #f5f2ea;
+  background: var(--sys-bg);
   border: none;
-  color: #0a0a08;
+  color: var(--sys-label);
   font-family: inherit;
   font-size: 0.64rem;
   font-weight: 900;
@@ -602,7 +603,7 @@
 }
 
 .cuenta-card-form button:hover {
-  background: #e8ff4a;
+  background: var(--sys-tint);
 }
 
 .cuenta-card-form button:active {
@@ -625,16 +626,16 @@
   justify-content: space-between;
   gap: 16px;
   padding: 34px 5vw 60px;
-  color: #8b8878;
+  color: var(--sys-label-2);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.26em;
 }
 
 .cuenta-footer a {
-  color: #f5f2ea;
+  color: var(--sys-bg);
   text-decoration: none;
-  border-bottom: 1px solid rgba(245, 242, 234, 0.4);
+  border-bottom: 1px solid var(--sys-sep);
   padding-bottom: 3px;
   -webkit-tap-highlight-color: transparent;
 }

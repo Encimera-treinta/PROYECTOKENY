@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -86,9 +84,15 @@ export default function Navbar() {
     return null;
   }
 
+  /* La home conserva el navbar original
+     (transparente + difference sobre el video). */
+  const isHome = pathname === "/";
+
   return (
     <>
-      <header className="future-nav">
+      <header
+        className={`future-nav ${isHome ? "future-nav-home" : "future-nav-glass"}`}
+      >
         <div className="future-nav-inner">
           <Link
             href="/"
@@ -118,6 +122,8 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
+
+          {!isHome && <ThemeToggle />}
 
           <button
             type="button"

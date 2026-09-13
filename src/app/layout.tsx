@@ -3,9 +3,11 @@ import { Barlow_Condensed, Barlow } from "next/font/google";
 import "./globals.css";
 import "@/styles/carrito.css";
 import "@/styles/liquid-glass.css";
+import "@/styles/ios-theme.css";
 
 import Navbar from "@/components/Navbar";
 import { CartProvider } from "@/components/CartProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const barlowCond = Barlow_Condensed({
   subsets: ["latin"],
@@ -53,10 +55,12 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <CartProvider>
-          <Navbar />
-          {children}
-        </CartProvider>
+        <ThemeProvider>
+          <CartProvider>
+            <Navbar />
+            {children}
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

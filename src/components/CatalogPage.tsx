@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useCart } from "./CartProvider";
-import Glass from "./Glass";
 
 type Product = {
   id: number;
@@ -18,6 +17,13 @@ type Section = {
   id: string;
   title: string;
   products: readonly Product[];
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  mujeres: "MUJERES",
+  hombres: "HOMBRES",
+  ninos: "NIÑOS",
+  rebajas: "REBAJAS",
 };
 
 export default function CatalogPage({
@@ -38,8 +44,7 @@ export default function CatalogPage({
 
   const currentCategory = label.toLowerCase();
 
-  /* Animaciones atleticas: barras de salida, dorsales,
-     velocidad. */
+  /* Animaciones estilo Apple: suaves, respetando reduced motion. */
   useEffect(() => {
     let ctx: { revert: () => void } | undefined;
 
@@ -51,56 +56,36 @@ export default function CatalogPage({
           return;
         }
 
-        /* Título: entra en diagonal atleta */
         gsap.fromTo(
-          ".pm-hero-title",
-          { x: -140, opacity: 0, skewX: -8 },
-          {
-            x: 0,
-            opacity: 1,
-            skewX: 0,
-            duration: 0.9,
-            ease: "power4.out",
-          }
+          ".ap-large-title",
+          { y: 40, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.9, ease: "power3.out" }
         );
 
         gsap.fromTo(
-          ".pm-hero-tag, .pm-nav",
-          { x: -60, opacity: 0 },
+          ".ap-segment, .ap-meta",
+          { y: 24, opacity: 0 },
           {
-            x: 0,
+            y: 0,
             opacity: 1,
             duration: 0.7,
-            stagger: 0.09,
-            ease: "power3.out",
-            delay: 0.25,
-          }
-        );
-
-        /* Tarjetas: salida de atletismo */
-        gsap.fromTo(
-          ".pm-card",
-          { x: 110, opacity: 0 },
-          {
-            x: 0,
-            opacity: 1,
-            duration: 0.75,
             stagger: 0.08,
-            ease: "power4.out",
-            delay: 0.4,
+            ease: "power3.out",
+            delay: 0.2,
           }
         );
 
-        /* Barra de velocidad inferior del hero */
         gsap.fromTo(
-          ".pm-speed-bar i",
-          { scaleX: 0 },
+          ".ap-card",
+          { y: 34, opacity: 0, scale: 0.98 },
           {
-            scaleX: 1,
-            duration: 1.1,
-            ease: "expo.out",
-            delay: 0.55,
-            transformOrigin: "left center",
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.7,
+            stagger: 0.06,
+            ease: "power3.out",
+            delay: 0.35,
           }
         );
       });
@@ -110,29 +95,19 @@ export default function CatalogPage({
   }, [label]);
 
   return (
-    <main className="pm-catalog">
+    <main className="ap-page">
       {/* =====================================
-          HERO ATHLETIC
+          LARGE TITLE (iOS 26) + SEGMENTED
       ===================================== */}
-      <header className="pm-hero">
-        <div className="pm-hero-meta">
-          <span>FOREVER FASTER</span>
+      <header className="ap-header">
+        <div className="ap-meta">
           <span>COLECCIÓN 2026</span>
           <span>{String(totalProducts).padStart(2, "0")} PIEZAS</span>
         </div>
 
-        <h1 className="pm-hero-title">
-          <span className="pm-title-main">{label}</span>
-          <span className="pm-title-ghost" aria-hidden="true">
-            {label}
-          </span>
-        </h1>
+        <h1 className="ap-large-title">{label}</h1>
 
-        <div className="pm-speed-bar" aria-hidden="true">
-          <i />
-        </div>
-
-        <nav className="pm-nav" aria-label="Categorías">
+        <nav className="ios-segment ap-segment" aria-label="Categorías">
           <Link
             href="/mujeres"
             className={currentCategory === "mujeres" ? "active" : ""}
@@ -167,94 +142,73 @@ export default function CatalogPage({
       {/* =====================================
           PRODUCTOS
       ===================================== */}
-      <div className="pm-content">
-        {sections.map((section, sectionIndex) => (
-          <section className="pm-section" id={section.id} key={section.id}>
-            <div className="pm-section-head">
-              <span className="pm-dorsal">
-                {String(sectionIndex + 1).padStart(2, "0")}
-              </span>
-              <h2 className="pm-section-title">{section.title}</h2>
-              <span className="pm-section-count">
-                {String(section.products.length).padStart(2, "0")} ITEMS
-              </span>
+      <div className="ap-content">
+        {sections.map((section) => (
+          <section className="ap-section" id={section.id} key={section.id}>
+            <div className="ap-section-head">
+              <h2>{section.title}</h2>
+              <span>{String(section.products.length).padStart(2, "0")} ITEMS</span>
             </div>
 
-            <div className="pm-grid">
-              {section.products.map((product, index) => {
-                /* Dorsal grande de atleta */
-                const dorsal = String(index + 1).padStart(2, "0");
+            <div className="ap-grid">
+              {section.products.map((product, index) => (
+                <article
+                  className="ap-card ios-card"
+                  key={`${product.name}-${index}`}
+                >
+                  <div className="ap-media">
+                    <Link
+                      href={`/producto/${product.id}`}
+                      className="ap-media-link"
+                      aria-label={`Ver ${product.name}`}
+                    >
+                      <img src={product.image} alt={product.name} />
+                    </Link>
 
-                return (
-                  <article
-                    className="pm-card"
-                    key={`${product.name}-${index}`}
-                  >
-                    <div className="pm-media">
-                      <Link
-                        href={`/producto/${product.id}`}
-                        className="pm-media-link"
-                        aria-label={`Ver ${product.name}`}
-                      >
-                        <img src={product.image} alt={product.name} />
-                      </Link>
+                    {sale && product.badge && (
+                      <span className="ap-badge">{product.badge}</span>
+                    )}
+                  </div>
 
-                      <span className="pm-number">{dorsal}</span>
+                  <div className="ap-info">
+                    <Link
+                      href={`/producto/${product.id}`}
+                      className="ap-name"
+                    >
+                      {product.name}
+                    </Link>
 
-                      {sale && product.badge && (
-                        <span className="pm-badge">{product.badge}</span>
-                      )}
-
-                      <button
-                        type="button"
-                        className="pm-add"
-                        onClick={() => {
-                          cart.add({
-                            id: product.id,
-                            name: product.name,
-                            price: product.price,
-                            image: product.image,
-                          });
-
-                          cart.setOpen(true);
-                        }}
-                        aria-label={`Agregar ${product.name} al carrito`}
-                      >
-                        AÑADIR
-                      </button>
+                    <div className="ap-price">
+                      {sale && product.oldPrice ? (
+                        <span className="ap-price-old">
+                          ${product.oldPrice.toFixed(2)}
+                        </span>
+                      ) : null}
+                      <span className="ap-price-now">
+                        ${product.price.toFixed(2)}
+                      </span>
                     </div>
 
-                    <div className="pm-info">
-                      <div>
-                        <Link
-                          href={`/producto/${product.id}`}
-                          className="pm-name"
-                        >
-                          {product.name}
-                        </Link>
-                        <span className="pm-cat">SPORTCRZ {label}</span>
-                      </div>
+                    <button
+                      type="button"
+                      className="ap-add"
+                      onClick={() => {
+                        cart.add({
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          image: product.image,
+                        });
 
-                      <div className="pm-price">
-                        {sale && product.oldPrice ? (
-                          <>
-                            <span className="pm-price-old">
-                              ${product.oldPrice.toFixed(2)}
-                            </span>
-                            <span className="pm-price-now">
-                              ${product.price.toFixed(2)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="pm-price-now">
-                            ${product.price.toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
+                        cart.setOpen(true);
+                      }}
+                      aria-label={`Agregar ${product.name} al carrito`}
+                    >
+                      AÑADIR
+                    </button>
+                  </div>
+                </article>
+              ))}
             </div>
           </section>
         ))}
@@ -263,34 +217,59 @@ export default function CatalogPage({
       {/* =====================================
           CIERRE
       ===================================== */}
-      <section className="pm-close">
-        <p className="pm-close-kicker">SPORTCRZ / MOVEMENT</p>
-        <h2 className="pm-close-title">
-          SIEMPRE
-          <br />
-          MÁS
-          <br />
-          RÁPIDO.
-        </h2>
-        <Link href="/" className="pm-close-link">
+      <section className="ap-close ios-card">
+        <p>SPORTCRZ — 2026</p>
+        <h2>DISEÑADO PARA MOVERSE.</h2>
+        <Link href="/" className="ap-close-link">
           VOLVER AL INICIO
         </Link>
       </section>
 
       {/* =====================================
-          CARRITO FLOTANTE (Liquid Glass)
+          TAB BAR FLOTANTE iOS 26 (móvil)
+          + CARRITO (desktop)
       ===================================== */}
-      <Glass
-        className="pm-float lg-pill"
-        strength="strong"
-        onClick={() => cart.setOpen(true)}
-        style={{ cursor: "pointer", border: "none", background: "rgba(11, 11, 11, 0.5)" }}
-      >
-        <span className="pm-float-label">CARRITO</span>
-        <span className="pm-float-count">
-          {String(cart.count).padStart(2, "0")}
-        </span>
-      </Glass>
+      <nav className="ap-tabbar ios-glass thick" aria-label="Navegación rápida">
+        <Link href="/" className="ap-tab">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+          </svg>
+          <span>INICIO</span>
+        </Link>
+
+        <Link href="/mujeres" className="ap-tab">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8.5" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            <path d="M5 20c1.4-3.6 4-5.4 7-5.4s5.6 1.8 7 5.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+          <span>TIENDA</span>
+        </Link>
+
+        <button
+          type="button"
+          className="ap-tab ap-tab-cart"
+          onClick={() => cart.setOpen(true)}
+          aria-label={`Abrir carrito con ${cart.count} productos`}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h2l2.2 10.2a1.6 1.6 0 0 0 1.6 1.3h7.4a1.6 1.6 0 0 0 1.6-1.2L20.6 10H7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="10" cy="21" r="1.4" fill="currentColor" />
+            <circle cx="17" cy="21" r="1.4" fill="currentColor" />
+          </svg>
+          <span>CARRITO</span>
+          {cart.count > 0 && (
+            <span className="ap-tab-badge">{String(cart.count).padStart(2, "0")}</span>
+          )}
+        </button>
+
+        <Link href="/cuenta" className="ap-tab">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8.5" r="3.4" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            <path d="M4.5 20.5c1.2-4 4.1-6 7.5-6s6.3 2 7.5 6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+          <span>CUENTA</span>
+        </Link>
+      </nav>
     </main>
   );
 }

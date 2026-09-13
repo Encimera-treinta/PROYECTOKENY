@@ -1,4 +1,4 @@
-/* ==========================================
+﻿/* ==========================================
    SPORTCRZ CART DRAWER
 ========================================== */
 
@@ -79,12 +79,7 @@
 
   /* Liquid Glass claro */
   background:
-    rgba(
-      244,
-      244,
-      241,
-      0.72
-    );
+    var(--sys-bg-elevated);
 
   backdrop-filter:
     blur(34px)
@@ -93,7 +88,7 @@
     blur(34px)
     saturate(180%);
 
-  color: #090909;
+  color: var(--sys-label);
 
   border-left: 1px solid rgba(255, 255, 255, 0.5);
 
@@ -200,7 +195,7 @@
 .cart-header h2 {
   margin: 0;
 
-  color: #090909;
+  color: var(--sys-label);
 
   font-size: 2rem;
 
@@ -226,7 +221,7 @@
 
   background: transparent;
 
-  color: #090909;
+  color: var(--sys-label);
 
   border:
     1px solid
@@ -258,7 +253,7 @@
 }
 
 .close-cart:hover {
-  background: #090909;
+  background: var(--sys-label);
 
   color: #ffffff;
 }
@@ -470,7 +465,7 @@
 .cart-item-info h4 {
   margin: 0;
 
-  color: #090909;
+  color: var(--sys-label);
 
   font-size: 0.82rem;
 
@@ -515,7 +510,7 @@
 }
 
 .remove-btn:hover {
-  color: #090909;
+  color: var(--sys-label);
 }
 
 
@@ -570,7 +565,7 @@
 
   background: transparent;
 
-  color: #090909;
+  color: var(--sys-label);
 
   border: 0;
 
@@ -587,7 +582,7 @@
 }
 
 .cart-quantity button:hover {
-  background: #090909;
+  background: var(--sys-label);
 
   color: #ffffff;
 }
@@ -602,7 +597,7 @@
 
   text-align: center;
 
-  color: #090909;
+  color: var(--sys-label);
 
   font-size: 0.55rem;
 
@@ -638,7 +633,7 @@
 }
 
 .cart-item-prices strong {
-  color: #090909;
+  color: var(--sys-label);
 
   font-size: 0.86rem;
 
@@ -688,7 +683,7 @@
     0
     30px;
 
-  color: #090909;
+  color: var(--sys-label);
 
   font-size:
     clamp(
@@ -733,13 +728,13 @@
 
   background: transparent;
 
-  color: #090909;
+  color: var(--sys-label);
 
   border: 0;
 
   border-bottom:
     1px solid
-    #090909;
+    var(--sys-label);
 
   cursor: pointer;
 
@@ -772,7 +767,7 @@
 
   flex-shrink: 0;
 
-  background: #090909;
+  background: var(--sys-label);
 
   color: #ffffff;
 
@@ -872,7 +867,7 @@
 
   background: #ffffff;
 
-  color: #090909;
+  color: var(--sys-label);
 
   border: 0;
 
@@ -1311,13 +1306,13 @@
   .close-cart:hover {
     background: transparent;
 
-    color: #090909;
+    color: var(--sys-label);
   }
 
   .cart-quantity button:hover {
     background: transparent;
 
-    color: #090909;
+    color: var(--sys-label);
   }
 
   .checkout-btn:hover {
