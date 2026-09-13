@@ -2,10 +2,13 @@
 
 /* Blobatar oficial (@blobatar/react):
    carita geométrica determinista por nombre,
-   con animación (respira, parpadea, mira el cursor). */
+   siempre viva: respira, flota, parpadea
+   y sus ojos siguen el cursor. */
 
 import { Blobatar } from "@blobatar/react";
+import { useGaze } from "@blobatar/react/gaze";
 import "blobatar/motion.css";
+import "blobatar/gaze.css";
 
 export default function BlobAvatar({
   seed,
@@ -16,11 +19,17 @@ export default function BlobAvatar({
   size?: number;
   className?: string;
 }) {
+  const { ref } = useGaze({
+    travel: 3,
+    lookAt: "pointer",
+  });
+
   return (
     <Blobatar
+      ref={ref}
       name={seed || "sportcrz"}
       size={size}
-      animate="hover"
+      animate="always"
       className={`blobatar ${className}`}
     />
   );

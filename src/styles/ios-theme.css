@@ -51,7 +51,7 @@
 /* Chip de usuario flotante (a la derecha del carrito) */
 .user-chip {
   position: fixed;
-  left: calc(clamp(14px, 2.4vw, 28px) + 52px + 72px);
+  left: calc(clamp(14px, 2.4vw, 28px) + 68px + 96px);
   bottom: calc(clamp(14px, 2.4vw, 28px) + env(safe-area-inset-bottom));
   z-index: 1000010;
 
@@ -93,9 +93,10 @@
    Junto al toggle de tema (a su derecha).
 ===================== */
 
+/* Botón carrito flotante: más separado del toggle */
 .cart-btn-float {
   position: fixed;
-  left: calc(clamp(14px, 2.4vw, 28px) + 52px);
+  left: calc(clamp(14px, 2.4vw, 28px) + 68px);
   bottom: calc(clamp(14px, 2.4vw, 28px) + env(safe-area-inset-bottom));
   z-index: 1000010;
 
