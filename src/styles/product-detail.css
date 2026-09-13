@@ -1,13 +1,17 @@
-/* ==========================================
-   PRODUCT DETAIL — nivel Pagani / Apple
-   Grid editorial, tipografía XL, GSAP
+﻿/* ==========================================
+   PRODUCT DETAIL â€” nivel Pagani / Apple
+   Grid editorial, tipografÃ­a XL, GSAP
 ========================================= */
 
 .pd-page {
+  --pd-ink: #141311;
+  --pd-paper: #f6f4ef;
+  --pd-mute: #8d897d;
+  --pd-accent: #d8ff3e;
   --pd-pad: 5vw;
   min-height: 100vh;
-  background: #0a0a08;
-  color: #f5f2ea;
+  background: var(--pd-ink);
+  color: var(--pd-paper);
 }
 
 /* =====================
@@ -51,7 +55,7 @@
   max-height: 84vh;
   overflow: hidden;
   background:
-    radial-gradient(120% 90% at 20% 10%, #1d1d18 0%, #0a0a08 60%);
+    radial-gradient(120% 90% at 20% 10%, #1d1d18 0%, var(--pd-ink) 60%);
   will-change: clip-path;
 }
 
@@ -68,8 +72,8 @@
   left: 26px;
   z-index: 3;
   padding: 9px 15px;
-  background: #e8ff4a;
-  color: #0a0a08;
+  background: var(--pd-accent);
+  color: var(--pd-ink);
   font-size: 0.62rem;
   font-weight: 900;
   letter-spacing: 0.22em;
@@ -100,7 +104,7 @@
 
 .pd-kicker {
   margin: 0;
-  color: #8b8878;
+  color: var(--pd-mute);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.34em;
@@ -140,8 +144,8 @@
 
 .pd-save {
   padding: 7px 12px;
-  background: #e8ff4a;
-  color: #0a0a08;
+  background: var(--pd-accent);
+  color: var(--pd-ink);
   font-size: 0.6rem;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -174,7 +178,7 @@
 
 .pd-sizes-label {
   margin: 0;
-  color: #8b8878;
+  color: var(--pd-mute);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.3em;
@@ -192,7 +196,7 @@
   padding: 0 14px;
   background: transparent;
   border: 1px solid rgba(245, 242, 234, 0.28);
-  color: #f5f2ea;
+  color: var(--pd-paper);
   font-family: inherit;
   font-size: 0.72rem;
   font-weight: 800;
@@ -207,14 +211,14 @@
 }
 
 .pd-size:hover {
-  border-color: #f5f2ea;
+  border-color: var(--pd-paper);
   transform: translateY(-2px);
 }
 
 .pd-size.active {
-  background: #f5f2ea;
-  color: #0a0a08;
-  border-color: #f5f2ea;
+  background: var(--pd-paper);
+  color: var(--pd-ink);
+  border-color: var(--pd-paper);
 }
 
 .pd-sizes.error .pd-size {
@@ -245,8 +249,8 @@
   gap: 12px;
   width: 100%;
   min-height: 68px;
-  background: #f5f2ea;
-  color: #0a0a08;
+  background: var(--pd-paper);
+  color: var(--pd-ink);
   border: none;
   font-family: inherit;
   font-size: 0.74rem;
@@ -263,13 +267,13 @@
 .pd-add-dot {
   width: 8px;
   height: 8px;
-  background: #0a0a08;
+  background: var(--pd-ink);
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .pd-add:hover:not(:disabled) {
-  background: #e8ff4a;
+  background: var(--pd-accent);
 }
 
 .pd-add:active:not(:disabled) {
@@ -278,12 +282,12 @@
 
 .pd-add:disabled {
   background: #3a382e;
-  color: #8b8878;
+  color: var(--pd-mute);
   cursor: not-allowed;
 }
 
 .pd-add:disabled .pd-add-dot {
-  background: #8b8878;
+  background: var(--pd-mute);
 }
 
 .pd-cart-link {
@@ -292,7 +296,7 @@
   justify-content: center;
   min-height: 54px;
   border: 1px solid rgba(245, 242, 234, 0.3);
-  color: #f5f2ea;
+  color: var(--pd-paper);
   text-decoration: none;
   font-size: 0.64rem;
   font-weight: 800;
@@ -306,7 +310,7 @@
 
 .pd-cart-link:hover {
   background: rgba(245, 242, 234, 0.1);
-  border-color: #f5f2ea;
+  border-color: var(--pd-paper);
 }
 
 /* ---------- VOLVER ---------- */
@@ -316,7 +320,7 @@
 }
 
 .pd-back a {
-  color: #8b8878;
+  color: var(--pd-mute);
   text-decoration: none;
   font-size: 0.6rem;
   font-weight: 800;
@@ -328,18 +332,18 @@
 }
 
 .pd-back a:hover {
-  color: #f5f2ea;
-  border-color: #f5f2ea;
+  color: var(--pd-paper);
+  border-color: var(--pd-paper);
 }
 
 /* =====================
-   DESPUÉS DEL STAGE
+   DESPUÃ‰S DEL STAGE
 ===================== */
 
 .pd-after {
   border-top: 1px solid rgba(245, 242, 234, 0.1);
-  background: #f5f2ea;
-  color: #0a0a08;
+  background: var(--pd-paper);
+  color: var(--pd-ink);
 }
 
 .pd-section {
@@ -351,14 +355,14 @@
 
 .pd-index {
   display: block;
-  color: #8b8878;
+  color: var(--pd-mute);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.34em;
   margin-bottom: clamp(22px, 4vh, 40px);
 }
 
-/* ---------- DESCRIPCIÓN ---------- */
+/* ---------- DESCRIPCIÃ“N ---------- */
 
 .pd-desc {
   display: grid;
@@ -377,7 +381,7 @@
 }
 
 .pd-desc-empty {
-  color: #8b8878;
+  color: var(--pd-mute);
   font-style: italic;
 }
 
@@ -397,11 +401,11 @@
   flex-direction: column;
   gap: 12px;
   padding: 26px 26px 30px;
-  background: #f5f2ea;
+  background: var(--pd-paper);
 }
 
 .pd-specs dt {
-  color: #8b8878;
+  color: var(--pd-mute);
   font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 0.3em;
@@ -434,12 +438,12 @@
 }
 
 .pd-close-link {
-  color: #0a0a08;
+  color: var(--pd-ink);
   text-decoration: none;
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.26em;
-  border-bottom: 2px solid #0a0a08;
+  border-bottom: 2px solid var(--pd-ink);
   padding-bottom: 6px;
   -webkit-tap-highlight-color: transparent;
 }
@@ -498,4 +502,10 @@
   .pd-section {
     width: 92%;
   }
+}
+
+/* Tipografía display en títulos */
+.pd-title,
+.pd-close h2 {
+  font-family: var(--font-display), var(--font-text), sans-serif;
 }

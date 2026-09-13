@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { useCart } from "./CartProvider";
 
 type Product = {
@@ -36,150 +37,142 @@ export default function CatalogPage({
 
   const currentCategory = label.toLowerCase();
 
+  /* Animación de entrada: tarjetas aparecen en cascada. */
+  useEffect(() => {
+    let ctx: { revert: () => void } | undefined;
+
+    (async () => {
+      const { gsap } = await import("gsap");
+
+      ctx = gsap.context(() => {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return;
+        }
+
+        gsap.fromTo(
+          ".zl-card",
+          { y: 42, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.85,
+            stagger: 0.07,
+            ease: "power3.out",
+            delay: 0.15,
+          }
+        );
+
+        gsap.fromTo(
+          ".zl-head > *",
+          { y: 26, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            stagger: 0.08,
+            ease: "power3.out",
+          }
+        );
+      });
+    })();
+
+    return () => ctx?.revert();
+  }, [label]);
+
   return (
-    <main className="catalog-page">
+    <main className="zl-catalog">
       {/* =====================================
           HEADER
       ===================================== */}
-
-      <section className="catalog-header">
-        <div className="catalog-header-top">
-          <span>SPORTCRZ / 2026</span>
-
-          <span>
-            {String(totalProducts).padStart(2, "0")} PRODUCTOS
-          </span>
+      <header className="zl-head">
+        <div className="zl-head-meta">
+          <span>COLECCIÓN 2026</span>
+          <span>{String(totalProducts).padStart(2, "0")} PIEZAS</span>
         </div>
 
-        <div className="catalog-title-row">
-          <h1>{label}</h1>
+        <h1 className="zl-head-title">{label}</h1>
 
-          <p>
-            MOVIMIENTO.
-            <br />
-            ACTITUD.
-            <br />
-            SPORTCRZ.
-          </p>
-        </div>
+        <p className="zl-head-sub">
+          Rendimiento y diseño para cada movimiento.
+        </p>
 
-        <nav
-          className="catalog-category-nav"
-          aria-label="Categorías"
-        >
+        <nav className="zl-cat-nav" aria-label="Categorías">
           <Link
             href="/mujeres"
-            className={
-              currentCategory === "mujeres"
-                ? "active"
-                : ""
-            }
+            className={currentCategory === "mujeres" ? "active" : ""}
           >
             MUJERES
           </Link>
-
           <Link
             href="/hombres"
-            className={
-              currentCategory === "hombres"
-                ? "active"
-                : ""
-            }
+            className={currentCategory === "hombres" ? "active" : ""}
           >
             HOMBRES
           </Link>
-
           <Link
             href="/ninos"
             className={
-              currentCategory === "niños" ||
-              currentCategory === "ninos"
+              currentCategory === "niños" || currentCategory === "ninos"
                 ? "active"
                 : ""
             }
           >
             NIÑOS
           </Link>
-
           <Link
             href="/rebajas"
-            className={
-              currentCategory === "rebajas"
-                ? "active"
-                : ""
-            }
+            className={currentCategory === "rebajas" ? "active" : ""}
           >
             REBAJAS
           </Link>
         </nav>
-      </section>
+      </header>
 
       {/* =====================================
           PRODUCTOS
       ===================================== */}
-
-      <div className="catalog-content">
+      <div className="zl-content">
         {sections.map((section, sectionIndex) => (
           <section
-            className="catalog-product-section"
+            className="zl-section"
             id={section.id}
             key={section.id}
           >
-            <div className="catalog-section-top">
-              <div>
-                <span>
-                  {String(sectionIndex + 1).padStart(2, "0")}
-                </span>
-
-                <h2>{section.title}</h2>
-              </div>
-
-              <span>
+            <div className="zl-section-head">
+              <span className="zl-section-count">
+                {String(sectionIndex + 1).padStart(2, "0")}
+              </span>
+              <h2>{section.title}</h2>
+              <span className="zl-section-items">
                 {String(section.products.length).padStart(2, "0")} ITEMS
               </span>
             </div>
 
-            <div className="experimental-grid">
+            <div className="zl-grid">
               {section.products.map((product, index) => {
-                const isLarge = index % 7 === 2;
-                const isWide = index % 9 === 5;
+                const wide = index % 7 === 3;
 
                 return (
                   <article
-                    className={[
-                      "experimental-product",
-                      isLarge ? "product-large" : "",
-                      isWide ? "product-wide" : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
+                    className={`zl-card${wide ? " wide" : ""}`}
                     key={`${product.name}-${index}`}
                   >
-                    <div className="experimental-image">
+                    <div className="zl-media">
                       <Link
                         href={`/producto/${product.id}`}
-                        className="experimental-image-link"
-                        aria-label={`Ver detalles de ${product.name}`}
+                        className="zl-media-link"
+                        aria-label={`Ver ${product.name}`}
                       >
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                        />
+                        <img src={product.image} alt={product.name} />
                       </Link>
 
-                      <span className="experimental-number">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-
                       {sale && product.badge && (
-                        <span className="experimental-sale">
-                          {product.badge}
-                        </span>
+                        <span className="zl-badge">{product.badge}</span>
                       )}
 
                       <button
                         type="button"
-                        className="experimental-add"
+                        className="zl-add"
                         onClick={() => {
                           cart.add({
                             id: product.id,
@@ -192,40 +185,30 @@ export default function CatalogPage({
                         }}
                         aria-label={`Agregar ${product.name} al carrito`}
                       >
-                        <span className="add-symbol">+</span>
-
-                        <span className="add-text">
-                          AGREGAR
-                        </span>
+                        AÑADIR AL CARRITO
                       </button>
                     </div>
 
-                    <div className="experimental-info">
-                      <div>
-                        <span className="experimental-category">
-                          SPORTCRZ / {label.toUpperCase()}
-                        </span>
+                    <div className="zl-info">
+                      <Link
+                        href={`/producto/${product.id}`}
+                        className="zl-name"
+                      >
+                        {product.name}
+                      </Link>
 
-                        <h3>
-                          <Link href={`/producto/${product.id}`} className="experimental-title-link">
-                            {product.name}
-                          </Link>
-                        </h3>
-                      </div>
-
-                      <div className="experimental-price">
+                      <div className="zl-price">
                         {sale && product.oldPrice ? (
                           <>
-                            <span className="price-old">
+                            <span className="zl-price-old">
                               ${product.oldPrice.toFixed(2)}
                             </span>
-
-                            <span className="price-new">
+                            <span className="zl-price-now">
                               ${product.price.toFixed(2)}
                             </span>
                           </>
                         ) : (
-                          <span>
+                          <span className="zl-price-now">
                             ${product.price.toFixed(2)}
                           </span>
                         )}
@@ -240,46 +223,35 @@ export default function CatalogPage({
       </div>
 
       {/* =====================================
-          MANIFESTO
+          CIERRE
       ===================================== */}
-
-      <section className="catalog-manifesto">
-        <span>SPORTCRZ / MOVEMENT</span>
-
-        <h2>
-          WEAR
-          <br />
-          YOUR
-          <br />
-          ATTITUDE.
-        </h2>
-
-        <div className="catalog-manifesto-bottom">
-          <p>
-            NO ES SUERTE.
+      <section className="zl-close">
+        <div className="zl-close-inner">
+          <p>SPORTCRZ — MOVEMENT</p>
+          <h2>
+            DISEÑADO
             <br />
-            ES SPORTCRZ.
-          </p>
-
-          <Link href="/">
-            VOLVER A SPORTCRZ
+            PARA
+            <br />
+            MOVERSE.
+          </h2>
+          <Link href="/" className="zl-close-link">
+            VOLVER AL INICIO
           </Link>
         </div>
       </section>
 
       {/* =====================================
-          CART
+          CART FLOTANTE
       ===================================== */}
-
       <button
         type="button"
-        className="catalog-floating-cart"
+        className="zl-float-cart"
         onClick={() => cart.setOpen(true)}
         aria-label={`Abrir carrito con ${cart.count} productos`}
       >
-        <span>CART</span>
-
-        <span>
+        <span>CARRITO</span>
+        <span className="zl-float-count">
           {String(cart.count).padStart(2, "0")}
         </span>
       </button>

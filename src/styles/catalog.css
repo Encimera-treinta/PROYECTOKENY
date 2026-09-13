@@ -1,0 +1,412 @@
+/* ==========================================
+   CATÁLOGO — editorial premium (ZL)
+   Fondo marfil, tipografía Archivo, grilla
+   limpia, hovers suaves.
+========================================= */
+
+.zl-catalog {
+  --zl-ink: #141311;
+  --zl-bg: #f6f4ef;
+  --zl-mute: #8d897d;
+  --zl-line: rgba(20, 19, 17, 0.12);
+  --zl-accent: #141311;
+
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  background: var(--zl-bg);
+  color: var(--zl-ink);
+  padding-top: calc(84px + env(safe-area-inset-top));
+}
+
+.zl-catalog *,
+.zl-catalog *::before,
+.zl-catalog *::after {
+  box-sizing: border-box;
+}
+
+.zl-catalog a {
+  color: inherit;
+}
+
+/* =====================
+   HEADER
+===================== */
+
+.zl-head {
+  padding: clamp(36px, 6vh, 80px) 5vw clamp(24px, 4vh, 44px);
+  border-bottom: 1px solid var(--zl-line);
+}
+
+.zl-head-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: var(--zl-mute);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+}
+
+.zl-head-title {
+  margin: clamp(18px, 3.5vh, 40px) 0 0;
+  font-family: var(--font-display), var(--font-text), sans-serif;
+  font-size: clamp(4rem, 13vw, 12rem);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.zl-head-sub {
+  margin: clamp(12px, 2vh, 22px) 0 0;
+  max-width: 46ch;
+  color: var(--zl-mute);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+}
+
+.zl-cat-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 3vw, 42px);
+  flex-wrap: wrap;
+  margin-top: clamp(22px, 4vh, 40px);
+}
+
+.zl-cat-nav a {
+  position: relative;
+  padding: 6px 0;
+  color: var(--zl-mute);
+  text-decoration: none;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  transition: color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zl-cat-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--zl-ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.zl-cat-nav a:hover,
+.zl-cat-nav a.active {
+  color: var(--zl-ink);
+}
+
+.zl-cat-nav a.active::after,
+.zl-cat-nav a:hover::after {
+  transform: scaleX(1);
+}
+
+/* =====================
+   SECCIONES
+===================== */
+
+.zl-section {
+  padding: clamp(30px, 5vh, 60px) 5vw 0;
+}
+
+.zl-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  margin-bottom: clamp(20px, 3.5vh, 34px);
+}
+
+.zl-section-count {
+  color: var(--zl-mute);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+}
+
+.zl-section-head h2 {
+  margin: 0;
+  font-family: var(--font-display), var(--font-text), sans-serif;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.zl-section-items {
+  margin-left: auto;
+  color: var(--zl-mute);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+}
+
+/* =====================
+   GRID DE PRODUCTOS
+===================== */
+
+.zl-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(14px, 2vw, 28px);
+}
+
+.zl-card.wide {
+  grid-column: span 2;
+}
+
+/* ---------- MEDIA ---------- */
+
+.zl-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: #e8e5dd;
+}
+
+.zl-media-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.zl-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.zl-card:hover .zl-media img {
+  transform: scale(1.05);
+}
+
+.zl-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  padding: 7px 12px;
+  background: var(--zl-ink);
+  color: #f6f4ef;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.zl-add {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 14px 12px;
+  border: none;
+  background: rgba(20, 19, 17, 0.92);
+  color: #f6f4ef;
+  font-family: inherit;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  cursor: pointer;
+  transform: translateY(102%);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zl-card:hover .zl-add,
+.zl-add:focus-visible {
+  transform: translateY(0);
+}
+
+.zl-add:hover {
+  background: var(--zl-ink);
+}
+
+/* ---------- INFO ---------- */
+
+.zl-info {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 2px 4px;
+}
+
+.zl-name {
+  color: var(--zl-ink);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+}
+
+.zl-name:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.zl-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.zl-price-old {
+  color: var(--zl-mute);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+.zl-price-now {
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =====================
+   CIERRE
+===================== */
+
+.zl-close {
+  margin-top: clamp(50px, 9vh, 110px);
+  background: var(--zl-ink);
+  color: #f6f4ef;
+}
+
+.zl-close-inner {
+  width: min(1420px, 92%);
+  margin: 0 auto;
+  padding: clamp(60px, 11vh, 130px) 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 4vh, 40px);
+}
+
+.zl-close p {
+  margin: 0;
+  color: #8d897d;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.34em;
+}
+
+.zl-close h2 {
+  margin: 0;
+  font-family: var(--font-display), var(--font-text), sans-serif;
+  font-size: clamp(3rem, 9vw, 8rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.zl-close-link {
+  align-self: flex-start;
+  color: #f6f4ef;
+  text-decoration: none;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  border-bottom: 2px solid #f6f4ef;
+  padding-bottom: 5px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =====================
+   CARRITO FLOTANTE
+===================== */
+
+.zl-float-cart {
+  position: fixed;
+  right: clamp(16px, 3vw, 36px);
+  bottom: clamp(16px, 3vh, 36px);
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--zl-ink);
+  color: #f6f4ef;
+  border: none;
+  font-family: inherit;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  box-shadow: 0 12px 32px rgba(20, 19, 17, 0.28);
+  transition: transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zl-float-cart:active {
+  transform: scale(0.96);
+}
+
+.zl-float-count {
+  padding: 2px 7px;
+  background: #f6f4ef;
+  color: var(--zl-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+
+@media (max-width: 1100px) {
+  .zl-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .zl-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .zl-card.wide {
+    grid-column: span 2;
+  }
+
+  .zl-add {
+    transform: translateY(0);
+    padding: 12px;
+    font-size: 0.54rem;
+  }
+
+  .zl-head-meta {
+    font-size: 0.5rem;
+  }
+
+  .zl-info {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 460px) {
+  .zl-head-title {
+    font-size: clamp(3rem, 16vw, 4.4rem);
+  }
+
+  .zl-float-cart {
+    right: 14px;
+    bottom: 14px;
+    padding: 12px 14px;
+  }
+}

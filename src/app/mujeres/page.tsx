@@ -1,7 +1,7 @@
 ﻿import CatalogPage from "@/components/CatalogPage";
 import { listProductsByCategory } from "@/lib/database";
 import { toCatalogProduct } from "@/lib/catalog-mapper";
-import "@/styles/shop.css";
+import "@/styles/catalog.css";
 
 export const metadata = { title: "Mujeres | SportCrz" };
 
