@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useCart } from "./CartProvider";
+import Glass from "./Glass";
 
 type Product = {
   id: number;
@@ -277,19 +278,19 @@ export default function CatalogPage({
       </section>
 
       {/* =====================================
-          CARRITO FLOTANTE
+          CARRITO FLOTANTE (Liquid Glass)
       ===================================== */}
-      <button
-        type="button"
-        className="pm-float"
+      <Glass
+        className="pm-float lg-pill"
+        strength="strong"
         onClick={() => cart.setOpen(true)}
-        aria-label={`Abrir carrito con ${cart.count} productos`}
+        style={{ cursor: "pointer", border: "none", background: "rgba(11, 11, 11, 0.5)" }}
       >
         <span className="pm-float-label">CARRITO</span>
         <span className="pm-float-count">
           {String(cart.count).padStart(2, "0")}
         </span>
-      </button>
+      </Glass>
     </main>
   );
 }

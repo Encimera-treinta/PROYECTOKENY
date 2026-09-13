@@ -249,9 +249,21 @@
   gap: 12px;
   width: 100%;
   min-height: 68px;
-  background: var(--pd-paper);
-  color: var(--pd-ink);
-  border: none;
+  background: rgba(245, 242, 234, 0.1);
+  color: var(--pd-paper);
+  border: 1px solid rgba(245, 242, 234, 0.22);
+
+  backdrop-filter:
+    blur(22px)
+    saturate(170%);
+  -webkit-backdrop-filter:
+    blur(22px)
+    saturate(170%);
+
+  box-shadow:
+    inset 0 1px 0 0 rgba(245, 242, 234, 0.24),
+    0 10px 32px rgba(0, 0, 0, 0.2);
+
   font-family: inherit;
   font-size: 0.74rem;
   font-weight: 900;
@@ -260,14 +272,15 @@
   overflow: hidden;
   transition:
     transform 0.15s ease,
-    background 0.2s ease;
+    background 0.2s ease,
+    border-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .pd-add-dot {
   width: 8px;
   height: 8px;
-  background: var(--pd-ink);
+  background: var(--pd-paper);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -275,6 +288,7 @@
 .pd-add:hover:not(:disabled) {
   background: var(--pd-accent);
   color: #ffffff;
+  border-color: var(--pd-accent);
 }
 
 .pd-add:hover:not(:disabled) .pd-add-dot {
@@ -286,9 +300,10 @@
 }
 
 .pd-add:disabled {
-  background: #3a382e;
+  background: rgba(58, 56, 46, 0.4);
   color: var(--pd-mute);
   cursor: not-allowed;
+  border-color: rgba(245, 242, 234, 0.1);
 }
 
 .pd-add:disabled .pd-add-dot {

@@ -1,0 +1,105 @@
+/* ==========================================
+   LIQUID GLASS — Apple style
+   Blur + saturate + refracción de borde +
+   brillo especular que sigue el cursor.
+========================================= */
+
+.lg-glass {
+  position: relative;
+  isolation: isolate;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  backdrop-filter:
+    blur(var(--lg-blur, 16px))
+    saturate(180%)
+    brightness(1.06);
+  -webkit-backdrop-filter:
+    blur(var(--lg-blur, 16px))
+    saturate(180%)
+    brightness(1.06);
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+
+  /* Luz de borde superior (lo que hace Apple) */
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.05),
+    inset 1px 0 0 0 rgba(255, 255, 255, 0.07),
+    inset -1px 0 0 0 rgba(255, 255, 255, 0.07),
+    0 8px 32px rgba(0, 0, 0, 0.18);
+
+  overflow: hidden;
+
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Brillo especular que sigue el mouse */
+.lg-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      220px 140px at var(--lg-glare-x, 50%) var(--lg-glare-y, 50%),
+      rgba(255, 255, 255, 0.16),
+      transparent 65%
+    );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.lg-glass:hover::before {
+  opacity: 1;
+}
+
+/* Variante sobre fondos claros */
+.lg-glass.over-light {
+  background: rgba(255, 255, 255, 0.42);
+  border-color: rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.2),
+    0 8px 32px rgba(31, 33, 44, 0.1);
+}
+
+.lg-glass.over-light::before {
+  background:
+    radial-gradient(
+      220px 140px at var(--lg-glare-x, 50%) var(--lg-glare-y, 50%),
+      rgba(255, 255, 255, 0.55),
+      transparent 65%
+    );
+}
+
+/* Click feedback */
+.lg-glass:active {
+  transform: scale(0.97);
+}
+
+/* =====================
+   PRESETS DE USO
+===================== */
+
+/* Pastilla flotante (carrito, chips) */
+.lg-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 999px;
+}
+
+/* Panel mediano (cards) */
+.lg-panel {
+  border-radius: 24px;
+}
+
+/* Barra completa (navbar, banners) */
+.lg-bar {
+  border-radius: 18px;
+}

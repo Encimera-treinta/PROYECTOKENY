@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Barlow_Condensed, Barlow } from "next/font/google";
 import "./globals.css";
 import "@/styles/carrito.css";
+import "@/styles/liquid-glass.css";
 
 import Navbar from "@/components/Navbar";
 import { CartProvider } from "@/components/CartProvider";
