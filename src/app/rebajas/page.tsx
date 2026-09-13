@@ -17,7 +17,7 @@ export default async function RebajasPage() {
       sections={[
         {
           id: "rebajas",
-          title: "Ãšltimas unidades",
+          title: "Últimas unidades",
           products: products.map(toCatalogProduct),
         },
       ]}

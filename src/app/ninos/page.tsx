@@ -3,7 +3,7 @@ import { listProductsByCategory } from "@/lib/database";
 import { toCatalogProduct } from "@/lib/catalog-mapper";
 import "@/styles/catalog.css";
 
-export const metadata = { title: "NiÃ±os | SportCrz" };
+export const metadata = { title: "Niños | SportCrz" };
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,7 @@ export default async function NinosPage() {
 
   return (
     <CatalogPage
-      label="NiÃ±os"
+      label="Niños"
       sections={[
         {
           id: "ninos-destacados",
