@@ -9,6 +9,7 @@ import {
   listPaymentMethods,
   listOrdersByCustomerEmail,
 } from "@/lib/database";
+import BlobAvatar from "@/components/BlobAvatar";
 import {
   updateProfileAction,
   addCardAction,
@@ -94,12 +95,15 @@ export default async function CuentaPage({
       </header>
 
       <section className="cuenta-hero">
-        <p className="cuenta-kicker">CLIENTE SPORTCRZ</p>
-        <h1>{customer.full_name.split(" ")[0].toUpperCase()}.</h1>
-        <p className="cuenta-meta">
-          {customer.email}
-          {customer.phone ? ` — ${customer.phone}` : ""}
-        </p>
+        <BlobAvatar seed={customer.email} size={64} />
+        <div>
+          <p className="cuenta-kicker">CLIENTE SPORTCRZ</p>
+          <h1>{customer.full_name.split(" ")[0].toUpperCase()}.</h1>
+          <p className="cuenta-meta">
+            {customer.email}
+            {customer.phone ? ` — ${customer.phone}` : ""}
+          </p>
+        </div>
       </section>
 
       {(flashText || errorText) && (
