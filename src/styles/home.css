@@ -7,8 +7,12 @@
   min-width: 0;
   overflow-x: hidden;
 
-  background: #ffffff;
-  color: #0a0a0a;
+  background: var(--sp-bg);
+  color: var(--sp-label);
+
+  transition:
+    background 0.35s ease,
+    color 0.35s ease;
 }
 
 .home-page *,
@@ -282,7 +286,7 @@
 
   margin-bottom: 45px;
 
-  color: #777;
+  color: var(--sp-label-2);
 
   font-size: 0.62rem;
 
@@ -297,7 +301,7 @@
 
   padding-bottom: 6px;
 
-  color: #111111;
+  color: var(--sp-label);
 
   text-decoration: none;
 
@@ -308,7 +312,7 @@
   letter-spacing: 0.22em;
 
   border-bottom:
-    1px solid #111111;
+    1px solid var(--sp-label);
 }
 
 .text-link {
@@ -333,7 +337,7 @@
     )
     0;
 
-  background: #ffffff;
+  background: var(--sp-bg);
 }
 
 .intro-layout {
@@ -356,7 +360,7 @@
 .intro-layout h2 {
   margin: 0;
 
-  color: #0a0a0a;
+  color: var(--sp-label);
 
   font-family:
     Arial,
@@ -389,7 +393,7 @@
     0
     22px;
 
-  color: #555;
+  color: var(--sp-label-2);
 
   font-size: 1rem;
 
@@ -611,7 +615,7 @@
 
   overflow: hidden;
 
-  background: #ffffff;
+  background: var(--sp-bg);
 }
 
 .manifesto-line {
@@ -619,7 +623,7 @@
 
   margin-left: -1vw;
 
-  color: #070707;
+  color: var(--sp-label);
 
   font-size:
     clamp(
@@ -650,7 +654,7 @@
 
   -webkit-text-stroke:
     1.5px
-    #111111;
+    var(--sp-label);
 }
 
 
@@ -667,7 +671,7 @@
     )
     0;
 
-  background: #f3f3f1;
+  background: var(--sp-bg);
 }
 
 .heading-row {
@@ -723,7 +727,7 @@
 
   aspect-ratio: 0.74;
 
-  background: #dddddd;
+  background: var(--sp-fill);
 }
 
 .drop-image img {
@@ -776,7 +780,7 @@
     0
     6px;
 
-  color: #111111;
+  color: var(--sp-label);
 
   font-size: 0.8rem;
 
@@ -786,7 +790,7 @@
 .drop-info p {
   margin: 0;
 
-  color: #888;
+  color: var(--sp-label-2);
 
   font-size: 0.7rem;
 }
@@ -794,7 +798,7 @@
 .drop-info > span {
   flex-shrink: 0;
 
-  color: #111111;
+  color: var(--sp-label);
 
   font-size: 0.8rem;
 
@@ -949,7 +953,7 @@
     )
     0;
 
-  background: #ffffff;
+  background: var(--sp-bg);
 }
 
 .story-layout {
@@ -1002,7 +1006,7 @@
 
   overflow: hidden;
 
-  background: #eeeeec;
+  background: var(--sp-fill);
 }
 
 .story-person-main .story-person-image {
@@ -1045,7 +1049,7 @@
 
   margin-bottom: 8px;
 
-  color: #999;
+  color: var(--sp-label-2);
 
   font-size: 0.52rem;
 
@@ -1060,7 +1064,7 @@
     0
     5px;
 
-  color: #111111;
+  color: var(--sp-label);
 
   font-size: 0.78rem;
 
@@ -1072,7 +1076,7 @@
 .story-person figcaption p {
   margin: 0;
 
-  color: #888;
+  color: var(--sp-label-2);
 
   font-size: 0.67rem;
 
@@ -1089,7 +1093,7 @@
     0
     45px;
 
-  color: #111111;
+  color: var(--sp-label);
 
   font-size:
     clamp(
@@ -1117,7 +1121,7 @@
     0
     18px;
 
-  color: #555;
+  color: var(--sp-label-2);
 
   font-size: 1rem;
 

@@ -19,7 +19,7 @@ const ERRORS: Record<string, string> = {
 export default async function CuentaLoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; mode?: string }>;
+  searchParams: Promise<{ error?: string; mode?: string; next?: string }>;
 }) {
   const session = await getCustomerSession();
 
@@ -29,6 +29,7 @@ export default async function CuentaLoginPage({
 
   const params = await searchParams;
   const isRegister = params.mode === "register";
+  const next = params.next && params.next.startsWith("/") ? params.next : "/cuenta";
   const errorText = params.error
     ? (ERRORS[params.error] ?? "Revisa los datos e intenta de nuevo.")
     : null;
@@ -68,6 +69,8 @@ export default async function CuentaLoginPage({
 
           {isRegister ? (
             <form action={registerAction} className="cuenta-login-form">
+              <input type="hidden" name="next" value={next} />
+
               <label>
                 NOMBRE COMPLETO
                 <input
@@ -120,6 +123,8 @@ export default async function CuentaLoginPage({
             </form>
           ) : (
             <form action={loginAction} className="cuenta-login-form">
+              <input type="hidden" name="next" value={next} />
+
               <label>
                 CORREO
                 <input
@@ -150,11 +155,11 @@ export default async function CuentaLoginPage({
 
           <p className="cuenta-login-switch">
             {isRegister ? (
-              <Link href="/cuenta/login">
+              <Link href={`/cuenta/login?next=${encodeURIComponent(next)}`}>
                 YA TENGO CUENTA — ENTRAR
               </Link>
             ) : (
-              <Link href="/cuenta/login?mode=register">
+              <Link href={`/cuenta/login?mode=register&next=${encodeURIComponent(next)}`}>
                 NO TENGO CUENTA — CREAR UNA
               </Link>
             )}

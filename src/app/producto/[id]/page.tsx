@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import type { Product } from "@/lib/database";
 import { getProductById } from "@/lib/database";
 import ProductDetail from "@/components/ProductDetail";
-import "@/styles/shop.css";
 import "@/styles/product-detail.css";
 
 export const dynamic = "force-dynamic";

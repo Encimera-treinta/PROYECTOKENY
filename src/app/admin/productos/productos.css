@@ -837,3 +837,154 @@
     min-height: 46px;
   }
 }
+
+
+/* ==========================================
+   MODO OSCURO ADMIN (productos / pedidos)
+   Solo aplica con data-theme="dark".
+========================================== */
+
+:root[data-theme="dark"] .admin-new-btn,
+:root[data-theme="dark"] .admin-form-submit,
+:root[data-theme="dark"] .admin-products-table th,
+:root[data-theme="dark"] .admin-orders-table th,
+:root[data-theme="dark"] .admin-order-status-form button,
+:root[data-theme="dark"] .admin-order-card-actions button,
+:root[data-theme="dark"] .admin-product-card-actions a {
+  background: var(--sp-accent);
+  color: var(--sp-accent-text);
+  border-color: var(--sp-accent);
+}
+
+:root[data-theme="dark"] .admin-flash {
+  border-color: color-mix(in srgb, var(--sp-label) 15%, transparent);
+}
+
+:root[data-theme="dark"] .admin-form-card,
+:root[data-theme="dark"] .admin-product-card,
+:root[data-theme="dark"] .admin-order-card {
+  background: var(--sp-surface);
+  border-color: var(--sp-sep);
+}
+
+:root[data-theme="dark"] .admin-form-head {
+  border-bottom-color: var(--sp-sep);
+}
+
+:root[data-theme="dark"] .admin-form-head span,
+:root[data-theme="dark"] .admin-product-form label,
+:root[data-theme="dark"] .admin-empty-row,
+:root[data-theme="dark"] .admin-price-old,
+:root[data-theme="dark"] .admin-image-hint,
+:root[data-theme="dark"] .admin-product-form input::placeholder,
+:root[data-theme="dark"] .admin-product-form textarea::placeholder {
+  color: var(--sp-label-2);
+}
+
+:root[data-theme="dark"] .admin-form-head a,
+:root[data-theme="dark"] .admin-row-actions a {
+  color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-image-name,
+:root[data-theme="dark"] .admin-order-card-meta {
+  color: var(--sp-label-2);
+}
+
+:root[data-theme="dark"] .admin-product-form input,
+:root[data-theme="dark"] .admin-product-form select,
+:root[data-theme="dark"] .admin-order-status-form select,
+:root[data-theme="dark"] .admin-order-card-actions select {
+  background: var(--sp-fill);
+  border-color: var(--sp-sep);
+  color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-product-form textarea {
+  background: var(--sp-surface);
+  border-color: color-mix(in srgb, var(--sp-label) 25%, transparent);
+  color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-product-form input:focus,
+:root[data-theme="dark"] .admin-product-form select:focus {
+  outline-color: var(--sp-label);
+  background: var(--sp-surface-2);
+}
+
+:root[data-theme="dark"] .admin-product-form textarea:focus {
+  border-color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-field-check input {
+  accent-color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-products-table table,
+:root[data-theme="dark"] .admin-orders-table table {
+  border-color: var(--sp-sep);
+}
+
+:root[data-theme="dark"] .admin-products-table td,
+:root[data-theme="dark"] .admin-orders-table td {
+  border-bottom-color: var(--sp-sep);
+}
+
+:root[data-theme="dark"] .admin-product-cell img,
+:root[data-theme="dark"] .admin-product-card-top img {
+  border-color: var(--sp-sep);
+}
+
+:root[data-theme="dark"] .admin-row-actions button {
+  color: #b3261e;
+  border-color: #b3261e;
+}
+
+:root[data-theme="dark"] .admin-product-card-actions {
+  border-top-color: color-mix(in srgb, var(--sp-label) 8%, transparent);
+}
+
+:root[data-theme="dark"] .admin-product-card-actions button {
+  color: #b3261e;
+  border-color: color-mix(in srgb, #b3261e 40%, transparent);
+}
+
+:root[data-theme="dark"] .admin-order-card-meta strong {
+  color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-image-picker,
+:root[data-theme="dark"] .admin-field-check {
+  background: var(--sp-fill);
+  border-color: color-mix(in srgb, var(--sp-label) 10%, transparent);
+}
+
+:root[data-theme="dark"] .admin-image-preview {
+  background: var(--sp-surface);
+  border-color: color-mix(in srgb, var(--sp-label) 25%, transparent);
+}
+
+:root[data-theme="dark"] .admin-image-actions .admin-image-btn {
+  border-color: color-mix(in srgb, var(--sp-label) 25%, transparent);
+  color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-image-actions .admin-image-btn.primary {
+  background: var(--sp-accent);
+  border-color: var(--sp-accent);
+  color: var(--sp-accent-text);
+}
+
+:root[data-theme="dark"] .admin-image-busy {
+  background: color-mix(in srgb, var(--sp-bg) 85%, transparent);
+  color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-flash-box {
+  background: color-mix(in srgb, #1a7f37 14%, var(--sp-bg));
+  border-color: #1a7f37;
+}
+
+:root[data-theme="dark"] .admin-flash-detail {
+  color: var(--sp-label);
+}

@@ -144,6 +144,15 @@ export async function deletePaymentAction(formData: FormData) {
 
 /* ===== AUTH ===== */
 
+/* Solo permite redirigir a rutas internas (evita open redirect). */
+function safeNext(raw: string | null): string {
+  const next = raw?.trim() || "/cuenta";
+  if (next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\")) {
+    return next;
+  }
+  return "/cuenta";
+}
+
 export async function registerAction(formData: FormData) {
   const result = await registerCustomer({
     email: String(formData.get("email") || ""),
@@ -153,10 +162,12 @@ export async function registerAction(formData: FormData) {
   });
 
   if (!result.ok) {
-    redirect(`/cuenta/login?error=${result.error}&mode=register`);
+    redirect(
+      `/cuenta/login?error=${result.error}&mode=register&next=${encodeURIComponent(safeNext(String(formData.get("next") || "")))}`
+    );
   }
 
-  redirect("/cuenta?welcome=1");
+  redirect(safeNext(String(formData.get("next") || "")));
 }
 
 export async function loginAction(formData: FormData) {
@@ -166,10 +177,12 @@ export async function loginAction(formData: FormData) {
   );
 
   if (!result.ok) {
-    redirect("/cuenta/login?error=invalid");
+    redirect(
+      `/cuenta/login?error=invalid&next=${encodeURIComponent(safeNext(String(formData.get("next") || "")))}`
+    );
   }
 
-  redirect("/cuenta");
+  redirect(safeNext(String(formData.get("next") || "")));
 }
 
 export async function logoutAction() {

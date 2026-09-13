@@ -814,3 +814,97 @@
     opacity: 1;
   }
 }
+
+
+/* ==========================================
+   MODO OSCURO ADMIN
+   Solo aplica con data-theme="dark"; en claro
+   el panel conserva su diseño original.
+========================================== */
+
+:root[data-theme="dark"] .admin-page {
+  background: var(--sp-bg);
+  color: var(--sp-label);
+
+  transition:
+    background 0.35s ease,
+    color 0.35s ease;
+}
+
+:root[data-theme="dark"] .admin-topbar {
+  border-bottom-color: var(--sp-sep);
+}
+
+:root[data-theme="dark"] .admin-topbar span,
+:root[data-theme="dark"] .admin-hero > span,
+:root[data-theme="dark"] .admin-card > span {
+  color: var(--sp-label-2);
+}
+
+:root[data-theme="dark"] .admin-top-actions a,
+:root[data-theme="dark"] .admin-top-actions button {
+  color: var(--sp-label);
+}
+
+:root[data-theme="dark"] .admin-hero p,
+:root[data-theme="dark"] .admin-card p {
+  color: var(--sp-label-2);
+}
+
+:root[data-theme="dark"] .admin-grid {
+  border-top-color: var(--sp-sep);
+  border-left-color: var(--sp-sep);
+}
+
+:root[data-theme="dark"] .admin-card {
+  border-right-color: var(--sp-sep);
+  border-bottom-color: var(--sp-sep);
+}
+
+:root[data-theme="dark"] .admin-card button {
+  color: var(--sp-label-2);
+  border-bottom-color: var(--sp-label-2);
+}
+
+:root[data-theme="dark"] .admin-card-primary {
+  background: var(--sp-accent);
+  color: var(--sp-accent-text);
+}
+
+:root[data-theme="dark"] .admin-card-primary p {
+  color: color-mix(in srgb, var(--sp-accent-text) 50%, transparent);
+}
+
+:root[data-theme="dark"] .admin-card-primary > span {
+  color: color-mix(in srgb, var(--sp-accent-text) 35%, transparent);
+}
+
+:root[data-theme="dark"] .admin-card-primary button {
+  color: color-mix(in srgb, var(--sp-accent-text) 40%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--sp-accent-text) 25%, transparent);
+}
+
+:root[data-theme="dark"] .admin-footer {
+  border-top-color: var(--sp-sep);
+  color: var(--sp-label-2);
+}
+
+:root[data-theme="dark"] .admin-footer strong {
+  color: var(--sp-label);
+}
+
+@media (max-width: 700px) {
+  :root[data-theme="dark"] .admin-tabbar {
+    background: var(--sp-accent);
+    border-top-color: color-mix(in srgb, var(--sp-accent-text) 15%, transparent);
+  }
+
+  :root[data-theme="dark"] .admin-tab {
+    color: color-mix(in srgb, var(--sp-accent-text) 55%, transparent);
+  }
+
+  :root[data-theme="dark"] .admin-tab.active {
+    color: var(--sp-accent-text);
+    border-bottom-color: var(--sp-accent-text);
+  }
+}
