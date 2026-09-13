@@ -156,10 +156,16 @@ export default function CatalogPage({
                     key={`${product.name}-${index}`}
                   >
                     <div className="experimental-image">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                      />
+                      <Link
+                        href={`/producto/${product.id}`}
+                        className="experimental-image-link"
+                        aria-label={`Ver detalles de ${product.name}`}
+                      >
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                        />
+                      </Link>
 
                       <span className="experimental-number">
                         {String(index + 1).padStart(2, "0")}
@@ -200,7 +206,11 @@ export default function CatalogPage({
                           SPORTCRZ / {label.toUpperCase()}
                         </span>
 
-                        <h3>{product.name}</h3>
+                        <h3>
+                          <Link href={`/producto/${product.id}`} className="experimental-title-link">
+                            {product.name}
+                          </Link>
+                        </h3>
                       </div>
 
                       <div className="experimental-price">

@@ -354,7 +354,19 @@
 
 /* ==========================================
    IMAGE
-========================================== */
+========================================= */
+
+.experimental-image-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.experimental-title-link {
+  color: inherit;
+  text-decoration: none;
+}
 
 .experimental-image {
   position: relative;
@@ -1338,8 +1350,8 @@ span:last-child {
   }
 }
 /* ==========================================
-   MEJORAS UX MÓVIL / TABLET
-   Botones táctiles grandes y visibles
+   MEJORAS UX Mï¿½VIL / TABLET
+   Botones tï¿½ctiles grandes y visibles
 ========================================= */
 
 @media (max-width: 820px) {
@@ -1361,7 +1373,7 @@ span:last-child {
   }
 }
 
-/* Carrusel horizontal swipeable en móvil */
+/* Carrusel horizontal swipeable en mï¿½vil */
 @media (max-width: 700px) {
   .experimental-grid {
     display: flex;

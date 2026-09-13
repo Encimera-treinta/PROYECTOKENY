@@ -61,6 +61,7 @@ const SCHEMA_SQL = `
     stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
     active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0, 1)),
     sort_order INTEGER NOT NULL DEFAULT 0,
+    description TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
@@ -118,6 +119,13 @@ export function ensureSchema(): Promise<void> {
 
       for (const statement of statements) {
         await database.execute(statement + ";");
+      }
+
+      /* Migra la tabla products si vino de una versión sin description. */
+      try {
+        await database.execute("ALTER TABLE products ADD COLUMN description TEXT");
+      } catch {
+        /* La columna ya existe. */
       }
 
       /* Migra credenciales de la versión anterior basada en .env. */
@@ -264,10 +272,11 @@ export type Product = {
   stock: number;
   active: number;
   sort_order: number;
+  description: string | null;
 };
 
 const PRODUCT_COLUMNS = `
-  id, name, category, price, old_price, image, badge, stock, active, sort_order
+  id, name, category, price, old_price, image, badge, stock, active, sort_order, description
 `;
 
 function rowToProduct(row: Record<string, unknown>): Product {
@@ -282,6 +291,10 @@ function rowToProduct(row: Record<string, unknown>): Product {
     stock: Number(row.stock),
     active: Number(row.active),
     sort_order: Number(row.sort_order),
+    description:
+      row.description === null || row.description === undefined
+        ? null
+        : String(row.description),
   };
 }
 
@@ -328,12 +341,13 @@ export async function createProduct(data: {
   badge: string | null;
   stock: number;
   sort_order: number;
+  description: string | null;
 }): Promise<number> {
   await ensureSchema();
   const result = await database.execute({
     sql: `
-      INSERT INTO products (name, category, price, old_price, image, badge, stock, sort_order)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO products (name, category, price, old_price, image, badge, stock, sort_order, description)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
     args: [
       data.name,
@@ -344,6 +358,7 @@ export async function createProduct(data: {
       data.badge,
       data.stock,
       data.sort_order,
+      data.description,
     ],
   });
 
@@ -362,13 +377,14 @@ export async function updateProduct(
     stock: number;
     active: number;
     sort_order: number;
+    description: string | null;
   }
 ): Promise<void> {
   await ensureSchema();
   await database.execute({
     sql: `
       UPDATE products
-      SET name = ?, category = ?, price = ?, old_price = ?, image = ?, badge = ?, stock = ?, active = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+      SET name = ?, category = ?, price = ?, old_price = ?, image = ?, badge = ?, stock = ?, active = ?, sort_order = ?, description = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `,
     args: [
@@ -381,6 +397,7 @@ export async function updateProduct(
       data.stock,
       data.active,
       data.sort_order,
+      data.description,
       id,
     ],
   });

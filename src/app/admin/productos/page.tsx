@@ -28,6 +28,7 @@ type FormProduct = {
   stock?: number;
   active?: number;
   sort_order?: number;
+  description?: string | null;
 };
 
 export default async function AdminProductosPage({
@@ -244,6 +245,22 @@ export default async function AdminProductosPage({
                   enterKeyHint="next"
                 />
               </div>
+            </div>
+
+            <div className="admin-field">
+              <label htmlFor="description">DESCRIPCIÓN (PARA LA PÁGINA DEL PRODUCTO)</label>
+              <textarea
+                id="description"
+                name="description"
+                rows={5}
+                defaultValue={editing?.description ?? ""}
+                placeholder="Ej: Camiseta dry-fit de entrenamiento. Tejido transpirable que aleja el sudor, corte ajustado y costuras planas que evitan roces. Ideal para gimnasio y running."
+                maxLength={2000}
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="done"
+              />
             </div>
 
             <div className="admin-form-row">

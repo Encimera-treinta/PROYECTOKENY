@@ -64,6 +64,7 @@ type ProductInput = {
   stock: number;
   active: number;
   sort_order: number;
+  description: string | null;
 };
 
 /* Acepta "25,99" (coma) o "25.99" (punto) y devuelve number. */
@@ -87,6 +88,7 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
   const sortOrderRaw = String(formData.get("sort_order") || "").trim();
   const sortOrder = Number(sortOrderRaw.replace(",", "."));
   const active = formData.get("active") === "on" ? 1 : 0;
+  const description = String(formData.get("description") || "").trim();
 
   if (!name) redirect("/admin/productos?new=1&error=name");
   if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) {
@@ -125,6 +127,7 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
     stock,
     active,
     sort_order: Number.isFinite(sortOrder) ? Math.trunc(sortOrder) : 0,
+    description: description || null,
   };
 }
 
