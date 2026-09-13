@@ -39,29 +39,13 @@
 }
 
 /* =====================
-   BLOBATAR — avatar blob
+   BLOBATAR — avatar blob oficial
 ===================== */
 
 .blobatar {
-  display: block;
   border-radius: 50%;
   flex-shrink: 0;
-}
-
-.blobatar-blob {
-  transform-origin: 50% 50%;
-  animation: blobatar-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes blobatar-in {
-  from {
-    transform: scale(0.4);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  display: block;
 }
 
 /* Chip de usuario flotante (junto al toggle) */
