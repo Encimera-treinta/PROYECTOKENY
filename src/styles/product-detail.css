@@ -4,10 +4,10 @@
 ========================================= */
 
 .pd-page {
-  --pd-ink: #141311;
-  --pd-paper: #f6f4ef;
-  --pd-mute: #8d897d;
-  --pd-accent: #d8ff3e;
+  --pd-ink: #0e0e0c;
+  --pd-paper: #faf9f4;
+  --pd-mute: #868478;
+  --pd-accent: #d4ff00;
   --pd-pad: 5vw;
   min-height: 100vh;
   background: var(--pd-ink);
@@ -508,4 +508,16 @@
 .pd-title,
 .pd-close h2 {
   font-family: var(--font-display), var(--font-text), sans-serif;
+}
+
+/* Números outline estilo revista en el cierre */
+.pd-close h2 span {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--pd-ink);
+}
+
+@media (max-width: 900px) {
+  .pd-close h2 span {
+    -webkit-text-stroke-width: 1.4px;
+  }
 }

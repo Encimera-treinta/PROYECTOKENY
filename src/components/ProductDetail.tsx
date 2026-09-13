@@ -286,7 +286,7 @@ export default function ProductDetail({
           <h2>
             WEAR
             <br />
-            YOUR
+            <span>YOUR</span>
             <br />
             ATTITUDE.
           </h2>

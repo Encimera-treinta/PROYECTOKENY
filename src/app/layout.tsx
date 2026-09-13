@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Archivo, Inter } from "next/font/google";
+import { Anton, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import "@/styles/carrito.css";
 
 import Navbar from "@/components/Navbar";
 import { CartProvider } from "@/components/CartProvider";
 
-const archivo = Archivo({
+const anton = Anton({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800", "900"],
+  weight: "400",
   variable: "--font-display",
   display: "swap",
 });
 
-const inter = Inter({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-text",
   display: "swap",
 });
@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${archivo.variable} ${inter.variable}`}>
+    <html lang="es" className={`${anton.variable} ${spaceGrotesk.variable}`}>
       <head>
         <link
           rel="preload"
