@@ -37,8 +37,8 @@ export default function CatalogPage({
 
   const currentCategory = label.toLowerCase();
 
-  /* Animaciones de revista: títulos que se expanden,
-     tarjetas con reveal escalonado, marquesina continua. */
+  /* Animaciones atleticas: barras de salida, dorsales,
+     velocidad. */
   useEffect(() => {
     let ctx: { revert: () => void } | undefined;
 
@@ -50,77 +50,58 @@ export default function CatalogPage({
           return;
         }
 
-        /* Título gigante: entra con escala y tracking */
+        /* Título: entra en diagonal atleta */
         gsap.fromTo(
-          ".rv-hero-title",
-          { scale: 1.18, opacity: 0, filter: "blur(14px)" },
+          ".pm-hero-title",
+          { x: -140, opacity: 0, skewX: -8 },
           {
-            scale: 1,
+            x: 0,
             opacity: 1,
-            filter: "blur(0px)",
-            duration: 1.2,
-            ease: "expo.out",
-          }
-        );
-
-        gsap.fromTo(
-          ".rv-hero-meta, .rv-nav",
-          { y: 30, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: "power3.out",
-            delay: 0.35,
-          }
-        );
-
-        gsap.fromTo(
-          ".rv-card",
-          { y: 90, opacity: 0, rotate: -1.5 },
-          {
-            y: 0,
-            opacity: 1,
-            rotate: 0,
-            duration: 1,
-            stagger: 0.09,
+            skewX: 0,
+            duration: 0.9,
             ease: "power4.out",
-            delay: 0.5,
           }
         );
 
-        /* Tarjetas responden al movimiento del mouse (tilt sutil) */
-        const cards = document.querySelectorAll<HTMLElement>(".rv-card");
+        gsap.fromTo(
+          ".pm-hero-tag, .pm-nav",
+          { x: -60, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.7,
+            stagger: 0.09,
+            ease: "power3.out",
+            delay: 0.25,
+          }
+        );
 
-        cards.forEach((card) => {
-          const media = card.querySelector<HTMLElement>(".rv-media");
+        /* Tarjetas: salida de atletismo */
+        gsap.fromTo(
+          ".pm-card",
+          { x: 110, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.75,
+            stagger: 0.08,
+            ease: "power4.out",
+            delay: 0.4,
+          }
+        );
 
-          if (!media) return;
-
-          card.addEventListener("mousemove", (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-
-            gsap.to(media, {
-              rotateY: x * 7,
-              rotateX: -y * 7,
-              duration: 0.5,
-              ease: "power2.out",
-              transformPerspective: 900,
-            });
-          });
-
-          card.addEventListener("mouseleave", () => {
-            gsap.to(media, {
-              rotateX: 0,
-              rotateY: 0,
-              duration: 0.7,
-              ease: "power3.out",
-            });
-          });
-        });
+        /* Barra de velocidad inferior del hero */
+        gsap.fromTo(
+          ".pm-speed-bar i",
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            duration: 1.1,
+            ease: "expo.out",
+            delay: 0.55,
+            transformOrigin: "left center",
+          }
+        );
       });
     })();
 
@@ -128,55 +109,41 @@ export default function CatalogPage({
   }, [label]);
 
   return (
-    <main className="rv-catalog">
+    <main className="pm-catalog">
       {/* =====================================
-          MARQUESINA SUPERIOR
+          HERO ATHLETIC
       ===================================== */}
-      <div className="rv-marquee" aria-hidden="true">
-        <div className="rv-marquee-track">
-          {[...Array(2)].map((_, i) => (
-            <span key={i} className="rv-marquee-seq">
-              <span>SPORTCRZ</span>
-              <span className="rv-dot" />
-              <span>{label.toUpperCase()}</span>
-              <span className="rv-dot" />
-              <span>{String(totalProducts).padStart(2, "0")} PIEZAS</span>
-              <span className="rv-dot" />
-              <span>ENVÍOS EN PANAMÁ</span>
-              <span className="rv-dot" />
-              <span>TARJETA & YAPPY</span>
-              <span className="rv-dot" />
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* =====================================
-          HERO
-      ===================================== */}
-      <header className="rv-hero">
-        <div className="rv-hero-meta">
-          <span>COLECCIÓN / 2026</span>
-          <span>REVISTA Nº {String(totalProducts).padStart(2, "0")}</span>
+      <header className="pm-hero">
+        <div className="pm-hero-meta">
+          <span>FOREVER FASTER</span>
+          <span>COLECCIÓN 2026</span>
+          <span>{String(totalProducts).padStart(2, "0")} PIEZAS</span>
         </div>
 
-        <h1 className="rv-hero-title">{label}</h1>
+        <h1 className="pm-hero-title">
+          <span className="pm-title-main">{label}</span>
+          <span className="pm-title-ghost" aria-hidden="true">
+            {label}
+          </span>
+        </h1>
 
-        <nav className="rv-nav" aria-label="Categorías">
+        <div className="pm-speed-bar" aria-hidden="true">
+          <i />
+        </div>
+
+        <nav className="pm-nav" aria-label="Categorías">
           <Link
             href="/mujeres"
             className={currentCategory === "mujeres" ? "active" : ""}
           >
             MUJERES
           </Link>
-          <span className="rv-nav-sep">/</span>
           <Link
             href="/hombres"
             className={currentCategory === "hombres" ? "active" : ""}
           >
             HOMBRES
           </Link>
-          <span className="rv-nav-sep">/</span>
           <Link
             href="/ninos"
             className={
@@ -187,7 +154,6 @@ export default function CatalogPage({
           >
             NIÑOS
           </Link>
-          <span className="rv-nav-sep">/</span>
           <Link
             href="/rebajas"
             className={currentCategory === "rebajas" ? "active" : ""}
@@ -200,49 +166,47 @@ export default function CatalogPage({
       {/* =====================================
           PRODUCTOS
       ===================================== */}
-      <div className="rv-content">
+      <div className="pm-content">
         {sections.map((section, sectionIndex) => (
-          <section className="rv-section" id={section.id} key={section.id}>
-            <div className="rv-section-head">
-              <span className="rv-section-num">
+          <section className="pm-section" id={section.id} key={section.id}>
+            <div className="pm-section-head">
+              <span className="pm-dorsal">
                 {String(sectionIndex + 1).padStart(2, "0")}
               </span>
-              <h2 className="rv-section-title">{section.title}</h2>
-              <span className="rv-section-count">
+              <h2 className="pm-section-title">{section.title}</h2>
+              <span className="pm-section-count">
                 {String(section.products.length).padStart(2, "0")} ITEMS
               </span>
             </div>
 
-            <div className="rv-grid">
+            <div className="pm-grid">
               {section.products.map((product, index) => {
-                /* Patrón editorial: cada 5ª tarjeta cruza el ancho */
-                const feature = index % 5 === 2;
+                /* Dorsal grande de atleta */
+                const dorsal = String(index + 1).padStart(2, "0");
 
                 return (
                   <article
-                    className={`rv-card${feature ? " feature" : ""}`}
+                    className="pm-card"
                     key={`${product.name}-${index}`}
                   >
-                    <div className="rv-media">
+                    <div className="pm-media">
                       <Link
                         href={`/producto/${product.id}`}
-                        className="rv-media-link"
+                        className="pm-media-link"
                         aria-label={`Ver ${product.name}`}
                       >
                         <img src={product.image} alt={product.name} />
                       </Link>
 
-                      <span className="rv-index">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+                      <span className="pm-number">{dorsal}</span>
 
                       {sale && product.badge && (
-                        <span className="rv-badge">{product.badge}</span>
+                        <span className="pm-badge">{product.badge}</span>
                       )}
 
                       <button
                         type="button"
-                        className="rv-add"
+                        className="pm-add"
                         onClick={() => {
                           cart.add({
                             id: product.id,
@@ -255,30 +219,33 @@ export default function CatalogPage({
                         }}
                         aria-label={`Agregar ${product.name} al carrito`}
                       >
-                        + CARRITO
+                        AÑADIR
                       </button>
                     </div>
 
-                    <div className="rv-info">
-                      <Link
-                        href={`/producto/${product.id}`}
-                        className="rv-name"
-                      >
-                        {product.name}
-                      </Link>
+                    <div className="pm-info">
+                      <div>
+                        <Link
+                          href={`/producto/${product.id}`}
+                          className="pm-name"
+                        >
+                          {product.name}
+                        </Link>
+                        <span className="pm-cat">SPORTCRZ {label}</span>
+                      </div>
 
-                      <div className="rv-price">
+                      <div className="pm-price">
                         {sale && product.oldPrice ? (
                           <>
-                            <span className="rv-price-old">
-                              {product.oldPrice.toFixed(2)}
+                            <span className="pm-price-old">
+                              ${product.oldPrice.toFixed(2)}
                             </span>
-                            <span className="rv-price-now">
+                            <span className="pm-price-now">
                               ${product.price.toFixed(2)}
                             </span>
                           </>
                         ) : (
-                          <span className="rv-price-now">
+                          <span className="pm-price-now">
                             ${product.price.toFixed(2)}
                           </span>
                         )}
@@ -295,32 +262,16 @@ export default function CatalogPage({
       {/* =====================================
           CIERRE
       ===================================== */}
-      <section className="rv-close">
-        <div className="rv-close-circle" aria-hidden="true">
-          <svg viewBox="0 0 200 200">
-            <defs>
-              <path
-                id="rvCircle"
-                d="M 100,100 m -78,0 a 78,78 0 1,1 156,0 a 78,78 0 1,1 -156,0"
-              />
-            </defs>
-            <text>
-              <textPath href="#rvCircle">
-                SPORTCRZ — NO ES SUERTE — ES ENTRENAMIENTO —
-              </textPath>
-            </text>
-          </svg>
-        </div>
-
-        <h2 className="rv-close-title">
-          HECHO
+      <section className="pm-close">
+        <p className="pm-close-kicker">SPORTCRZ / MOVEMENT</p>
+        <h2 className="pm-close-title">
+          SIEMPRE
           <br />
-          PARA
+          MÁS
           <br />
-          GANAR.
+          RÁPIDO.
         </h2>
-
-        <Link href="/" className="rv-close-link">
+        <Link href="/" className="pm-close-link">
           VOLVER AL INICIO
         </Link>
       </section>
@@ -330,12 +281,12 @@ export default function CatalogPage({
       ===================================== */}
       <button
         type="button"
-        className="rv-float"
+        className="pm-float"
         onClick={() => cart.setOpen(true)}
         aria-label={`Abrir carrito con ${cart.count} productos`}
       >
-        <span className="rv-float-label">CART</span>
-        <span className="rv-float-count">
+        <span className="pm-float-label">CARRITO</span>
+        <span className="pm-float-count">
           {String(cart.count).padStart(2, "0")}
         </span>
       </button>

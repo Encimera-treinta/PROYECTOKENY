@@ -4,10 +4,10 @@
 ========================================= */
 
 .pd-page {
-  --pd-ink: #0e0e0c;
-  --pd-paper: #faf9f4;
-  --pd-mute: #868478;
-  --pd-accent: #d4ff00;
+  --pd-ink: #0b0b0b;
+  --pd-paper: #ffffff;
+  --pd-mute: #a3a3a3;
+  --pd-accent: #ff2d2d;
   --pd-pad: 5vw;
   min-height: 100vh;
   background: var(--pd-ink);
@@ -145,7 +145,7 @@
 .pd-save {
   padding: 7px 12px;
   background: var(--pd-accent);
-  color: var(--pd-ink);
+  color: #ffffff;
   font-size: 0.6rem;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -274,6 +274,11 @@
 
 .pd-add:hover:not(:disabled) {
   background: var(--pd-accent);
+  color: #ffffff;
+}
+
+.pd-add:hover:not(:disabled) .pd-add-dot {
+  background: #ffffff;
 }
 
 .pd-add:active:not(:disabled) {
@@ -507,7 +512,9 @@
 /* Tipografía display en títulos */
 .pd-title,
 .pd-close h2 {
-  font-family: var(--font-display), var(--font-text), sans-serif;
+  font-family: var(--font-display), sans-serif;
+  font-style: italic;
+  font-weight: 900;
 }
 
 /* Números outline estilo revista en el cierre */

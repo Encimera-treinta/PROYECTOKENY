@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Anton, Space_Grotesk } from "next/font/google";
+import { Barlow_Condensed, Barlow } from "next/font/google";
 import "./globals.css";
 import "@/styles/carrito.css";
 
 import Navbar from "@/components/Navbar";
 import { CartProvider } from "@/components/CartProvider";
 
-const anton = Anton({
+const barlowCond = Barlow_Condensed({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const barlow = Barlow({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-text",
   display: "swap",
 });
@@ -40,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${anton.variable} ${spaceGrotesk.variable}`}>
+    <html lang="es" className={`${barlowCond.variable} ${barlow.variable}`}>
       <head>
         <link
           rel="preload"
