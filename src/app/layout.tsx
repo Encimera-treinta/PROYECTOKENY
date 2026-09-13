@@ -8,6 +8,7 @@ import "@/styles/ios-theme.css";
 import Navbar from "@/components/Navbar";
 import { CartProvider } from "@/components/CartProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const barlowCond = Barlow_Condensed({
   subsets: ["latin"],
@@ -59,6 +60,7 @@ export default function RootLayout({
           <CartProvider>
             <Navbar />
             {children}
+            <ThemeToggle className="theme-toggle-float" />
           </CartProvider>
         </ThemeProvider>
       </body>

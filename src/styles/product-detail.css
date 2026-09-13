@@ -4,16 +4,16 @@
 ========================================= */
 
 .pd-page {
-  --pd-ink: var(--sys-label);
-  --pd-paper: var(--sys-label);
-  --pd-mute: var(--sys-label-2);
-  --pd-accent: var(--sys-accent);
-  --pd-page-bg: var(--sys-bg);
-  --pd-panel-bg: var(--sys-bg-elevated);
-  --pd-sep: var(--sys-sep);
-  --pd-card: var(--sys-card);
-  --pd-fill: var(--sys-fill);
-  --pd-tint: var(--sys-tint);
+  --pd-ink: var(--sp-label);
+  --pd-paper: var(--sp-label);
+  --pd-mute: var(--sp-label-2);
+  --pd-accent: var(--sp-accent);
+  --pd-page-bg: var(--sp-bg);
+  --pd-panel-bg: var(--sp-surface-2);
+  --pd-sep: var(--sp-sep);
+  --pd-card: var(--sp-surface);
+  --pd-fill: var(--sp-fill);
+  --pd-tint: var(--sp-accent);
   --pd-pad: 5vw;
   min-height: 100vh;
   background: var(--pd-page-bg);
@@ -224,7 +224,7 @@
 
 .pd-size.active {
   background: var(--pd-ink);
-  color: var(--sys-bg);
+  color: var(--sp-bg);
   border-color: var(--pd-ink);
 }
 
@@ -256,12 +256,12 @@
   gap: 12px;
   width: 100%;
   min-height: 68px;
-  background: var(--sys-tint);
-  color: #ffffff;
+  background: var(--sp-label);
+  color: var(--sp-bg);
   border: none;
-  border-radius: 18px;
+  border-radius: 16px;
 
-  box-shadow: 0 10px 30px rgba(10, 132, 255, 0.35);
+  box-shadow: 0 10px 28px var(--sp-glass-shadow);
 
   font-family: inherit;
   font-size: 0.74rem;

@@ -79,7 +79,7 @@
 
   /* Liquid Glass claro */
   background:
-    var(--sys-bg-elevated);
+    var(--sp-surface);
 
   backdrop-filter:
     blur(34px)
@@ -88,7 +88,7 @@
     blur(34px)
     saturate(180%);
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   border-left: 1px solid rgba(255, 255, 255, 0.5);
 
@@ -195,7 +195,7 @@
 .cart-header h2 {
   margin: 0;
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   font-size: 2rem;
 
@@ -221,7 +221,7 @@
 
   background: transparent;
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   border:
     1px solid
@@ -253,7 +253,7 @@
 }
 
 .close-cart:hover {
-  background: var(--sys-label);
+  background: var(--sp-label);
 
   color: #ffffff;
 }
@@ -465,7 +465,7 @@
 .cart-item-info h4 {
   margin: 0;
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   font-size: 0.82rem;
 
@@ -510,7 +510,7 @@
 }
 
 .remove-btn:hover {
-  color: var(--sys-label);
+  color: var(--sp-label);
 }
 
 
@@ -565,7 +565,7 @@
 
   background: transparent;
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   border: 0;
 
@@ -582,7 +582,7 @@
 }
 
 .cart-quantity button:hover {
-  background: var(--sys-label);
+  background: var(--sp-label);
 
   color: #ffffff;
 }
@@ -597,7 +597,7 @@
 
   text-align: center;
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   font-size: 0.55rem;
 
@@ -633,7 +633,7 @@
 }
 
 .cart-item-prices strong {
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   font-size: 0.86rem;
 
@@ -683,7 +683,7 @@
     0
     30px;
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   font-size:
     clamp(
@@ -728,13 +728,13 @@
 
   background: transparent;
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   border: 0;
 
   border-bottom:
     1px solid
-    var(--sys-label);
+    var(--sp-label);
 
   cursor: pointer;
 
@@ -767,7 +767,7 @@
 
   flex-shrink: 0;
 
-  background: var(--sys-label);
+  background: var(--sp-label);
 
   color: #ffffff;
 
@@ -867,7 +867,7 @@
 
   background: #ffffff;
 
-  color: var(--sys-label);
+  color: var(--sp-label);
 
   border: 0;
 
@@ -1306,13 +1306,13 @@
   .close-cart:hover {
     background: transparent;
 
-    color: var(--sys-label);
+    color: var(--sp-label);
   }
 
   .cart-quantity button:hover {
     background: transparent;
 
-    color: var(--sys-label);
+    color: var(--sp-label);
   }
 
   .checkout-btn:hover {

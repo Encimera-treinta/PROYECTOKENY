@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
      del monorepo de escritorio; en Vercel no afecta. */
   outputFileTracingRoot: __dirname,
   serverExternalPackages: ["sharp"],
+  experimental: {
+    /* Transiciones de vista nativas entre rutas —
+       navegación sin pantallas de carga. */
+    viewTransition: true,
+  },
 };
 
 export default nextConfig;

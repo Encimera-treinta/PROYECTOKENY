@@ -1,377 +1,392 @@
 /* ==========================================
-   CATÁLOGO — APPLE 26 (iOS 26 Liquid Glass)
-   Large title, grouped cards, tab bar flotante.
-   Todo con variables de tema light/dark.
+   CATÁLOGO — SPORTSWEAR EDITORIAL
+   Monocromo, tipografía condensada grande,
+   glass minimal, transiciones rápidas.
 ========================================= */
 
-.ap-page {
+.sw-page {
   width: 100%;
   min-width: 0;
   overflow-x: hidden;
-  background: var(--sys-bg);
-  color: var(--sys-label);
+  background: var(--sp-bg);
+  color: var(--sp-label);
   padding-top: calc(84px + env(safe-area-inset-top));
-  padding-bottom: 120px;
-  transition: background 0.4s ease, color 0.4s ease;
+  transition: background 0.35s ease, color 0.35s ease;
 }
 
-.ap-page *,
-.ap-page *::before,
-.ap-page *::after {
+.sw-page *,
+.sw-page *::before,
+.sw-page *::after {
   box-sizing: border-box;
 }
 
-.ap-page a {
+.sw-page a {
   color: inherit;
 }
 
 /* =====================
-   HEADER / LARGE TITLE
+   HEADER
 ===================== */
 
-.ap-header {
-  padding: clamp(30px, 5vh, 60px) 5vw clamp(20px, 3.5vh, 40px);
+.sw-head {
+  padding: clamp(28px, 5vh, 64px) 5vw clamp(18px, 3vh, 36px);
 }
 
-.ap-meta {
+.sw-head-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  color: var(--sys-label-2);
-  font-size: 0.6rem;
+  color: var(--sp-label-2);
+  font-size: 0.58rem;
   font-weight: 600;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.32em;
 }
 
-.ap-large-title {
-  margin: clamp(10px, 2vh, 22px) 0 clamp(18px, 3vh, 34px);
+/* Título con máscara — reveal vertical */
+.sw-title {
+  margin: clamp(14px, 2.5vh, 30px) 0;
+}
+
+.sw-title-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+.sw-title-line {
+  display: block;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-size: clamp(3.6rem, 11vw, 10rem);
   font-weight: 800;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
+  will-change: transform;
+}
+
+/* Nav por texto */
+.sw-cats {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 3.4vw, 44px);
+  flex-wrap: wrap;
+  margin-top: clamp(14px, 2.5vh, 28px);
+}
+
+.sw-cats a {
+  position: relative;
+  padding: 5px 0;
+  color: var(--sp-label-2);
+  text-decoration: none;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sw-cats a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--sp-label);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sw-cats a:hover,
+.sw-cats a.active {
+  color: var(--sp-label);
+}
+
+.sw-cats a:hover::after,
+.sw-cats a.active::after {
+  transform: scaleX(1);
 }
 
 /* =====================
    SECCIONES
 ===================== */
 
-.ap-section {
-  padding: clamp(20px, 3.5vh, 40px) 5vw 0;
+.sw-section {
+  padding: clamp(22px, 4vh, 44px) 5vw 0;
 }
 
-.ap-section-head {
+.sw-section-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: clamp(16px, 3vh, 30px);
+  margin-bottom: clamp(14px, 2.5vh, 26px);
 }
 
-.ap-section-head h2 {
+.sw-section-head h2 {
   margin: 0;
-  font-size: 1.35rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.3rem, 2.2vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-.ap-section-head span {
-  color: var(--sys-label-2);
-  font-size: 0.58rem;
+.sw-section-head span {
+  color: var(--sp-label-2);
+  font-size: 0.56rem;
   font-weight: 700;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.3em;
 }
 
 /* =====================
    GRID
 ===================== */
 
-.ap-grid {
+.sw-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: clamp(16px, 2.4vw, 28px);
-}
-
-.ap-card {
-  border-radius: 24px;
-  overflow: hidden;
-  transition:
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s ease;
-}
-
-.ap-card:hover {
-  transform: translateY(-5px);
-  box-shadow:
-    inset 0 1px 0 0 var(--sys-glass-inner),
-    0 18px 44px var(--sys-glass-shadow);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+  gap: clamp(14px, 2vw, 26px);
 }
 
 /* ---------- MEDIA ---------- */
 
-.ap-media {
+.sw-media {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
-  background: var(--sys-fill);
+  background: var(--sp-fill);
+  border-radius: 2px;
 }
 
-.ap-media-link {
+.sw-media-link {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-.ap-media img {
+.sw-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
 }
 
-.ap-card:hover .ap-media img {
-  transform: scale(1.04);
+.sw-card:hover .sw-media img {
+  transform: scale(1.045);
 }
 
-.ap-badge {
+.sw-badge {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 12px;
+  left: 12px;
   z-index: 2;
-  padding: 7px 12px;
-  background: var(--sys-accent);
-  color: #ffffff;
-  border-radius: 999px;
-  font-size: 0.56rem;
+  padding: 6px 10px;
+  background: var(--sp-accent);
+  color: var(--sp-accent-text);
+  font-size: 0.52rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
+  border-radius: 2px;
+}
+
+.sw-add {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 12px;
+  border: none;
+  background: var(--sp-glass-bg);
+  color: var(--sp-label);
+
+  backdrop-filter:
+    blur(16px)
+    saturate(170%);
+  -webkit-backdrop-filter:
+    blur(16px)
+    saturate(170%);
+
+  box-shadow: inset 0 1px 0 0 var(--sp-glass-inner);
+
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  cursor: pointer;
+  transform: translateY(102%);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sw-card:hover .sw-add,
+.sw-add:focus-visible {
+  transform: translateY(0);
+}
+
+.sw-add:hover {
+  background: var(--sp-accent);
+  color: var(--sp-accent-text);
+  box-shadow: none;
 }
 
 /* ---------- INFO ---------- */
 
-.ap-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px 16px 18px;
-}
-
-.ap-name {
-  color: var(--sys-label);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  line-height: 1.35;
-}
-
-.ap-name:hover {
-  color: var(--sys-tint);
-}
-
-.ap-price {
+.sw-info {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 1px 4px;
 }
 
-.ap-price-old {
-  color: var(--sys-label-2);
-  font-size: 0.75rem;
+.sw-name {
+  color: var(--sp-label);
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  min-width: 0;
+}
+
+.sw-name:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.sw-price {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.sw-price-old {
+  color: var(--sp-label-2);
+  font-size: 0.66rem;
   font-weight: 500;
   text-decoration: line-through;
 }
 
-.ap-price-now {
-  font-size: 1.05rem;
-  font-weight: 800;
+.sw-price-now {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
-}
-
-.ap-add {
-  margin-top: 4px;
-  padding: 12px 14px;
-  border: none;
-  border-radius: 12px;
-  background: var(--sys-tint);
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    filter 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.ap-add:hover {
-  filter: brightness(1.1);
-}
-
-.ap-add:active {
-  transform: scale(0.96);
 }
 
 /* =====================
    CIERRE
 ===================== */
 
-.ap-close {
-  width: min(1240px, 90%);
-  margin: clamp(50px, 9vh, 100px) auto 0;
-  padding: clamp(40px, 8vh, 80px) clamp(24px, 5vw, 60px);
-  border-radius: 32px;
+.sw-close {
+  padding: clamp(56px, 10vh, 110px) 5vw;
+}
+
+.sw-close-inner {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: clamp(18px, 3.5vh, 34px);
+  max-width: 1240px;
+  margin: 0 auto;
 }
 
-.ap-close p {
+.sw-close p {
   margin: 0;
-  color: var(--sys-label-2);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.3em;
+  color: var(--sp-label-2);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.34em;
 }
 
-.ap-close h2 {
+.sw-close h2 {
   margin: 0;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(2.4rem, 6vw, 5rem);
+  font-size: clamp(2.8rem, 8vw, 7.4rem);
   font-weight: 800;
-  line-height: 0.95;
+  line-height: 0.92;
   letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
-.ap-close-link {
-  align-self: flex-start;
+.sw-close-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
   margin-top: 8px;
-  padding: 13px 24px;
-  border-radius: 999px;
-  background: var(--sys-label);
-  color: var(--sys-bg);
+}
+
+.sw-close-link {
+  padding: 13px 22px;
+  background: var(--sp-accent);
+  color: var(--sp-accent-text);
   text-decoration: none;
+  font-family: var(--font-display), sans-serif;
   font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  transition: transform 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.ap-close-link:hover {
-  transform: scale(1.04);
-}
-
-/* =====================
-   TAB BAR FLOTANTE iOS 26
-   Visible en móvil como tab bar;
-   en desktop se reduce a pastilla.
-===================== */
-
-.ap-tabbar {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(18px + env(safe-area-inset-bottom));
-  z-index: 90;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 10px;
-  border-radius: 26px;
-}
-
-.ap-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 18px;
-  background: transparent;
-  color: var(--sys-label-2);
-  font-family: inherit;
-  font-size: 0.48rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease;
+  letter-spacing: 0.24em;
+  border-radius: 2px;
+  transition: opacity 0.2s ease;
   -webkit-tap-highlight-color: transparent;
-  position: relative;
 }
 
-.ap-tab svg {
-  width: 21px;
-  height: 21px;
+.sw-close-link:hover {
+  opacity: 0.82;
 }
 
-.ap-tab:hover {
-  color: var(--sys-label);
-  background: var(--sys-fill);
+.sw-cart-btn {
+  padding: 13px 22px;
+  background: transparent;
+  color: var(--sp-label);
+  border: 1px solid var(--sp-sep);
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s ease, color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.ap-tab-cart {
-  color: var(--sys-tint);
-}
-
-.ap-tab-badge {
-  position: absolute;
-  top: 2px;
-  right: 6px;
-  padding: 2px 5px;
-  border-radius: 999px;
-  background: var(--sys-accent);
-  color: #ffffff;
-  font-size: 0.44rem;
-  font-weight: 800;
+.sw-cart-btn:hover {
+  background: var(--sp-fill-2);
 }
 
 /* =====================
    RESPONSIVE
 ===================== */
 
-@media (min-width: 761px) {
-  /* Desktop: la tab bar es compacta */
-  .ap-tab span {
-    display: none;
-  }
-
-  .ap-tab {
-    padding: 12px 16px;
-  }
-
-  .ap-tab svg {
-    width: 22px;
-    height: 22px;
-  }
-}
-
-@media (max-width: 760px) {
-  .ap-grid {
+@media (max-width: 640px) {
+  .sw-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
   }
 
-  .ap-card {
-    border-radius: 20px;
+  .sw-add {
+    transform: translateY(0);
+    padding: 10px;
+    font-size: 0.52rem;
+    letter-spacing: 0.16em;
   }
 
-  .ap-info {
-    padding: 12px 12px 14px;
+  .sw-title-line {
+    font-size: clamp(3rem, 15vw, 4.6rem);
   }
 
-  .ap-name {
-    font-size: 0.78rem;
-  }
-
-  .ap-tab {
-    padding: 7px 12px;
+  .sw-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding-top: 9px;
   }
 }
