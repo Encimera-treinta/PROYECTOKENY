@@ -46,15 +46,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${barlowCond.variable} ${barlow.variable}`}>
-      <head>
-        <link
-          rel="preload"
-          as="video"
-          href="/img/Video_Fondo.mp4"
-          type="video/mp4"
-          fetchPriority="high"
-        />
-      </head>
       <body>
         <ThemeProvider>
           <CartProvider>
