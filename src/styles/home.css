@@ -64,6 +64,32 @@
   filter: brightness(0.58);
 }
 
+/* Ocultar los controles nativos de iOS/Safari para que el
+   hero no parezca un reproductor de video. */
+.home-hero-video::-webkit-media-controls {
+  display: none !important;
+
+  -webkit-appearance: none;
+}
+
+.home-hero-video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  -webkit-appearance: none;
+}
+
+.home-hero-video::-webkit-media-controls-play-button,
+.home-hero-video::-webkit-media-controls-panel,
+.home-hero-video::-webkit-media-controls-fullscreen-button,
+.home-hero-video::-webkit-media-controls-timeline,
+.home-hero-video::-webkit-media-controls-volume-slider {
+  display: none !important;
+}
+
 .home-hero-overlay {
   position: absolute;
 

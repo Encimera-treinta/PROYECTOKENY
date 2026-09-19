@@ -1,5 +1,6 @@
 import Link from "next/link";
 import HomeAnimations from "@/components/HomeAnimations";
+import HeroVideoAutoplay from "@/components/HeroVideoAutoplay";
 import "@/styles/home.css";
 
 export default function HomePage() {
@@ -51,6 +52,8 @@ export default function HomePage() {
               type="video/mp4"
             />
           </video>
+
+          <HeroVideoAutoplay />
 
         <div className="home-hero-overlay" />
 
