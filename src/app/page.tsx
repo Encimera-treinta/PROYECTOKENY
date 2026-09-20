@@ -6,23 +6,13 @@ import "@/styles/home.css";
 export default function HomePage() {
   return (
     <>
-      {/* Preload solo en la home: versión ligera para móvil,
-          pesada para desktop. (El layout global ya no precarga
-          el video en todas las rutas.) */}
-      <link
-        rel="preload"
-        as="video"
-        href="/img/Video_Fondo_mobile.mp4"
-        type="video/mp4"
-        media="(max-width: 767px)"
-        fetchPriority="high"
-      />
+      {/* Preload de la fuente maestra para conservar la calidad en todos los
+          navegadores y tamaños. El navegador seguirá adaptando el render. */}
       <link
         rel="preload"
         as="video"
         href="/img/Video_Fondo.mp4"
         type="video/mp4"
-        media="(min-width: 768px)"
         fetchPriority="high"
       />
 
@@ -42,11 +32,6 @@ export default function HomePage() {
             poster="/img/Video_Fondo_poster.jpg"
             aria-hidden="true"
           >
-            <source
-              src="/img/Video_Fondo_mobile.mp4"
-              type="video/mp4"
-              media="(max-width: 767px)"
-            />
             <source
               src="/img/Video_Fondo.mp4"
               type="video/mp4"
