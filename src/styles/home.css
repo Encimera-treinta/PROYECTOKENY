@@ -71,6 +71,20 @@
   opacity: 1;
 }
 
+/* En iOS Safari el reproductor nativo puede aparecer mientras un video
+   visible está esperando permiso de autoplay. En móvil mantenemos el video
+   fuera de la capa visual hasta que play() confirme que ya comenzó; el póster
+   del hero sigue visible y el primer toque lo inicia sin superposición nativa. */
+@media (max-width: 767px) {
+  .home-hero-video {
+    visibility: hidden;
+  }
+
+  .home-hero-video[data-video-state="playing"] {
+    visibility: visible;
+  }
+}
+
 .hero-video-toggle {
   position: absolute;
   z-index: 3;
