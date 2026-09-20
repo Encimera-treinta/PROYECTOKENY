@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Fuerza el autoplay del video del hero en iOS/Safari,
@@ -10,6 +10,8 @@ import { useEffect } from "react";
  * usuario — imperceptible, sin que se vea como reproductor.
  */
 export default function HeroVideoAutoplay() {
+  const [isPlaying, setIsPlaying] = useState(false);
+
   useEffect(() => {
     const video = document.querySelector<HTMLVideoElement>(
       ".home-hero-video"
@@ -19,10 +21,15 @@ export default function HeroVideoAutoplay() {
 
     let started = false;
 
+    const setVideoState = (state: "playing" | "waiting") => {
+      video.dataset.videoState = state;
+    };
+
     const cleanup = () => {
       window.removeEventListener("touchend", onGesture);
       window.removeEventListener("click", onGesture);
       document.removeEventListener("scroll", onGesture, true);
+      window.removeEventListener("pointerdown", onGesture);
     };
 
     const tryPlay = () => {
@@ -38,16 +45,19 @@ export default function HeroVideoAutoplay() {
         result
           .then(() => {
             started = true;
+            setVideoState("playing");
+            setIsPlaying(true);
             cleanup();
           })
           .catch(() => {
-            /* Bloqueado por el navegador: se reintenta con
-               el primer gesto del usuario. */
+            setVideoState("waiting");
           });
       }
     };
 
     const onGesture = () => tryPlay();
+
+    setVideoState("waiting");
 
     video.addEventListener("loadedmetadata", tryPlay);
     video.addEventListener("canplay", tryPlay);
@@ -55,6 +65,7 @@ export default function HeroVideoAutoplay() {
     window.addEventListener("touchend", onGesture);
     window.addEventListener("click", onGesture);
     document.addEventListener("scroll", onGesture, true);
+    window.addEventListener("pointerdown", onGesture, { passive: true });
 
     tryPlay();
 
@@ -65,5 +76,29 @@ export default function HeroVideoAutoplay() {
     };
   }, []);
 
-  return null;
+  const toggleVideo = () => {
+    const video = document.querySelector<HTMLVideoElement>(".home-hero-video");
+    if (!video) return;
+
+    if (video.paused) {
+      video.muted = true;
+      void video.play().then(() => setIsPlaying(true));
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      className={`hero-video-toggle${isPlaying ? " is-visible" : ""}`}
+      onClick={toggleVideo}
+      aria-label={isPlaying ? "Pausar video" : "Reproducir video"}
+      aria-hidden={!isPlaying}
+      tabIndex={isPlaying ? 0 : -1}
+    >
+      <span aria-hidden="true">Ⅱ</span>
+    </button>
+  );
 }
