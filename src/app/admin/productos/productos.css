@@ -59,6 +59,56 @@
   background: #ffffff;
 }
 
+/* Acabado del prototipo de referencia: superficie de trabajo compacta. */
+.admin-page .admin-products-table,
+.admin-page .admin-orders-table {
+  background: #191b1e;
+  border: 1px solid #2d3035;
+  border-radius: 15px;
+  padding: 0;
+  overflow: auto;
+}
+.admin-page .admin-products-table table,
+.admin-page .admin-orders-table table { border: 0; min-width: 880px; }
+.admin-page .admin-products-table th,
+.admin-page .admin-orders-table th { background: #202226; color: #b3b5bc; font-size: 11px; padding: 14px 20px; }
+.admin-page .admin-products-table td,
+.admin-page .admin-orders-table td { color: #e6e8eb; font-size: 13px; padding: 16px 20px; border-color: #2d3035; }
+.admin-page .admin-products-table tr:hover td,
+.admin-page .admin-orders-table tr:hover td { background: #202226; }
+.admin-page .admin-row-actions a,
+.admin-page .admin-row-actions button { min-height: 34px; border-radius: 8px; padding: 0 10px; }
+
+/* Editor flotante: mantiene el listado visible y evita recorrer toda la página. */
+.admin-page:has(.admin-form-card) { overflow: hidden; }
+.admin-page:has(.admin-form-card)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(9, 9, 9, .42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.admin-form-card {
+  position: fixed;
+  z-index: 31;
+  inset: 5vh 4vw;
+  width: auto;
+  max-width: 1080px;
+  max-height: 90vh;
+  margin: auto;
+  overflow: auto;
+  border: 0;
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.24);
+  animation: admin-modal-in .24s ease-out both;
+}
+@keyframes admin-modal-in {
+  from { opacity: 0; transform: translateY(18px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .admin-form-head {
   display: flex;
   align-items: center;
@@ -781,7 +831,11 @@
   }
 
   .admin-form-card {
+    inset: 12px 10px calc(78px + env(safe-area-inset-bottom));
+    width: auto;
+    max-height: none;
     padding: 18px;
+    border-radius: 20px;
   }
 
   .admin-form-row {
@@ -835,6 +889,82 @@
   .admin-product-form select {
     font-size: 0.85rem;
     min-height: 46px;
+  }
+}
+
+/* Vista móvil tipo tarjetas: evita tablas comprimidas y facilita tocar acciones. */
+@media (max-width: 700px) {
+  .admin-products-toolbar {
+    align-items: stretch;
+    margin-bottom: 20px;
+  }
+
+  .admin-new-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 54px;
+    font-size: .68rem;
+    border-radius: 14px;
+  }
+
+  .admin-flash-box,
+  .admin-flash {
+    width: 100%;
+    line-height: 1.5;
+  }
+
+  .admin-form-card {
+    border: 0;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.07);
+  }
+
+  .admin-form-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .admin-form-head-actions {
+    width: 100%;
+    display: flex;
+    gap: 18px;
+  }
+
+  .admin-product-card,
+  .admin-order-card {
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+
+  .admin-product-card-actions,
+  .admin-order-card-actions {
+    gap: 10px;
+  }
+
+  .admin-product-card-actions a,
+  .admin-product-card-actions button,
+  .admin-order-card-actions button {
+    min-height: 48px;
+    border-radius: 12px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .admin-order-card-actions form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .admin-order-card-actions select {
+    min-height: 48px;
+    border-radius: 12px;
+    padding: 0 12px;
+    font-size: 16px;
   }
 }
 

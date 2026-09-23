@@ -4,6 +4,7 @@ import { listOrders, type Order } from "@/lib/database";
 import { updateOrderStatusAction } from "./actions";
 import "../login/admin.css";
 import "../productos/productos.css";
+import AdminNav from "@/components/AdminNav";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "PENDIENTE",
@@ -24,6 +25,7 @@ export default async function AdminPedidosPage({
 
   return (
     <main className="admin-page">
+      <AdminNav active="pedidos" />
       <header className="admin-topbar">
         <div>
           <span>SPORTCRZ / CONTROL</span>

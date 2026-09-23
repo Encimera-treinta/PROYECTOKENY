@@ -163,7 +163,14 @@ export function ensureSchema(): Promise<void> {
 
       if (legacyAdminEmail && legacyAdminPasswordHash) {
         await database.execute({
-          sql: "INSERT OR IGNORE INTO users (email, password_hash, role) VALUES (?, ?, 'admin')",
+          sql: `
+            INSERT INTO users (email, password_hash, role, active)
+            VALUES (?, ?, 'admin', 1)
+            ON CONFLICT(email) DO UPDATE SET
+              password_hash = excluded.password_hash,
+              role = 'admin',
+              active = 1
+          `,
           args: [legacyAdminEmail, legacyAdminPasswordHash],
         });
       }

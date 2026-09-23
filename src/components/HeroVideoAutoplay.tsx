@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 /**
  * Fuerza el autoplay del video del hero en iOS/Safari,
@@ -10,8 +10,6 @@ import { useEffect, useState } from "react";
  * usuario — imperceptible, sin que se vea como reproductor.
  */
 export default function HeroVideoAutoplay() {
-  const [isPlaying, setIsPlaying] = useState(false);
-
   useEffect(() => {
     const video = document.querySelector<HTMLVideoElement>(
       ".home-hero-video"
@@ -46,7 +44,6 @@ export default function HeroVideoAutoplay() {
           .then(() => {
             started = true;
             setVideoState("playing");
-            setIsPlaying(true);
             cleanup();
           })
           .catch(() => {
@@ -76,29 +73,6 @@ export default function HeroVideoAutoplay() {
     };
   }, []);
 
-  const toggleVideo = () => {
-    const video = document.querySelector<HTMLVideoElement>(".home-hero-video");
-    if (!video) return;
-
-    if (video.paused) {
-      video.muted = true;
-      void video.play().then(() => setIsPlaying(true));
-    } else {
-      video.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  return (
-    <button
-      type="button"
-      className={`hero-video-toggle${isPlaying ? " is-visible" : ""}`}
-      onClick={toggleVideo}
-      aria-label={isPlaying ? "Pausar video" : "Reproducir video"}
-      aria-hidden={!isPlaying}
-      tabIndex={isPlaying ? 0 : -1}
-    >
-      <span aria-hidden="true">Ⅱ</span>
-    </button>
-  );
+  // El hero no es un reproductor: no renderizamos ningún botón ni control.
+  return null;
 }

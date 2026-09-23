@@ -9,6 +9,7 @@ import {
 } from "./actions";
 import "../login/admin.css";
 import "./productos.css";
+import AdminNav from "@/components/AdminNav";
 
 const CATEGORY_LABELS: Record<string, string> = {
   mujeres: "MUJERES",
@@ -68,6 +69,7 @@ export default async function AdminProductosPage({
 
   return (
     <main className="admin-page">
+      <AdminNav active="productos" />
       <header className="admin-topbar">
         <div>
           <span>SPORTCRZ / CONTROL</span>
