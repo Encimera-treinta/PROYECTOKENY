@@ -3,6 +3,7 @@
 import { useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ImagePicker from "@/components/ImagePicker";
 import { Icon } from "./Icon";
 import type {
   OverviewData,
@@ -40,6 +41,8 @@ type ProductForm = {
   sort_order: string;
   active: string;
   description: string;
+  /* Data URL de la foto optimizada en el navegador (opcional). */
+  image_file_data: string;
 };
 
 /* ============================================
@@ -693,6 +696,7 @@ export function ProductEditor({
         sort_order: String(draft.sort_order ?? 0),
         active: String(draft.active ?? 1),
         description: draft.description ?? "",
+        image_file_data: draft.image_file_data ?? "",
       };
     }
     return {
@@ -706,6 +710,7 @@ export function ProductEditor({
       sort_order: "0",
       active: "1",
       description: "",
+      image_file_data: "",
     };
   });
 
@@ -731,6 +736,7 @@ export function ProductEditor({
       sort_order: Number.isFinite(sortOrder) ? sortOrder : 0,
       active: form.active === "1" ? 1 : 0,
       description: form.description.trim() || null,
+      image_file_data: form.image_file_data || null,
     };
   }
 
@@ -742,6 +748,13 @@ export function ProductEditor({
           CANCELAR
         </button>
       </div>
+
+      {/* Subida de foto real: comprime en el navegador y la server
+          action la procesa con sharp -> /uploads/... */}
+      <ImagePicker
+        defaultImage={draft?.image}
+        onPicked={(dataUrl) => update({ image_file_data: dataUrl ?? "" })}
+      />
 
       <div className={styles.field}>
         <label htmlFor="name">NOMBRE</label>

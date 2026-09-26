@@ -46,6 +46,10 @@ export interface ProductDraft {
   active: number;
   sort_order: number;
   description: string | null;
+  /** Foto subida en el navegador como data URL. La server action la
+      redimensiona con sharp y la guarda en /uploads. Si viene vacía
+      se respeta el campo `image` de ruta. */
+  image_file_data?: string | null;
 }
 
 /* ============ PEDIDOS ============ */

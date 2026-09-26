@@ -44,8 +44,14 @@ function formatSize(bytes: number) {
 
 export default function ImagePicker({
   defaultImage,
+  onPicked,
 }: {
   defaultImage?: string;
+  /* Canal opcional para consumidores que NO envian un <form>
+     (p. ej. el editor del panel, que construye su propio FormData).
+     Dentro de un <form> sigue funcionando igual por el input
+     oculto name="image_file_data". */
+  onPicked?: (dataUrl: string | null) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -63,6 +69,7 @@ export default function ImagePicker({
       setPreview(null);
       setFileName(null);
       setSizeInfo(null);
+      onPicked?.(null);
       return;
     }
 
@@ -71,6 +78,7 @@ export default function ImagePicker({
       setPreview(null);
       setFileName(null);
       setSizeInfo(null);
+      onPicked?.(null);
       return;
     }
 
@@ -79,6 +87,7 @@ export default function ImagePicker({
       setPreview(null);
       setFileName(null);
       setSizeInfo(null);
+      onPicked?.(null);
       return;
     }
 
@@ -99,18 +108,21 @@ export default function ImagePicker({
           `Original ${formatSize(originalKb * 1024)} optimizada ${formatSize(compressedBytes)} lista para subir`
         );
         setBusy(false);
+        onPicked?.(compressed);
       } catch {
         setError("No se pudo procesar la imagen. Intenta con otra.");
         setPreview(null);
         setFileName(null);
         setSizeInfo(null);
         setBusy(false);
+        onPicked?.(null);
       }
     };
 
     reader.onerror = () => {
       setError("No se pudo leer la imagen. Intenta de nuevo.");
       setBusy(false);
+      onPicked?.(null);
     };
 
     reader.readAsDataURL(file);
@@ -122,6 +134,7 @@ export default function ImagePicker({
     setFileName(null);
     setSizeInfo(null);
     setError(null);
+    onPicked?.(null);
   }
 
   return (

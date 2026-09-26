@@ -10,3 +10,4 @@ dev-server.log
 
 .vercel
 .env*
+*.tsbuildinfo
