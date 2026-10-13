@@ -366,6 +366,42 @@
    RESPONSIVE
 ===================== */
 
+@media (max-width: 860px) {
+  /* En el celular estas pestanas son la forma principal
+     de moverse por la tienda: como links de texto quedaban
+     con 23px de alto y era casi imposible acertar con el
+     dedo. En movil pasan a ser botones de 44px. */
+  .sw-cats {
+    gap: 8px;
+  }
+
+  .sw-cats a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 0 16px;
+
+    border: 1px solid var(--sp-border);
+    border-radius: 999px;
+
+    font-size: 0.72rem;
+  }
+
+  /* El subrayado se reemplaza por el relleno de la
+     pastilla activa. */
+  .sw-cats a::after {
+    display: none;
+  }
+
+  .sw-cats a.active {
+    background: var(--sp-label);
+    border-color: var(--sp-label);
+    color: var(--sp-bg);
+  }
+}
+
 @media (max-width: 640px) {
   .sw-grid {
     grid-template-columns: repeat(2, 1fr);
