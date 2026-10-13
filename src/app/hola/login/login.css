@@ -11,7 +11,18 @@
 
   margin: 0;
 
-  overflow-x: hidden;
+  /*
+    clip, no hidden.
+    "hidden" + overflow-y sin declarar hace que overflowY compute a "auto",
+    convirtiendo este <main> en contenedor de scroll. Ese contenedor no
+    scrollea (altura = contenido) y con overscroll-behavior-y:none el gesto
+    tactilmuria ahi sin propagarse al documento -> swipe no funciona.
+    "clip" recorta igual de sobra sin crear contenedor de scroll.
+  */
+  overflow-x: clip;
+
+  /* Anchos: el documento scrollea en Y. */
+  overflow-y: visible;
 
   background: #080808;
 
@@ -684,12 +695,36 @@
 }
 
 /* ==========================================
-   FIXES iOS SAFARI / ANDROID (LOGIN)
-========================================= */
+   TOUCH / SCROLL TACTIL
+   ========================================== */
 
+/*
+  El <body> global arrastra overflow-x:hidden -> overflowY:auto, asi que
+  tambien es contenedor de scroll. Hay que dejarlo propagar el gesto al
+  viewport: sin esto el documento no scrollea con el dedo.
+*/
+body:has(.admin-login-page) {
+  overflow-x: clip;
+
+  overflow-y: visible;
+
+  overscroll-behavior-y: auto;
+
+  /* Desactiva el zoom por doble tap sin bloquear el paneo vertical. */
+  touch-action: pan-x pan-y;
+}
+
+.admin-login-page,
+.admin-login-shell,
+.admin-login-content {
+  overscroll-behavior-y: auto;
+
+  touch-action: pan-x pan-y;
+}
+
+/* El contenedor real de scroll en movil es el documento. */
 .admin-login-page {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }

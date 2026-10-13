@@ -21,7 +21,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   category: "ERROR: Categoría inválida.",
   price: "ERROR: El PRECIO debe ser un número mayor o igual a 0 (usa punto o coma, ej. 25.99).",
   old_price: "ERROR: El PRECIO ANTERIOR debe ser un número válido.",
-  stock: "ERROR: El STOCK debe ser un número entero (ej. 10).",
+  stock: "ERROR: El STOCK debe ser un número entero (ej. 10) o dejarlo vacío para no controlar inventario.",
   image: "ERROR: La foto no se pudo procesar. Prueba otra imagen o máx. 8 MB.",
   id: "ERROR: Producto no encontrado.",
   missing: "ERROR: Ese producto ya no existe.",

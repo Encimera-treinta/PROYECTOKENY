@@ -6,22 +6,18 @@ import "@/styles/home.css";
 export default function HomePage() {
   return (
     <>
-      {/* Preload de la fuente maestra para conservar la calidad en todos los
-          navegadores y tamaños. El navegador seguirá adaptando el render. */}
-      <link
-        rel="preload"
-        as="video"
-        href="/img/Video_Fondo.mp4"
-        type="video/mp4"
-        fetchPriority="high"
-      />
-
       <main className="home-page">
         <HomeAnimations />
         {/* ==============================
             HERO
         ============================== */}
         <section className="home-hero">
+          {/* Mobile recibe la version ligera (5 MB). La de escritorio
+              pesa 21 MB: cargarla en un celular es tirar datos.
+              Antes el <link rel=preload as="video"> era ignorado por
+              el navegador (generaba warning) y ademas forzaba la de
+              21 MB para todos. Ahora el <video preload="auto"> hace
+              su trabajo y cada dispositivo baja lo que le toca. */}
           <video
             className="home-hero-video"
             autoPlay
@@ -32,6 +28,11 @@ export default function HomePage() {
             poster="/img/Video_Fondo_poster.jpg"
             aria-hidden="true"
           >
+            <source
+              src="/img/Video_Fondo_mobile.mp4"
+              type="video/mp4"
+              media="(max-width: 820px)"
+            />
             <source
               src="/img/Video_Fondo.mp4"
               type="video/mp4"
@@ -451,14 +452,6 @@ export default function HomePage() {
             <span>NO ES SUERTE, ES SPORTCRZ.</span>
             <span>PANAMÁ</span>
           </div>
-
-          <Link
-            href="/admin/login"
-            className="admin-secret-entry"
-            aria-label="Acceso administrativo"
-          >
-            <span />
-          </Link>
         </div>
       </footer>
       </main>

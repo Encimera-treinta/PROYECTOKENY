@@ -11,7 +11,7 @@ import CartButton from "./CartButton";
    (modo oscuro) sí se mantiene. */
 export default function FloatingControls() {
   const pathname = usePathname();
-  const isAdmin = pathname?.startsWith("/admin");
+  const isAdmin = pathname?.startsWith("/hola");
 
   return (
     <>

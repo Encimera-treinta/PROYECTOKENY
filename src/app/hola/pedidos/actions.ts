@@ -23,10 +23,10 @@ export async function updateOrderStatusAction(formData: FormData) {
     id <= 0 ||
     !STATUSES.includes(status as (typeof STATUSES)[number])
   ) {
-    redirect("/admin/pedidos?error=status");
+    redirect("/hola/pedidos?error=status");
   }
 
   await updateOrderStatus(id, status);
-  revalidatePath("/admin/pedidos");
-  redirect("/admin/pedidos?updated=1");
+  revalidatePath("/hola/pedidos");
+  redirect("/hola/pedidos?updated=1");
 }

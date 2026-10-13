@@ -260,7 +260,7 @@ export async function requireAdmin() {
 
   if (!session) {
     redirect(
-      "/admin/login"
+      "/hola/login"
     );
   }
 

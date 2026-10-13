@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-import { signOutAdminAction } from "@/app/admin/actions";
+import { signOutAdminAction } from "@/app/hola/actions";
 import { AdminShell, OverviewView, type OverviewData } from "./SportCrzAdmin";
 import { PAYMENT_OPTIONS, STATUS_OPTIONS } from "./constants";
 
 /* ============================================
-   /admin — RESUMEN
+   /hola — RESUMEN
    Cablea AdminShell + OverviewView a los datos
    REALES que trae el servidor (getOverviewMetrics).
    Los botones navegan a las rutas reales; no hay
@@ -41,9 +41,9 @@ export function AdminOverviewPanel({
         data={data}
         statuses={STATUS_OPTIONS}
         payments={PAYMENT_OPTIONS}
-        basePath="/admin"
-        onCreate={() => router.push("/admin/productos?new=1")}
-        onOpenOrder={() => router.push("/admin/pedidos")}
+        basePath="/hola"
+        onCreate={() => router.push("/hola/productos?new=1")}
+        onOpenOrder={() => router.push("/hola/pedidos")}
         onRetry={() => router.refresh()}
         loading={isPending}
       />

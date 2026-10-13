@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
-import { signOutAdminAction } from "@/app/admin/actions";
+import { signOutAdminAction } from "@/app/hola/actions";
 import {
   createProductAction,
   deleteProductAction,
   updateProductAction,
-} from "@/app/admin/productos/actions";
+} from "@/app/hola/productos/actions";
 import {
   AdminShell,
   ProductEditor,
@@ -26,7 +26,7 @@ import {
 } from "./constants";
 
 /* ============================================
-   /admin/productos — PRODUCTOS
+   /hola/productos — PRODUCTOS
    Cablea AdminShell + ProductsView + ProductEditor
    a listAllProducts() REAL y a las server actions
    reales de crear / editar / eliminar.
@@ -42,7 +42,7 @@ function toDraft(row: ProductRow): ProductDraft {
     old_price: row.old_price ?? null,
     image: row.image ?? "",
     badge: row.badge ?? null,
-    stock: row.stock ?? 0,
+    stock: row.stock ?? null,
     active: row.active ?? 1,
     sort_order: row.sort_order ?? 0,
     description: row.description ?? null,
@@ -61,7 +61,7 @@ function toFormData(draft: ProductDraft): FormData {
   formData.set("old_price", draft.old_price != null ? String(draft.old_price) : "");
   formData.set("image", draft.image);
   formData.set("badge", draft.badge ?? "");
-  formData.set("stock", String(draft.stock));
+  formData.set("stock", draft.stock == null ? "" : String(draft.stock));
   formData.set("sort_order", String(draft.sort_order));
   formData.set("active", draft.active === 1 ? "on" : "");
   formData.set("description", draft.description ?? "");

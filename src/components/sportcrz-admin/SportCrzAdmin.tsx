@@ -98,9 +98,9 @@ export function AdminShell({
     icon: "grid" | "box" | "bag";
     label: string;
   }> = [
-    { key: "overview", href: "/admin", icon: "grid", label: "RESUMEN" },
-    { key: "products", href: "/admin/productos", icon: "box", label: "PRODUCTOS" },
-    { key: "orders", href: "/admin/pedidos", icon: "bag", label: "PEDIDOS" },
+    { key: "overview", href: "/hola", icon: "grid", label: "RESUMEN" },
+    { key: "products", href: "/hola/productos", icon: "box", label: "PRODUCTOS" },
+    { key: "orders", href: "/hola/pedidos", icon: "bag", label: "PEDIDOS" },
   ];
 
   return (
@@ -155,7 +155,7 @@ export function AdminShell({
           <span className={styles.topbarCode}>SPORTCRZ / CONTROL</span>
           <div className={styles.topbarActions}>
             <Link
-              href="/admin"
+              href="/hola"
               className={cx(
                 styles.topLink,
                 active === "overview" && styles.topLinkActive
@@ -164,7 +164,7 @@ export function AdminShell({
               RESUMEN
             </Link>
             <Link
-              href="/admin/productos"
+              href="/hola/productos"
               className={cx(
                 styles.topLink,
                 active === "products" && styles.topLinkActive
@@ -173,13 +173,19 @@ export function AdminShell({
               PRODUCTOS
             </Link>
             <Link
-              href="/admin/pedidos"
+              href="/hola/pedidos"
               className={cx(
                 styles.topLink,
                 active === "orders" && styles.topLinkActive
               )}
             >
               PEDIDOS
+            </Link>
+            <Link
+              href="/hola/accesos"
+              className={styles.topLink}
+            >
+              ACCESOS
             </Link>
             <Link href="/" className={styles.topLink} target="_blank" rel="noreferrer">
               VER TIENDA
@@ -692,7 +698,7 @@ export function ProductEditor({
         old_price: draft.old_price != null ? String(draft.old_price) : "",
         image: draft.image ?? "",
         badge: draft.badge ?? "",
-        stock: String(draft.stock ?? 0),
+        stock: draft.stock == null ? "" : String(draft.stock),
         sort_order: String(draft.sort_order ?? 0),
         active: String(draft.active ?? 1),
         description: draft.description ?? "",
@@ -706,7 +712,7 @@ export function ProductEditor({
       old_price: "",
       image: "",
       badge: "",
-      stock: "0",
+      stock: "",
       sort_order: "0",
       active: "1",
       description: "",
@@ -722,7 +728,10 @@ export function ProductEditor({
   function toDraft(): ProductDraft {
     const price = Number(form.price);
     const oldPrice = form.old_price.trim() === "" ? null : Number(form.old_price);
-    const stock = Number(form.stock);
+    /* Stock vacio = sin control de inventario (NULL).
+       0 = agotado explicitamente. */
+    const stock =
+      form.stock.trim() === "" ? null : Number(form.stock);
     const sortOrder = Number(form.sort_order);
     return {
       id: form.id,
@@ -732,7 +741,7 @@ export function ProductEditor({
       old_price: oldPrice != null && Number.isFinite(oldPrice) ? oldPrice : null,
       image: form.image.trim() || "/img/portfolio-1.jpg",
       badge: form.badge.trim() || null,
-      stock: Number.isFinite(stock) ? stock : 0,
+      stock: stock != null && Number.isFinite(stock) ? stock : null,
       sort_order: Number.isFinite(sortOrder) ? sortOrder : 0,
       active: form.active === "1" ? 1 : 0,
       description: form.description.trim() || null,
@@ -814,16 +823,16 @@ export function ProductEditor({
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="stock">STOCK</label>
+          <label htmlFor="stock">STOCK (VACIO = SIN CONTROL)</label>
           <input
             id="stock"
             type="number"
             inputMode="numeric"
             min="0"
             step="1"
+            placeholder="Sin control"
             value={form.stock}
             onChange={(e) => update({ stock: e.target.value })}
-            required
           />
         </div>
       </div>

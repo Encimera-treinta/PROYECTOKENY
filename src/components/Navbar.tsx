@@ -75,7 +75,7 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
-  if (pathname.startsWith("/admin")) {
+  if (pathname.startsWith("/hola")) {
     return null;
   }
 

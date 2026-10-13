@@ -61,7 +61,7 @@ type ProductInput = {
   old_price: number | null;
   image: string;
   badge: string | null;
-  stock: number;
+  stock: number | null;
   active: number;
   sort_order: number;
   description: string | null;
@@ -84,24 +84,30 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
   const imageFileData = String(formData.get("image_file_data") || "").trim();
   const badgeRaw = String(formData.get("badge") || "").trim();
   const stockRaw = String(formData.get("stock") || "").trim();
-  const stock = Number(stockRaw.replace(",", "."));
+  /* Stock vacio = sin control de inventario (NULL). */
+  const stock = stockRaw
+    ? Number(stockRaw.replace(",", "."))
+    : null;
   const sortOrderRaw = String(formData.get("sort_order") || "").trim();
   const sortOrder = Number(sortOrderRaw.replace(",", "."));
   const active = formData.get("active") === "on" ? 1 : 0;
   const description = String(formData.get("description") || "").trim();
 
-  if (!name) redirect("/admin/productos?new=1&error=name");
+  if (!name) redirect("/hola/productos?new=1&error=name");
   if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) {
-    redirect("/admin/productos?new=1&error=category");
+    redirect("/hola/productos?new=1&error=category");
   }
   if (!priceRaw || !Number.isFinite(price) || price < 0) {
-    redirect("/admin/productos?new=1&error=price");
+    redirect("/hola/productos?new=1&error=price");
   }
   if (oldPrice !== null && (!Number.isFinite(oldPrice) || oldPrice < 0)) {
-    redirect("/admin/productos?new=1&error=old_price");
+    redirect("/hola/productos?new=1&error=old_price");
   }
-  if (!stockRaw || !Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock)) {
-    redirect("/admin/productos?new=1&error=stock");
+  if (
+    stock !== null &&
+    (!Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock))
+  ) {
+    redirect("/hola/productos?new=1&error=stock");
   }
 
   /* Si subieron foto nueva, tiene prioridad sobre la ruta manual. */
@@ -113,7 +119,7 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
     if (saved) {
       image = saved;
     } else {
-      redirect("/admin/productos?new=1&error=image");
+      redirect("/hola/productos?new=1&error=image");
     }
   }
 
@@ -135,34 +141,34 @@ export async function createProductAction(formData: FormData) {
   await requireAdmin();
   const data = await parseProductForm(formData);
   const newId = await createProduct(data);
-  revalidatePath("/admin/productos");
+  revalidatePath("/hola/productos");
   revalidatePath(`/${data.category}`);
   /* Redirige directo al formulario del producto creado,
      con su foto y datos cargados para verificarlo. */
-  redirect(`/admin/productos?edit=${newId}&created=1`);
+  redirect(`/hola/productos?edit=${newId}&created=1`);
 }
 
 export async function updateProductAction(formData: FormData) {
   await requireAdmin();
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id) || id <= 0) {
-    redirect(`/admin/productos?edit=${id || ""}&error=id`);
+    redirect(`/hola/productos?edit=${id || ""}&error=id`);
   }
   if (!(await getProductById(id))) {
-    redirect("/admin/productos?error=missing");
+    redirect("/hola/productos?error=missing");
   }
   const data = await parseProductForm(formData);
   await updateProduct(id, data);
-  revalidatePath("/admin/productos");
+  revalidatePath("/hola/productos");
   revalidatePath(`/${data.category}`);
-  redirect(`/admin/productos?edit=${id}&updated=1`);
+  redirect(`/hola/productos?edit=${id}&updated=1`);
 }
 
 export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id) || id <= 0) {
-    redirect("/admin/productos?error=id");
+    redirect("/hola/productos?error=id");
   }
   const product = await getProductById(id);
   await deleteProduct(id);
@@ -173,7 +179,7 @@ export async function deleteProductAction(formData: FormData) {
     await deleteUploadByName(fileName);
   }
 
-  revalidatePath("/admin/productos");
+  revalidatePath("/hola/productos");
   if (product) revalidatePath(`/${product.category}`);
-  redirect("/admin/productos?deleted=1");
+  redirect("/hola/productos?deleted=1");
 }

@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
-import { signOutAdminAction } from "@/app/admin/actions";
-import { updateOrderStatusAction } from "@/app/admin/pedidos/actions";
+import { signOutAdminAction } from "@/app/hola/actions";
+import { updateOrderStatusAction } from "@/app/hola/pedidos/actions";
 import {
   AdminShell,
   OrdersView,
@@ -15,7 +15,7 @@ import { PAGE_SIZE, PAYMENT_OPTIONS, STATUS_OPTIONS } from "./constants";
 import styles from "./SportCrzAdmin.module.css";
 
 /* ============================================
-   /admin/pedidos — PEDIDOS
+   /hola/pedidos — PEDIDOS
    Cablea AdminShell + OrdersView a listOrders()
    REAL. El cambio de estado pasa por la server
    action real (updateOrderStatusAction), que
