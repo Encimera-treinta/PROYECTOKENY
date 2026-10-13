@@ -1,0 +1,596 @@
+/* ==========================================
+   SPORTCRZ / PEDIDO COMPARTIDO
+   Pagina simple, movil primero, tipografia grande.
+   ========================================== */
+
+.pedido-page {
+  width: 100%;
+  min-width: 0;
+
+  min-height: 100vh;
+  min-height: 100svh;
+
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  /* clip, no hidden: "hidden" convertiria esta pagina en contenedor de
+     scroll y el gesto tactil no llegaria al documento. */
+  overflow-x: clip;
+  overflow-y: visible;
+
+  background: #f4f4f1;
+  color: #0a0a0a;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.pedido-page *,
+.pedido-page *::before,
+.pedido-page *::after {
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   TOP / FOOTER
+   ========================================== */
+
+.pedido-top,
+.pedido-footer {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 20px 5%;
+
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
+.pedido-top {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.pedido-footer {
+  margin-top: auto;
+
+  color: rgba(0, 0, 0, 0.4);
+
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.pedido-top a {
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  color: rgba(0, 0, 0, 0.55);
+  text-decoration: none;
+
+  touch-action: manipulation;
+}
+
+.pedido-top a:active {
+  opacity: 0.5;
+}
+
+
+/* ==========================================
+   WRAP
+   ========================================== */
+
+.pedido-wrap {
+  width: min(560px, 100%);
+
+  margin: 0 auto;
+
+  padding: 8px 5% 40px;
+
+  flex: 1;
+}
+
+
+/* ==========================================
+   INTRO
+   ========================================== */
+
+.pedido-intro {
+  padding: 32px 0 28px;
+}
+
+.pedido-eyebrow {
+  display: block;
+
+  margin-bottom: 20px;
+
+  color: rgba(0, 0, 0, 0.45);
+
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+}
+
+.pedido-intro h1 {
+  margin: 0 0 20px;
+
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+
+  font-size: clamp(2.4rem, 11vw, 4rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.pedido-lead {
+  margin: 0;
+
+  max-width: 34ch;
+
+  color: rgba(0, 0, 0, 0.6);
+
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+
+/* ==========================================
+   QUIEN TE LO MANDA
+   ========================================== */
+
+.pedido-remitente {
+  margin-bottom: 24px;
+
+  padding: 16px;
+
+  background: #ffffff;
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+}
+
+.pedido-remitente-label {
+  display: block;
+
+  margin-bottom: 12px;
+
+  color: rgba(0, 0, 0, 0.45);
+
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+}
+
+.pedido-remitente-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pedido-remitente-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+
+  display: grid;
+  place-items: center;
+
+  background: #0a0a0a;
+  color: #ffffff;
+
+  border-radius: 50%;
+
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.pedido-remitente-info {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pedido-remitente-info strong {
+  overflow-wrap: anywhere;
+
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.pedido-remitente-phone {
+  color: rgba(0, 0, 0, 0.5);
+
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.pedido-remitente-wa {
+  flex: 0 0 auto;
+
+  min-height: 44px;
+
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+
+  background: #0a0a0a;
+  color: #ffffff;
+
+  text-decoration: none;
+
+  border-radius: 10px;
+
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+
+  touch-action: manipulation;
+}
+
+.pedido-remitente-wa:active {
+  opacity: 0.75;
+}
+
+
+/* ==========================================
+   ITEMS
+   ========================================== */
+
+.pedido-items {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  margin-bottom: 24px;
+}
+
+.pedido-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 14px;
+
+  background: #ffffff;
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+}
+
+.pedido-item img,
+.pedido-item-fallback {
+  width: 84px;
+  height: 84px;
+  flex: 0 0 84px;
+
+  object-fit: cover;
+
+  border-radius: 10px;
+
+  background: #e4e4e0;
+}
+
+.pedido-item-fallback {
+  display: grid;
+  place-items: center;
+
+  color: rgba(0, 0, 0, 0.3);
+
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.pedido-item-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pedido-item-qty {
+  color: rgba(0, 0, 0, 0.45);
+
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.pedido-item-info h3 {
+  margin: 0;
+
+  overflow-wrap: anywhere;
+
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.pedido-item-price {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+
+/* ==========================================
+   TOTAL
+   ========================================== */
+
+.pedido-total {
+  padding: 20px;
+
+  background: #0a0a0a;
+  color: #ffffff;
+
+  border-radius: 14px;
+
+  margin-bottom: 20px;
+}
+
+.pedido-total-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.pedido-total-row strong {
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.pedido-total-note {
+  margin: 12px 0 0;
+
+  color: rgba(255, 255, 255, 0.55);
+
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+
+/* ==========================================
+   NOTA
+   ========================================== */
+
+.pedido-note {
+  padding: 16px 18px;
+
+  margin-bottom: 20px;
+
+  background: #ffffff;
+
+  border-left: 3px solid #0a0a0a;
+
+  border-radius: 0 10px 10px 0;
+}
+
+.pedido-note span {
+  display: block;
+  margin-bottom: 7px;
+
+  color: rgba(0, 0, 0, 0.45);
+
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+}
+
+.pedido-note p {
+  margin: 0;
+
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+
+/* ==========================================
+   ACCIONES
+   ========================================== */
+
+.pedido-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pedido-confirm {
+  width: 100%;
+
+  min-height: 68px;
+
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  background: #0a0a0a;
+  color: #ffffff;
+
+  border: 0;
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+
+  touch-action: manipulation;
+
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.pedido-confirm:active {
+  transform: scale(0.985);
+  opacity: 0.85;
+}
+
+.pedido-confirm:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.pedido-confirm span:last-child {
+  font-size: 1.3rem;
+}
+
+.pedido-copy {
+  width: 100%;
+
+  min-height: 56px;
+
+  background: transparent;
+  color: rgba(0, 0, 0, 0.55);
+
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+
+  touch-action: manipulation;
+}
+
+.pedido-copy:active {
+  opacity: 0.5;
+}
+
+.pedido-error {
+  margin: 0 0 4px;
+
+  padding: 12px 14px;
+
+  color: #b3001b;
+  background: rgba(179, 0, 27, 0.06);
+
+  border: 1px solid rgba(179, 0, 27, 0.25);
+  border-radius: 10px;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.pedido-hint {
+  margin: 4px 0 0;
+
+  color: rgba(0, 0, 0, 0.45);
+
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.pedido-done {
+  padding: 28px 22px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  background: #0a0a0a;
+  color: #ffffff;
+
+  border-radius: 14px;
+}
+
+.pedido-done strong {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.pedido-done span {
+  color: rgba(255, 255, 255, 0.7);
+
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+
+/* ==========================================
+   TOUCH
+   ========================================== */
+
+.pedido-page,
+.pedido-wrap {
+  overscroll-behavior-y: auto;
+
+  touch-action: pan-x pan-y;
+}
+
+/*
+  globals.css deja body con overflow-x:hidden, que hace computar
+  overflow-y:auto y convierte el body en contenedor de scroll. Se anula
+  para que el gesto tactil llegue directo al documento.
+*/
+body:has(.pedido-page) {
+  overflow-x: clip;
+  overflow-y: visible;
+  overscroll-behavior-y: auto;
+}
+
+.pedido-page button,
+.pedido-page a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* ==========================================
+   MOVIL
+   ========================================== */
+
+@media (max-width: 480px) {
+  .pedido-item img,
+  .pedido-item-fallback {
+    width: 72px;
+    height: 72px;
+    flex-basis: 72px;
+  }
+
+  .pedido-intro h1 {
+    font-size: clamp(2.1rem, 12vw, 3rem);
+  }
+
+  .pedido-total-row strong {
+    font-size: 1.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pedido-confirm,
+  .pedido-copy {
+    transition: none;
+  }
+}

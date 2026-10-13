@@ -1,0 +1,280 @@
+/* ==========================================
+   COMPARTIR CARRITO / WHATSAPP
+
+   El panel vive dentro de .cart-footer, que usa
+   background: var(--sp-label) (contraste: claro en
+   tema claro, oscuro en tema oscuro). Por eso los
+   textos van en blanco y los bordes en blanco
+   translucido: funcionan en los dos temas.
+   ========================================== */
+
+/* ---- Item sin imagen ---- */
+
+.cart-item-noimg {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(0, 0, 0, 0.06);
+
+  color: rgba(0, 0, 0, 0.35);
+
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.share-panel {
+  margin-top: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---- Boton que abre el panel ---- */
+
+.share-toggle {
+  width: 100%;
+
+  min-height: 46px;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.62);
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+
+  touch-action: manipulation;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.share-toggle:hover,
+.share-toggle:active {
+  color: #ffffff;
+
+  border-color: rgba(255, 255, 255, 0.5);
+
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Explicacion ---- */
+
+.share-explainer {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.58);
+
+  font-size: 0.58rem;
+  line-height: 1.7;
+  letter-spacing: 0.08em;
+}
+
+/* ---- Datos de quien comparte ---- */
+
+.share-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.share-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.share-field label {
+  color: rgba(255, 255, 255, 0.55);
+
+  font-size: 0.46rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.share-field input {
+  width: 100%;
+
+  min-height: 46px;
+
+  padding: 0 12px;
+
+  background: rgba(0, 0, 0, 0.06);
+  color: #ffffff;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0;
+
+  font-family: inherit;
+  font-size: 0.86rem;
+
+  outline: none;
+
+  transition: border-color 0.2s ease;
+}
+
+.share-field input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.share-field input:focus {
+  border-color: #ffffff;
+}
+
+/* ---- Hints y errores ---- */
+
+.share-hint {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.5);
+
+  font-size: 0.52rem;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+}
+
+.share-error {
+  margin: 0;
+
+  padding: 10px 12px;
+
+  color: #ff8a8a;
+  background: rgba(255, 92, 92, 0.14);
+
+  border: 1px solid rgba(255, 92, 92, 0.5);
+
+  font-size: 0.56rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+}
+
+/* ---- Acciones ---- */
+
+.share-btn {
+  width: 100%;
+
+  min-height: 50px;
+
+  background: #ffffff;
+  color: #101113;
+
+  border: 0;
+  border-radius: 0;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+
+  touch-action: manipulation;
+
+  transition: opacity 0.2s ease;
+}
+
+.share-btn:hover { opacity: 0.88; }
+
+.share-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.share-cancel {
+  width: 100%;
+
+  min-height: 40px;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+
+  border: 0;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+
+  touch-action: manipulation;
+}
+
+.share-cancel:hover { color: #ffffff; }
+
+/* ---- Link generado ---- */
+
+.share-done {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 14px;
+
+  background: rgba(0, 0, 0, 0.08);
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.share-done-label {
+  color: rgba(255, 255, 255, 0.62);
+
+  font-size: 0.48rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+}
+
+.share-url {
+  width: 100%;
+
+  min-height: 44px;
+
+  padding: 10px 12px;
+
+  background: rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0;
+
+  font-family: inherit;
+  font-size: 0.62rem;
+
+  outline: none;
+}
+
+.share-url:focus {
+  border-color: #ffffff;
+}
+
+.share-done-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.share-done-actions .share-btn {
+  flex: 1;
+}
+
+.share-done-actions .share-cancel {
+  flex: 0 0 auto;
+  width: auto;
+
+  padding: 0 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}

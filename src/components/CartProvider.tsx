@@ -36,6 +36,12 @@ const CartContext =
 const CART_STORAGE_KEY =
   "sportcrz_cart";
 
+/* Destino de los pedidos por WhatsApp: el numero configurado en
+   NEXT_PUBLIC_STORE_WHATSAPP (formato internacional, sin +). */
+const STORE_WHATSAPP = (
+  process.env.NEXT_PUBLIC_STORE_WHATSAPP || ""
+).replace(/\D/g, "");
+
 export function CartProvider({
   children,
 }: {
@@ -328,6 +334,299 @@ export function useCart() {
    DRAWER
 ===================================== */
 
+/* =====================================
+   COMPARTIR CARRITO POR WHATSAPP
+   Genera un link /pedido/CODE y abre
+   WhatsApp con el texto listo.
+===================================== */
+
+type ShareState = "idle" | "sending" | "done" | "error";
+
+type ShareMe = {
+  authenticated: boolean;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string | null;
+};
+
+function ShareCartPanel() {
+  const cart = useCart();
+  const [state, setState] =
+    useState<ShareState>("idle");
+  const [url, setUrl] =
+    useState("");
+  const [error, setError] =
+    useState("");
+  const [open, setOpen] =
+    useState(false);
+
+  /* Datos de quien comparte: se completan solos con la sesion
+     y se pueden editar antes de mandar. */
+  const [me, setMe] =
+    useState<ShareMe | null>(null);
+  const [senderName, setSenderName] =
+    useState("");
+  const [senderPhone, setSenderPhone] =
+    useState("");
+
+  useEffect(() => {
+    fetch("/api/customer/me")
+      .then((r) => r.json())
+      .then((data: ShareMe) => {
+        setMe(data);
+
+        if (!data.authenticated) return;
+
+        const nombre = [
+          data.firstName,
+          data.lastName,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+
+        if (nombre) setSenderName(nombre);
+        if (data.phone) setSenderPhone(data.phone);
+      })
+      .catch(() => setMe(null));
+  }, [open]);
+
+  async function handleShare() {
+    if (state === "sending") return;
+
+    setState("sending");
+    setError("");
+
+    try {
+      const response = await fetch(
+        "/api/shared-cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            sender_name: senderName.trim(),
+            sender_phone:
+              senderPhone.trim(),
+            items: cart.items.map(
+              (item) => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.image,
+              })
+            ),
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.code) {
+        setState("error");
+        setError(
+          data.error ||
+            "No se pudo generar el link."
+        );
+
+        return;
+      }
+
+      const origin =
+        window.location.origin;
+
+      const shareUrl =
+        `${origin}/pedido/${data.code}`;
+
+      const text =
+        `Hola! Estas son las prendas que elegi para vos en SportCrz 😄\n\n` +
+        `Revisá la lista acá: ${shareUrl}`;
+
+      setUrl(shareUrl);
+      setState("done");
+
+      /* Con numero configurado abre el chat directo; sin numero,
+         cae en el selector de contactos de WhatsApp. */
+      const whatsappHref = STORE_WHATSAPP
+        ? `https://wa.me/${STORE_WHATSAPP}?text=${encodeURIComponent(
+            text
+          )}`
+        : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+      window.open(
+        whatsappHref,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    } catch {
+      setState("error");
+      setError(
+        "Error de conexión. Intenta de nuevo."
+      );
+    }
+  }
+
+  async function handleCopy() {
+    if (!url) return;
+
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      setError(
+        "No se pudo copiar. Copia el link a mano."
+      );
+    }
+  }
+
+  return (
+    <div className="share-panel">
+      {!open && state !== "done" ? (
+        <button
+          type="button"
+          className="share-toggle"
+          onClick={() => setOpen(true)}
+        >
+          ¿MANDARSELO A ALGUIEN?
+        </button>
+      ) : null}
+
+      {open && state !== "done" ? (
+        <>
+          <p className="share-explainer">
+            Crea un link con tu carrito y
+            mandalo por WhatsApp. Quien lo
+            abra ve la lista y confirma. Sin
+            cuenta y sin pagar por la página.
+          </p>
+
+          <div className="share-fields">
+            <div className="share-field">
+              <label htmlFor="share-name">
+                QUIEN LO MANDA
+              </label>
+
+              <input
+                id="share-name"
+                type="text"
+                value={senderName}
+                onChange={(event) =>
+                  setSenderName(event.target.value)
+                }
+                placeholder="Tu nombre"
+                maxLength={80}
+              />
+            </div>
+
+            <div className="share-field">
+              <label htmlFor="share-phone">
+                TU WHATSAPP
+              </label>
+
+              <input
+                id="share-phone"
+                type="tel"
+                inputMode="tel"
+                value={senderPhone}
+                onChange={(event) =>
+                  setSenderPhone(event.target.value)
+                }
+                placeholder="Opcional"
+                maxLength={20}
+              />
+            </div>
+          </div>
+
+          {me?.authenticated && !senderPhone ? (
+            <p className="share-hint">
+              Pone tu numero si queres que te
+              escriba directo a vos.
+            </p>
+          ) : null}
+
+          {error ? (
+            <p className="share-error">
+              {error}
+            </p>
+          ) : null}
+
+          <button
+            type="button"
+            className="share-btn"
+            onClick={handleShare}
+            disabled={
+              state === "sending" ||
+              !senderName.trim()
+            }
+          >
+            {state === "sending"
+              ? "GENERANDO..."
+              : "MANDAR POR WHATSAPP"}
+          </button>
+
+          {!senderName.trim() ? (
+            <p className="share-hint">
+              Escribi tu nombre para que sepa
+              quien le manda esto.
+            </p>
+          ) : null}
+
+          <button
+            type="button"
+            className="share-cancel"
+            onClick={() => setOpen(false)}
+          >
+            CERRAR
+          </button>
+        </>
+      ) : null}
+
+      {state === "done" && url ? (
+        <div className="share-done">
+          <span className="share-done-label">
+            LINK CREADO
+          </span>
+
+          <input
+            className="share-url"
+            readOnly
+            value={url}
+            onFocus={(event) =>
+              event.currentTarget.select()
+            }
+            aria-label="Link del pedido"
+          />
+
+          <div className="share-done-actions">
+            <button
+              type="button"
+              className="share-btn"
+              onClick={handleCopy}
+            >
+              COPIAR LINK
+            </button>
+
+            <button
+              type="button"
+              className="share-cancel"
+              onClick={() => {
+                setState("idle");
+                setOpen(false);
+                setUrl("");
+              }}
+            >
+              CERRAR
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function CartDrawer() {
   const cart = useCart();
 
@@ -446,14 +745,18 @@ function CartDrawer() {
                   key={`${item.name}-${index}`}
                 >
                   <div className="cart-item-image">
-                    <img
-                      src={
-                        item.image
-                      }
-                      alt={
-                        item.name
-                      }
-                    />
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                      />
+                    ) : (
+                      <span className="cart-item-noimg">
+                        {String(
+                          index + 1
+                        ).padStart(2, "0")}
+                      </span>
+                    )}
 
                     <span>
                       {String(
@@ -592,6 +895,8 @@ function CartDrawer() {
 
               <span></span>
             </Link>
+
+            <ShareCartPanel />
 
             <button
               type="button"
