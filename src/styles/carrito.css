@@ -1310,6 +1310,68 @@
 
 
 /* ==========================================
+   /* ==========================================
+   PANTALLAS BAJAS
+   En el celular el encabezado (125px) y el
+   pie se comian el espacio y los productos
+   se quedaba con 128px: los botones de
+   cantidad y los precios caian fuera de la
+   vista. Aqui se comprimen ambos para que al
+   menos el primer articulo se vea completo.
+   ========================================== */
+
+@media (max-height: 760px) {
+  .cart-header {
+    min-height: auto;
+
+    padding-top:
+      calc(
+        16px +
+        env(
+          safe-area-inset-top
+        )
+      );
+
+    padding-bottom: 12px;
+  }
+
+  .cart-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .cart-eyebrow {
+    font-size: 0.5rem;
+  }
+
+  .cart-meta {
+    min-height: 34px;
+  }
+
+  .cart-footer {
+    padding:
+      14px
+      34px
+      calc(
+        14px +
+        env(
+          safe-area-inset-bottom
+        )
+      );
+  }
+
+  /* La nota es informativa: es lo primero que
+     se puede sacar sin perder informacion. */
+  .cart-note {
+    display: none;
+  }
+
+  .checkout-btn {
+    min-height: 56px;
+  }
+}
+
+
+/* ==========================================
    TOUCH DEVICES
 ========================================== */
 
