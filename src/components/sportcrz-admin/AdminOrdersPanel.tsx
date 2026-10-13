@@ -89,10 +89,30 @@ export function AdminOrdersPanel({
     startTransition(() => {
       void (async () => {
         try {
-          await updateOrderStatusAction(formData);
+          const result =
+            await updateOrderStatusAction(
+              formData
+            );
+
+          if (!result?.ok) {
+            setError(
+              result?.error ||
+                "NO SE PUDO ACTUALIZAR EL PEDIDO."
+            );
+
+            return;
+          }
+
           setNotice("ESTADO ACTUALIZADO.");
+
+          /* Sin recargar el panel la fila seguiría
+             mostrando el estado anterior. */
+          router.refresh();
         } catch {
-          setError("NO SE PUDO ACTUALIZAR EL PEDIDO.");
+          setError(
+            "NO SE PUDO ACTUALIZAR EL PEDIDO."
+          );
+
           router.refresh();
         }
       })();

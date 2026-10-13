@@ -1,6 +1,11 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
+import {
+  useEffect,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ImagePicker from "@/components/ImagePicker";
@@ -90,7 +95,15 @@ export function AdminShell({
   onSignOut: () => void;
   children: ReactNode;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  /* El menú se cierra solo al cambiar de ruta: en el celular
+     tapear un link y tener que cerrarlo a mano es un paso
+     de más. */
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   const links: Array<{
     key: "overview" | "products" | "orders";
@@ -103,10 +116,45 @@ export function AdminShell({
     { key: "orders", href: "/hola/pedidos", icon: "bag", label: "PEDIDOS" },
   ];
 
+  const enlaces = [
+    ...links.map((l) => ({
+      href: l.href,
+      label: l.label,
+      icon: l.icon,
+      activo:
+        l.key === active
+          ? styles.navLinkActive
+          : "",
+    })),
+    {
+      href: "/hola/accesos",
+      label: "ACCESOS",
+      icon: "grid" as const,
+      activo: pathname?.startsWith("/hola/accesos")
+        ? styles.navLinkActive
+        : "",
+    },
+  ];
+
   return (
     <div className={styles.root}>
-      {/* ======== SIDEBAR DESKTOP (232px) ======== */}
-      <aside className={styles.sidebar}>
+      {/* Tapón para cerrar el menú en celular */}
+      {menuOpen ? (
+        <button
+          type="button"
+          className={styles.menuScrim}
+          onClick={() => setMenuOpen(false)}
+          aria-label="Cerrar menú"
+        />
+      ) : null}
+
+      {/* ======== SIDEBAR (escritorio) / MENÚ (celular) ======== */}
+      <aside
+        className={cx(
+          styles.sidebar,
+          menuOpen && styles.sidebarOpen
+        )}
+      >
         <div className={styles.brand}>
           <span className={styles.brandMark}>S</span>
           <div className={styles.brandText}>
@@ -116,17 +164,16 @@ export function AdminShell({
         </div>
 
         <nav className={styles.nav} aria-label="Navegación del panel">
-          {links.map((link) => (
+          {enlaces.map((link) => (
             <Link
-              key={link.key}
+              key={link.href}
               href={link.href}
-              className={cx(
-                styles.navLink,
-                active === link.key && styles.navLinkActive
-              )}
-              aria-current={active === link.key ? "page" : undefined}
+              className={cx(styles.navLink, link.activo)}
+              aria-current={
+                link.activo ? "page" : undefined
+              }
             >
-              <Icon name={link.icon} size={16} />
+              <Icon name={link.icon} size={18} />
               <span>{link.label}</span>
             </Link>
           ))}
@@ -152,44 +199,55 @@ export function AdminShell({
       {/* ======== CONTENIDO ======== */}
       <div className={styles.main}>
         <header className={styles.topbar}>
-          <span className={styles.topbarCode}>SPORTCRZ / CONTROL</span>
+          <button
+            type="button"
+            className={styles.menuButton}
+            onClick={() =>
+              setMenuOpen((v) => !v)
+            }
+            aria-expanded={menuOpen}
+            aria-label={
+              menuOpen
+                ? "Cerrar menú"
+                : "Abrir menú"
+            }
+          >
+            <span
+              className={cx(
+                styles.menuBars,
+                menuOpen && styles.menuBarsOpen
+              )}
+              aria-hidden="true"
+            >
+              <i />
+            </span>
+            <span className={styles.menuButtonText}>
+              MENÚ
+            </span>
+          </button>
+
+          <span className={styles.topbarCode}>
+            {enlaces.find((e) => e.activo)?.label ??
+              "CONTROL"}
+          </span>
+
           <div className={styles.topbarActions}>
             <Link
-              href="/hola"
-              className={cx(
-                styles.topLink,
-                active === "overview" && styles.topLinkActive
-              )}
-            >
-              RESUMEN
-            </Link>
-            <Link
-              href="/hola/productos"
-              className={cx(
-                styles.topLink,
-                active === "products" && styles.topLinkActive
-              )}
-            >
-              PRODUCTOS
-            </Link>
-            <Link
-              href="/hola/pedidos"
-              className={cx(
-                styles.topLink,
-                active === "orders" && styles.topLinkActive
-              )}
-            >
-              PEDIDOS
-            </Link>
-            <Link
-              href="/hola/accesos"
+              href="/"
               className={styles.topLink}
+              target="_blank"
+              rel="noreferrer"
             >
-              ACCESOS
-            </Link>
-            <Link href="/" className={styles.topLink} target="_blank" rel="noreferrer">
               VER TIENDA
             </Link>
+
+            <button
+              type="button"
+              className={styles.signOutTop}
+              onClick={onSignOut}
+            >
+              SALIR
+            </button>
           </div>
         </header>
 
@@ -378,28 +436,39 @@ export function ProductsView({
                 )}
                 {rows.map((row) => (
                   <tr key={row.id}>
-                    <td>{String(row.id).padStart(2, "0")}</td>
-                    <td>
+                    <td data-label="ID">
+                      {String(row.id).padStart(2, "0")}
+                    </td>
+                    <td data-label="PRODUCTO">
                       <span className={styles.productCell}>
-                        {row.image && (
-                          <img src={row.image} alt={row.name} width={40} height={40} />
-                        )}
+                        {row.image ? (
+                          <img
+                            src={row.image}
+                            alt={row.name}
+                            width={40}
+                            height={40}
+                          />
+                        ) : null}
                         <span>
                           <strong>{row.name}</strong>
                         </span>
                       </span>
                     </td>
-                    <td>{row.category.toUpperCase()}</td>
-                    <td>
+                    <td data-label="CATEGORÍA">
+                      {row.category.toUpperCase()}
+                    </td>
+                    <td data-label="PRECIO">
                       ${(row.price ?? 0).toFixed(2)}
                     </td>
-                    <td>{row.stock ?? "—"}</td>
-                    <td>
+                    <td data-label="STOCK">
+                      {row.stock ?? "LIBRE"}
+                    </td>
+                    <td data-label="ESTADO">
                       <Badge tone={row.active ? "green" : "red"}>
                         {row.active ? "ACTIVO" : "OCULTO"}
                       </Badge>
                     </td>
-                    <td>
+                    <td data-label="ACCIONES">
                       <span className={styles.cellActions}>
                         {onEdit && (
                           <button type="button" onClick={() => onEdit(row.id)}>
@@ -518,22 +587,34 @@ export function OrdersView({
               )}
               {rows.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.order_code}</td>
-                  <td>
+                  <td data-label="CÓDIGO">
+                    <strong>{row.order_code}</strong>
+                  </td>
+                  <td data-label="CLIENTE">
                     <span className={styles.customerCell}>
                       <strong>{row.customer_name}</strong>
-                      {row.customer_email && <small>{row.customer_email}</small>}
+                      {row.customer_email ? (
+                        <small>{row.customer_email}</small>
+                      ) : null}
                     </span>
                   </td>
-                  <td>{row.item_count ?? "—"}</td>
-                  <td>${(row.total ?? 0).toFixed(2)}</td>
-                  <td>{row.payment_method?.toUpperCase() ?? "—"}</td>
-                  <td>
+                  <td data-label="ARTÍCULOS">
+                    {row.item_count ?? "—"}
+                  </td>
+                  <td data-label="TOTAL">
+                    <strong>
+                      ${(row.total ?? 0).toFixed(2)}
+                    </strong>
+                  </td>
+                  <td data-label="PAGO">
+                    {row.payment_method?.toUpperCase() ?? "—"}
+                  </td>
+                  <td data-label="ESTADO">
                     <Badge tone={getStatusTone(row.status)}>
                       {row.status.toUpperCase()}
                     </Badge>
                   </td>
-                  <td>
+                  <td data-label="ACCIONES">
                     <span className={styles.cellActions}>
                       {onOpenOrder && (
                         <button type="button" onClick={() => onOpenOrder(row.id)}>

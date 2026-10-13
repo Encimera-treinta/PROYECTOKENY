@@ -619,28 +619,164 @@
 .submit:hover { opacity: 0.85; }
 
 /* ======================
+   MENU HAMBURGUESA
+   Solo visible en celular.
+   ====================== */
+
+.menuButton {
+  display: none;
+  align-items: center;
+  gap: 10px;
+
+  min-height: 48px;
+  padding: 0 16px;
+
+  background: var(--sp-elevated);
+  color: var(--sp-label);
+
+  border: 0;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Las 3 barras del icono. */
+.menuBars {
+  position: relative;
+
+  width: 20px;
+  height: 14px;
+
+  flex: 0 0 20px;
+
+  display: block;
+}
+
+.menuBars::before,
+.menuBars::after,
+.menuBars > i {
+  content: "";
+  position: absolute;
+  left: 0;
+
+  width: 20px;
+  height: 2px;
+
+  background: currentColor;
+  border-radius: 2px;
+
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.menuBars::before { top: 0; }
+.menuBars > i { top: 6px; }
+.menuBars::after { top: 12px; }
+
+.menuBarsOpen::before {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.menuBarsOpen > i { opacity: 0; }
+
+.menuBarsOpen::after {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Tapon oscuro para cerrar el menu. */
+.menuScrim {
+  display: none;
+
+  position: fixed;
+  inset: 0;
+
+  z-index: 39;
+
+  padding: 0;
+  border: 0;
+
+  background: rgba(0, 0, 0, 0.55);
+
+  cursor: pointer;
+}
+
+/* Boton SALIR de la barra superior. */
+.signOutTop {
+  min-height: 48px;
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+
+  background: transparent;
+  color: var(--sp-label-2);
+
+  border: 1px solid var(--sp-border);
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+
+  touch-action: manipulation;
+}
+
+/* ======================
    RESPONSIVE
-====================== */
+   ====================== */
 
 @media (max-width: 860px) {
-  /* BUG CORREGIDO: la base es flex: 0 0 232px y .root es nowrap.
-     En pantallas chicas el sidebar ocupaba 100% y empujaba .main
-     fuera de la pantalla (385px de desborde, main con ancho 0).
-     Con wrap + flex:1 1 100% el sidebar toma su propia fila y el
-     contenido pasa abajo. */
+  /* El sidebar deja de ser columna lateral y pasa a ser un
+     menu deslizante. La barra de arriba queda con el boton
+     hamburguesa, asi hay un solo lugar donde navegar. */
   .root {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .sidebar {
-    width: 100%;
-    flex: 1 1 100%;
-    position: static;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    overflow: visible;
-    flex-wrap: wrap;
+    position: fixed;
+    inset: 0 auto 0 0;
+
+    z-index: 40;
+
+    width: min(290px, 84vw);
+    height: 100vh;
+    height: 100dvh;
+
+    flex-direction: column;
+    align-items: stretch;
+
+    padding: 22px 16px;
+
+    overflow-y: auto;
+
+    /* Oculto por defecto en celular. .sidebarOpen lo muestra.
+       No se usa visibility para poder animar el transform.
+       Esta regla va DESPUES de .sidebarOpen a proposito:
+       el !important de aqui gana cuando el menu esta cerrado,
+       y cuando se abre gana el selector de clase propia. */
+    display: none;
+    transform: translateX(-100%);
+
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Cuando el menu esta abierto gana sobre el display:none
+     de arriba porque es una regla mas especifica. */
+  .sidebarOpen {
+    display: flex !important;
+
+    transform: translateX(0);
   }
 
   .main {
@@ -648,235 +784,362 @@
     min-width: 0;
   }
 
-  .brand { border-bottom: 0; margin-bottom: 0; }
+  .brand {
+    border-bottom: 1px solid var(--sp-border);
+    margin-bottom: 10px;
+  }
 
-  .nav { flex-direction: row; flex-wrap: wrap; }
+  /* Links grandes y espaciados: se tocan sin pensar. */
+  .nav {
+    flex-direction: column;
+    gap: 6px;
+  }
 
-  .sidebarFooter { margin-top: 0; margin-left: auto; }
+  .navLink {
+    min-height: 52px;
+    padding: 14px 16px;
 
-  .mainContent { padding: 20px 16px; }
+    font-size: 0.82rem;
+    letter-spacing: 0.14em;
 
-  .topbar { flex-wrap: wrap; padding: 12px 16px; }
+    border-radius: 10px;
+  }
+
+  .sidebarFooter {
+    margin-top: auto;
+    margin-left: 0;
+  }
+
+  .signOut {
+    min-height: 52px;
+    font-size: 0.72rem;
+  }
+
+  .mainContent {
+    padding: 20px 16px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+
+    padding: 12px 16px;
+  }
+
+  .menuButton {
+    display: flex;
+  }
+
+  .menuScrim {
+    display: block;
+  }
+
+  .topbarCode {
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+  }
+
+  .topbarActions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .topLink,
+  .signOutTop {
+    min-height: 48px;
+    font-size: 0.66rem;
+  }
+
+  /* Todo lo que se toca, grande. */
+  .submit,
+  .newBtn,
+  .cancelBtn,
+  .submitBtn,
+  .pagingBtn,
+  .statusSelect,
+  .search input,
+  .field input,
+  .field select,
+  .field textarea {
+    min-height: 48px;
+    font-size: 0.82rem;
+  }
+
+  .cellActions button,
+  .rowActions a,
+  .rowActions button,
+  .deleteBtn {
+    min-height: 44px;
+    padding: 12px 14px;
+    font-size: 0.66rem;
+  }
+
+  .quickPrimary {
+    min-height: 52px;
+    font-size: 0.72rem;
+  }
+
+  /* Texto legible sin entrecerrar los ojos. */
+  .navLink { font-size: 0.82rem; }
+
+  .table td {
+    font-size: 0.82rem;
+  }
+
+  .badge {
+    font-size: 0.68rem;
+    padding: 7px 11px;
+  }
+
+  .search input {
+    font-size: 0.9rem;
+  }
+
+  .field label,
+  .metricCard span,
+  .metricPrimaryLabel,
+  .emptyLine,
+  .emptyRow,
+  .overviewTitle {
+    letter-spacing: 0.14em;
+  }
+
+  .overviewTitle {
+    font-size: 1.5rem;
+  }
+
+  .overviewSub {
+    font-size: 0.78rem;
+  }
+
+  .shellFooter {
+    padding: 16px;
+    font-size: 0.62rem;
+  }
 }
 
-@media (max-width: 560px) {
-  .topbarActions { display: none; }
+@media (max-width: 860px) {
+  /* Las tablas pasan a tarjetas apiladas: una fila por
+     pedido, con la etiqueta de cada campo a la izquierda. */
+  .table thead {
+    display: none;
+  }
 
-  .table th { display: none; }
+  /* Cada fila pasa a ser una tarjeta. Se usa flex en la
+     fila (no block) para que las celdas se apilen bien. */
+  .table,
+  .table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .table tr {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    /* El reset global no aplica dentro de <table>: sin esto el
+       padding de 16px suma al 100% y la fila se sale de la
+       tarjeta (8px de desborde en cada lado). */
+    box-sizing: border-box;
+
+    margin-bottom: 0;
+    padding: 16px;
+
+    background: var(--sp-surface);
+    border: 1px solid var(--sp-border);
+    border-radius: 12px;
+  }
 
   .table td {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+
+    box-sizing: border-box;
+    width: 100%;
+
+    padding: 10px 0;
+
     text-align: right;
-    gap: 12px;
+    font-size: 0.82rem;
+
+    border-bottom: 1px solid #22252a;
+
+    /* Sin esto el valor largo (correo, codigo) estira la celda
+       y se sale de la tarjeta. */
+    min-width: 0;
+  }
+
+  /* El valor de la derecha puede partirse sin romper la
+     etiqueta de la izquierda. */
+  .table td > * {
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+  }
+
+  .table td::before {
+    flex: 0 0 auto;
+
+    text-align: left;
+
+    color: var(--sp-label-2);
+
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  .customerCell,
+  .productCell {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  /* Nombre y correo en lineas separadas: pegados se leen
+     como una sola frase y no se distingue donde termina
+     uno y empieza el otro. */
+  .customerCell small {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 0.72rem;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+  }
+
+  .table tr td:last-child {
+    border-bottom: 0;
+    padding-top: 14px;
   }
 
   .table td::before {
     content: attr(data-label);
-    text-align: left;
-    color: var(--sp-label-2);
-    font-size: 0.5rem;
-    letter-spacing: 0.18em;
+
     flex: 0 0 auto;
+
+    text-align: left;
+
+    color: var(--sp-label-2);
+
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  /* La fila que trae el nombre del pedido manda. */
+  .table td:first-child {
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  .metricGrid,
+  .formRow,
+  .fieldRow {
+    grid-template-columns: 1fr;
+  }
+
+  .paging {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .pagingBtn {
+    flex: 1;
+  }
+
+  .toolbar {
+    gap: 8px;
+  }
+
+  .toolbarSpacer {
+    display: none;
+  }
+
+  .topbarCode {
+    display: none;
+  }
+
+  .cellActions,
+  .rowActions {
+    flex-wrap: wrap;
+  }
+
+  /* En el celu nada baja de 13px: por debajo de eso
+     la letra no se lee con comodidad y los rotulos
+     de las tablas se vuelven adivinar. Este bloque
+     va al final a proposito para ganar a las reglas
+     anteriores del mismo media query. */
+  .brand small,
+  .navLink,
+  .userAvatar,
+  .userText strong,
+  .userText small,
+  .topbarCode,
+  .topLink,
+  .signOutTop,
+  .shellFooter,
+  .badge,
+  .overviewTitle,
+  .overviewSub,
+  .metricCard span,
+  .metricCard p,
+  .metricPrimary p,
+  .metricPrimary,
+  .metricPrimaryLabel,
+  .metricPrimaryValue,
+  .metricNote,
+  .menuButton,
+  .menuButtonText,
+  .quickPrimary,
+  .overviewNotice,
+  .overviewNoticeErr,
+  .overviewNoticeErr button,
+  .search input,
+  .pagingBtn,
+  .pagingInfo,
+  .table th,
+  .table td,
+  .table td::before,
+  .rowActions button,
+  .cellActions button,
+  .emptyLine,
+  .editorHead,
+  .editorHead a,
+  .editorHead strong,
+  .signOut,
+  .field label,
+  .field input,
+  .field select,
+  .field textarea,
+  .submit,
+  .deleteBtn,
+  .customerCell small {
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* Las etiquetas de la tabla en modo tarjeta
+     necesitan un poco mas de aire al crecer. */
+  .table td {
+    flex-wrap: wrap;
+    row-gap: 2px;
   }
 }
-/* ======================
-   VISTA PRODUCTOS
-====================== */
 
-.products {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.orders {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.toolbarSpacer { flex: 1; }
-
-.cellActions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cellActions button {
-  padding: 8px 12px;
-  border: 1px solid var(--sp-border);
-  border-radius: 7px;
-  background: transparent;
-  color: var(--sp-label);
-  font: inherit;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-
-.cellActions button:hover { opacity: 0.7; }
-
-.deleteBtn { color: var(--sp-red) !important; border-color: var(--sp-red) !important; }
-
-.productCell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-}
-
-.productCell img {
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-
-.emptyRow {
-  padding: 26px 14px;
-  text-align: center;
-  color: var(--sp-label-2);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-}
-
-.customerCell {
-  display: flex;
-  flex-direction: column;
-}
-
-.customerCell strong { font-weight: 700; }
-
-.customerCell small { color: var(--sp-label-2); font-size: 0.5rem; }
-
-.statusSelect {
-  padding: 7px 8px;
-  border: 1px solid var(--sp-border);
-  border-radius: 7px;
-  background: var(--sp-surface);
-  color: var(--sp-label);
-  font: inherit;
-  font-size: 0.55rem;
-  letter-spacing: 0.12em;
-  cursor: pointer;
-}
-
-.noticeErr {
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border: 1px solid var(--sp-red);
-  border-radius: 10px;
-  color: var(--sp-red);
-}
-
-.noticeErrText {
-  margin: 0;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-}
-
-/* Aviso de operacion confirmada (equivale al .admin-flash.ok
-   del panel anterior: se conserva la confirmacion real). */
-.noticeOk {
-  margin: 0 0 14px;
-  padding: 12px 14px;
-  border: 1px solid var(--sp-green);
-  border-radius: 10px;
-  color: var(--sp-green);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-}
-
-/* ======================
-   EDITOR DE PRODUCTO
-====================== */
-
-.fieldRow {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-}
-
-.cancelBtn,
-.submitBtn {
-  padding: 13px 16px;
-  border: 0;
-  border-radius: 9px;
-  font: inherit;
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-
-.cancelBtn {
-  background: var(--sp-surface);
-  border: 1px solid var(--sp-border);
-  color: var(--sp-label);
-}
-
-.submitBtn {
-  background: var(--sp-accent);
-  color: var(--sp-accent-text);
-}
-
-.cancelBtn:hover, .submitBtn:hover { opacity: 0.85; }
-
-.cancelBtn:disabled, .submitBtn:disabled { opacity: 0.45; cursor: not-allowed; }
-
-.brandText {
-  display: flex;
-  flex-direction: column;
-}
-
-.brandText strong { font-size: 0.7rem; letter-spacing: 0.22em; }
-
-.brandText small { font-size: 0.5rem; letter-spacing: 0.32em; color: var(--sp-label-2); }
-
-.overviewQuick {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.noticeErrText p { margin: 0; }
-
+/* En pantallas grandes se respeta la preferencia de
+   menos animacion. */
 @media (prefers-reduced-motion: reduce) {
-  .navLink, .topLink, .metricCard, .tableCard { transition: none; }
+  .menuBars::before,
+  .menuBars::after,
+  .menuBars > i {
+    transition: none;
+  }
 }
-
-/* Botón principal "NUEVO PRODUCTO" de la vista de productos */
-.newBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 13px 16px;
-  border: 0;
-  border-radius: 9px;
-  background: var(--sp-accent);
-  color: var(--sp-accent-text);
-  font-family: inherit;
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-
-.newBtn:hover { opacity: 0.85; }

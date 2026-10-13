@@ -158,6 +158,16 @@ export default function CheckoutClient() {
     }
   }
 
+  /* Hasta que se lee el carrito del navegador no se
+     sabe el total: se muestra "..." en lugar de un
+     "PAGAR $0.00" que parece un error. */
+  const totalTexto = !cart.hydrated
+    ? "..."
+    : `$${cart.total.toFixed(2)}`;
+
+  const submitDeshabilitado =
+    loading || !cart.hydrated || cart.items.length === 0;
+
   return (
     <main className="checkout-page">
       <header className="checkout-topbar">
@@ -302,9 +312,9 @@ export default function CheckoutClient() {
             <button
               className="checkout-submit"
               type="submit"
-              disabled={loading || cart.items.length === 0}
+              disabled={submitDeshabilitado}
             >
-              <span>{loading ? "PROCESANDO..." : `PAGAR $${cart.total.toFixed(2)}`}</span>
+              <span>{loading ? "PROCESANDO..." : `PAGAR ${totalTexto}`}</span>
               <span></span>
             </button>
 
@@ -322,9 +332,12 @@ export default function CheckoutClient() {
           </div>
 
           <div className="checkout-items">
-            {cart.items.length === 0 && (
-              <p className="checkout-empty">Tu carrito está vacío.</p>
-            )}
+            {/* El aviso de carrito vacio solo se muestra
+                cuando ya sabemos que de verdad lo esta. */}
+            {cart.hydrated &&
+              cart.items.length === 0 && (
+                <p className="checkout-empty">Tu carrito está vacío.</p>
+              )}
             {cart.items.map((item, index) => (
               <div className="checkout-item" key={`${item.name}-${index}`}>
                 {item.image ? (
@@ -346,7 +359,7 @@ export default function CheckoutClient() {
 
           <div className="checkout-total">
             <span>TOTAL</span>
-            <strong>${cart.total.toFixed(2)}</strong>
+            <strong>{totalTexto}</strong>
           </div>
         </aside>
       </div>

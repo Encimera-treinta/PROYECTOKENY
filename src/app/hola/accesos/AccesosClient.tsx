@@ -231,7 +231,7 @@ export default function AccesosClient({
                       border:
                         "1px solid #2a2d33",
                       borderRadius: 8,
-                      fontSize: "0.7rem",
+                      fontSize: "0.82rem",
                     }}
                     aria-label="Link de acceso"
                   />
@@ -249,6 +249,7 @@ export default function AccesosClient({
                       className={styles.cellActionsButton}
                       onClick={handleCopy}
                       style={{
+                        minHeight: 48,
                         padding:
                           "9px 14px",
                         border:
@@ -259,10 +260,10 @@ export default function AccesosClient({
                         color: "#f2f4e9",
                         font:
                           "inherit",
-                        fontSize: "0.55rem",
+                        fontSize: "0.82rem",
                         fontWeight: 700,
                         letterSpacing:
-                          "0.16em",
+                          "0.12em",
                         cursor: "pointer",
                       }}
                     >
@@ -277,6 +278,11 @@ export default function AccesosClient({
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
+                          display:
+                            "inline-flex",
+                          alignItems:
+                            "center",
+                          minHeight: 48,
                           padding:
                             "9px 14px",
                           border:
@@ -285,10 +291,10 @@ export default function AccesosClient({
                           color: "#f2f4e9",
                           textDecoration:
                             "none",
-                          fontSize: "0.55rem",
+                          fontSize: "0.82rem",
                           fontWeight: 700,
                           letterSpacing:
-                            "0.16em",
+                            "0.12em",
                         }}
                       >
                         MANDAR POR WHATSAPP
@@ -299,7 +305,7 @@ export default function AccesosClient({
                   <p
                     style={{
                       marginTop: 12,
-                      fontSize: "0.6rem",
+                      fontSize: "0.82rem",
                       lineHeight: 1.6,
                       opacity: 0.75,
                     }}
@@ -334,10 +340,11 @@ export default function AccesosClient({
                         "transparent",
                       color: "#ff5c5c",
                       font: "inherit",
-                      fontSize: "0.55rem",
+                      fontSize: "0.82rem",
                       fontWeight: 700,
                       letterSpacing:
-                        "0.16em",
+                        "0.12em",
+                      minHeight: 48,
                       cursor: "pointer",
                     }}
                   >
@@ -446,11 +453,12 @@ export default function AccesosClient({
                                       "#ff5c5c",
                                     font: "inherit",
                                     fontSize:
-                                      "0.52rem",
+                                      "0.82rem",
                                     fontWeight:
                                       700,
                                     letterSpacing:
-                                      "0.16em",
+                                      "0.12em",
+                                    minHeight: 48,
                                     cursor:
                                       "pointer",
                                   }}

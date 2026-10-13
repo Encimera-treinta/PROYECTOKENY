@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
 import {
   createProduct,
@@ -73,7 +72,18 @@ function parsePrice(raw: string): number {
   return Number(cleaned);
 }
 
-async function parseProductForm(formData: FormData): Promise<ProductInput> {
+export type ProductResult =
+  | { ok: true; id: number; created: boolean }
+  | { ok: false; error: string };
+
+/* Error de validacion: en vez de redirigir con un query
+   se devuelve el motivo para que el panel lo muestre
+   sin perder lo que el usuario ya escribio. */
+class ProductError extends Error {}
+
+async function parseProductForm(
+  formData: FormData
+): Promise<ProductInput> {
   const name = String(formData.get("name") || "").trim();
   const category = String(formData.get("category") || "").trim();
   const priceRaw = String(formData.get("price") || "").trim();
@@ -93,21 +103,25 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
   const active = formData.get("active") === "on" ? 1 : 0;
   const description = String(formData.get("description") || "").trim();
 
-  if (!name) redirect("/hola/productos?new=1&error=name");
+  if (!name) throw new ProductError("Ponle un nombre al producto.");
+
   if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) {
-    redirect("/hola/productos?new=1&error=category");
+    throw new ProductError("Elegí una categoría válida.");
   }
+
   if (!priceRaw || !Number.isFinite(price) || price < 0) {
-    redirect("/hola/productos?new=1&error=price");
+    throw new ProductError("El precio no es válido.");
   }
+
   if (oldPrice !== null && (!Number.isFinite(oldPrice) || oldPrice < 0)) {
-    redirect("/hola/productos?new=1&error=old_price");
+    throw new ProductError("El precio anterior no es válido.");
   }
+
   if (
     stock !== null &&
     (!Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock))
   ) {
-    redirect("/hola/productos?new=1&error=stock");
+    throw new ProductError("El stock debe ser un número entero de 0 para arriba.");
   }
 
   /* Si subieron foto nueva, tiene prioridad sobre la ruta manual. */
@@ -119,7 +133,7 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
     if (saved) {
       image = saved;
     } else {
-      redirect("/hola/productos?new=1&error=image");
+      throw new ProductError("La foto no se pudo procesar.");
     }
   }
 
@@ -137,49 +151,100 @@ async function parseProductForm(formData: FormData): Promise<ProductInput> {
   };
 }
 
-export async function createProductAction(formData: FormData) {
+export async function createProductAction(
+  formData: FormData
+): Promise<ProductResult> {
   await requireAdmin();
-  const data = await parseProductForm(formData);
-  const newId = await createProduct(data);
-  revalidatePath("/hola/productos");
-  revalidatePath(`/${data.category}`);
-  /* Redirige directo al formulario del producto creado,
-     con su foto y datos cargados para verificarlo. */
-  redirect(`/hola/productos?edit=${newId}&created=1`);
+
+  try {
+    const data = await parseProductForm(formData);
+    const newId = await createProduct(data);
+
+    revalidatePath("/hola/productos");
+    revalidatePath(`/${data.category}`);
+
+    return { ok: true, id: newId, created: true };
+  } catch (err) {
+    if (err instanceof ProductError) {
+      return { ok: false, error: err.message };
+    }
+
+    return {
+      ok: false,
+      error: "No se pudo crear el producto.",
+    };
+  }
 }
 
-export async function updateProductAction(formData: FormData) {
+export async function updateProductAction(
+  formData: FormData
+): Promise<ProductResult> {
   await requireAdmin();
+
   const id = Number(formData.get("id"));
+
   if (!Number.isInteger(id) || id <= 0) {
-    redirect(`/hola/productos?edit=${id || ""}&error=id`);
+    return { ok: false, error: "Producto no válido." };
   }
+
   if (!(await getProductById(id))) {
-    redirect("/hola/productos?error=missing");
+    return {
+      ok: false,
+      error: "Ese producto ya no existe.",
+    };
   }
-  const data = await parseProductForm(formData);
-  await updateProduct(id, data);
-  revalidatePath("/hola/productos");
-  revalidatePath(`/${data.category}`);
-  redirect(`/hola/productos?edit=${id}&updated=1`);
+
+  try {
+    const data = await parseProductForm(formData);
+
+    await updateProduct(id, data);
+
+    revalidatePath("/hola/productos");
+    revalidatePath(`/${data.category}`);
+
+    return { ok: true, id, created: false };
+  } catch (err) {
+    if (err instanceof ProductError) {
+      return { ok: false, error: err.message };
+    }
+
+    return {
+      ok: false,
+      error: "No se pudo guardar el producto.",
+    };
+  }
 }
 
-export async function deleteProductAction(formData: FormData) {
+export async function deleteProductAction(
+  formData: FormData
+): Promise<ProductResult> {
   await requireAdmin();
+
   const id = Number(formData.get("id"));
+
   if (!Number.isInteger(id) || id <= 0) {
-    redirect("/hola/productos?error=id");
-  }
-  const product = await getProductById(id);
-  await deleteProduct(id);
-
-  /* Borra también la foto si era una imagen subida. */
-  if (product?.image?.startsWith("/uploads/")) {
-    const fileName = product.image.replace("/uploads/", "");
-    await deleteUploadByName(fileName);
+    return { ok: false, error: "Producto no válido." };
   }
 
-  revalidatePath("/hola/productos");
-  if (product) revalidatePath(`/${product.category}`);
-  redirect("/hola/productos?deleted=1");
+  try {
+    const product = await getProductById(id);
+
+    await deleteProduct(id);
+
+    /* Borra también la foto si era una imagen subida. */
+    if (product?.image?.startsWith("/uploads/")) {
+      const fileName = product.image.replace("/uploads/", "");
+      await deleteUploadByName(fileName);
+    }
+
+    revalidatePath("/hola/productos");
+    if (product) revalidatePath(`/${product.category}`);
+
+    return { ok: true, id, created: false };
+  } catch {
+    return {
+      ok: false,
+      error: "No se pudo eliminar el producto.",
+    };
+  }
 }

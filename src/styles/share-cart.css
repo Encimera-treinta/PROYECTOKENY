@@ -39,18 +39,17 @@
 .share-toggle {
   width: 100%;
 
-  min-height: 46px;
+  min-height: 48px;
 
   background: transparent;
-  color: rgba(255, 255, 255, 0.62);
-
+  color: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 0;
 
   cursor: pointer;
 
   font-family: inherit;
-  font-size: 0.54rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.2em;
 

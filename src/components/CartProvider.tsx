@@ -28,6 +28,11 @@ type CartContextType = {
   clear: () => void;
   count: number;
   total: number;
+  /* false mientras se lee el carrito del
+     navegador. Sirve para no mostrar el
+     aviso de "carrito vacio" un instante
+     antes de que aparezca el contenido. */
+  hydrated: boolean;
 };
 
 const CartContext =
@@ -293,12 +298,15 @@ export function CartProvider({
 
         count,
         total,
+
+        hydrated,
       }),
       [
         items,
         open,
         count,
         total,
+        hydrated,
       ]
     );
 
@@ -703,7 +711,15 @@ function CartDrawer() {
         {/* ITEMS */}
 
         <div className="cart-items-container">
-          {cart.items.length ===
+          {/* Antes de leer el navegador no sabemos si hay
+             items: se muestra un hueco en vez de decir
+             "esta vacio" y contradictedespues. */}
+          {!cart.hydrated ? (
+            <div
+              className="empty-cart"
+              aria-hidden="true"
+            />
+          ) : cart.items.length ===
           0 ? (
             <div className="empty-cart">
               <span>
@@ -862,7 +878,8 @@ function CartDrawer() {
 
         {/* FOOTER */}
 
-        {cart.items.length >
+        {cart.hydrated &&
+          cart.items.length >
           0 && (
           <div className="cart-footer">
             <div className="cart-summary-line">

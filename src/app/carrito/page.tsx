@@ -11,9 +11,18 @@ export default function CarritoPage() {
       <span>SPORTCRZ / BAG</span>
       <h1>TU<br />CARRITO.</h1>
       <p>
-        {cart.count === 0
-          ? "TODAVÍA NO HAS AGREGADO PRODUCTOS."
-          : `${cart.count} ${cart.count === 1 ? "ARTÍCULO" : "ARTÍCULOS"} · $${cart.total.toFixed(2)}`}
+        {/* Mientras no sabemos si hay productos no se
+            anuncia "no agregaste nada": se veria un
+            segundo y despues cambiaria solo. */}
+        {!cart.hydrated
+          ? "CARGANDO TU CARRITO..."
+          : cart.count === 0
+            ? "TODAVÍA NO HAS AGREGADO PRODUCTOS."
+            : `${cart.count} ${
+                cart.count === 1
+                  ? "ARTÍCULO"
+                  : "ARTÍCULOS"
+              } · $${cart.total.toFixed(2)}`}
       </p>
       <div>
         <button type="button" onClick={() => cart.setOpen(true)}>

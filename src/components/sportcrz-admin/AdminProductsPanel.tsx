@@ -176,20 +176,30 @@ export function AdminProductsPanel({
     setNotice(null);
 
     startTransition(async () => {
-      try {
-        if (next.id) {
-          await updateProductAction(formData);
-        } else {
-          await createProductAction(formData);
-        }
-        /* La action redirige; si vuelve sin navegar, refrescamos. */
-        setEditorOpen(false);
-        setDraft(null);
-        router.refresh();
-      } catch {
-        setError("ERROR: No se pudo guardar el producto.");
-        router.refresh();
+      const result = next.id
+        ? await updateProductAction(formData)
+        : await createProductAction(formData);
+
+      if (!result?.ok) {
+        setError(
+          result?.error ||
+            "No se pudo guardar el producto."
+        );
+
+        return;
       }
+
+      /* El formulario sigue abierto solo si algo fallo:
+         asi el usuario no pierde lo que escribio. */
+      setEditorOpen(false);
+      setDraft(null);
+      setNotice(
+        result.created
+          ? "PRODUCTO CREADO."
+          : "PRODUCTO GUARDADO."
+      );
+
+      router.refresh();
     });
   }
 
@@ -208,13 +218,20 @@ export function AdminProductsPanel({
     setNotice(null);
 
     startTransition(async () => {
-      try {
-        await deleteProductAction(formData);
-        router.refresh();
-      } catch {
-        setError("ERROR: No se pudo eliminar el producto.");
-        router.refresh();
+      const result = await deleteProductAction(formData);
+
+      if (!result?.ok) {
+        setError(
+          result?.error ||
+            "No se pudo eliminar el producto."
+        );
+
+        return;
       }
+
+      setNotice("PRODUCTO ELIMINADO.");
+
+      router.refresh();
     });
   }
 
