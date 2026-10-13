@@ -15,6 +15,12 @@ import {
   deletePaymentMethod,
   updateCustomerProfile,
 } from "@/lib/database";
+import {
+  clearLoginFailures,
+  clientIp,
+  isLoginBlocked,
+  registerLoginFailure,
+} from "@/lib/rate-limit";
 
 /* ===== PERFIL ===== */
 
@@ -171,16 +177,45 @@ export async function registerAction(formData: FormData) {
 }
 
 export async function loginAction(formData: FormData) {
+  const email = String(
+    formData.get("email") || ""
+  ).trim();
+
+  /* Solo cuentan los intentos FALLIDOS: 10 por IP+correo
+     cada 10 minutos. El acierto nunca queda bloqueado. */
+  if (await isLoginBlocked("customer-login", email)) {
+    redirect("/cuenta/login?error=locked");
+  }
+
   const result = await loginCustomer(
-    String(formData.get("email") || ""),
+    email,
     String(formData.get("password") || "")
   );
 
   if (!result.ok) {
+    const stillOk = await registerLoginFailure(
+      "customer-login",
+      email
+    );
+
+    const destino = safeNext(
+      String(formData.get("next") || "")
+    );
+
+    if (!stillOk) {
+      redirect("/cuenta/login?error=locked");
+    }
+
     redirect(
-      `/cuenta/login?error=invalid&next=${encodeURIComponent(safeNext(String(formData.get("next") || "")))}`
+      `/cuenta/login?error=invalid&next=${encodeURIComponent(destino)}`
     );
   }
+
+  clearLoginFailures(
+    "customer-login",
+    email,
+    await clientIp()
+  );
 
   redirect(safeNext(String(formData.get("next") || "")));
 }

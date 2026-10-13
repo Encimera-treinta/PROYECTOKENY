@@ -14,6 +14,8 @@ const ERRORS: Record<string, string> = {
   email: "Ingresa un correo válido.",
   password: "La contraseña debe tener al menos 6 caracteres.",
   name: "Ingresa tu nombre completo.",
+  locked:
+    "Demasiados intentos. Espera unos minutos e intenta de nuevo.",
 };
 
 export default async function CuentaLoginPage({

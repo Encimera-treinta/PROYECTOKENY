@@ -58,7 +58,9 @@ const SCHEMA_SQL = `
     old_price REAL CHECK (old_price IS NULL OR old_price >= 0),
     image TEXT NOT NULL DEFAULT '/img/portfolio-1.jpg',
     badge TEXT,
-    stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
+    /* stock NULL = sin control de inventario (se vende siempre).
+       stock 0 = agotado explicitamente. */
+    stock INTEGER CHECK (stock IS NULL OR stock >= 0),
     active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0, 1)),
     sort_order INTEGER NOT NULL DEFAULT 0,
     description TEXT,
@@ -135,6 +137,61 @@ const SCHEMA_SQL = `
   );
 
   CREATE INDEX IF NOT EXISTS payment_methods_customer_idx ON payment_methods(customer_id);
+
+  /*
+    Carritos compartidos: el cliente arma su carrito y se genera un link
+    corto (/pedido/CODE) que puede mandar por WhatsApp a quien quiera
+    (por ejemplo su madre). Quien abre el link solo ve la lista y la
+    confirma. No necesita cuenta ni pagar por la pagina.
+
+    OJO: este bloque se parte por punto y coma, asi que ni el
+    comentario ni el SQL pueden contener uno.
+  */
+  CREATE TABLE IF NOT EXISTS shared_carts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL UNIQUE,
+    sender_name TEXT,
+    sender_phone TEXT,
+    recipient_name TEXT,
+    note TEXT,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'declined', 'ordered')),
+    subtotal REAL NOT NULL CHECK (subtotal >= 0),
+    total REAL NOT NULL CHECK (total >= 0),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS shared_carts_status_idx ON shared_carts(status, created_at);
+
+  CREATE TABLE IF NOT EXISTS shared_cart_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cart_id INTEGER NOT NULL REFERENCES shared_carts(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id) ON DELETE SET NULL,
+    product_name TEXT NOT NULL,
+    image TEXT,
+    unit_price REAL NOT NULL CHECK (unit_price >= 0),
+    quantity INTEGER NOT NULL CHECK (quantity > 0)
+  );
+
+  CREATE INDEX IF NOT EXISTS shared_cart_items_cart_idx ON shared_cart_items(cart_id);
+
+  /*
+    Links de acceso directo al panel (magic link).
+    Solo se guarda el SHA-256 del token, jamas el token en claro.
+    OJO: ni el comentario ni el SQL pueden contener punto y coma.
+  */
+  CREATE TABLE IF NOT EXISTS admin_login_links (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash TEXT NOT NULL UNIQUE,
+    label TEXT,
+    expires_at TEXT NOT NULL,
+    revoked_at TEXT,
+    last_used_at TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS admin_login_links_user_idx ON admin_login_links(user_id);
 `;
 
 /* Ejecuta el esquema una sola vez por proceso. */
@@ -203,7 +260,7 @@ export function ensureSchema(): Promise<void> {
 
         for (const p of seed) {
           await database.execute({
-            sql: "INSERT INTO products (name, category, price, old_price, image, badge, stock, sort_order) VALUES (?, ?, ?, ?, ?, ?, 0, ?)",
+            sql: "INSERT INTO products (name, category, price, old_price, image, badge, stock, sort_order) VALUES (?, ?, ?, ?, ?, ?, NULL, ?)",
             args: [p.name, p.category, p.price, p.old_price, p.image, p.badge, p.sort_order],
           });
         }
@@ -305,7 +362,8 @@ export type Product = {
   old_price: number | null;
   image: string;
   badge: string | null;
-  stock: number;
+  /* NULL = sin control de inventario. 0 = agotado. */
+  stock: number | null;
   active: number;
   sort_order: number;
   description: string | null;
@@ -324,7 +382,10 @@ function rowToProduct(row: Record<string, unknown>): Product {
     old_price: row.old_price === null || row.old_price === undefined ? null : Number(row.old_price),
     image: String(row.image),
     badge: row.badge === null || row.badge === undefined ? null : String(row.badge),
-    stock: Number(row.stock),
+    stock:
+      row.stock === null || row.stock === undefined
+        ? null
+        : Number(row.stock),
     active: Number(row.active),
     sort_order: Number(row.sort_order),
     description:
@@ -375,7 +436,7 @@ export async function createProduct(data: {
   old_price: number | null;
   image: string;
   badge: string | null;
-  stock: number;
+  stock: number | null;
   sort_order: number;
   description: string | null;
 }): Promise<number> {
@@ -410,7 +471,7 @@ export async function updateProduct(
     old_price: number | null;
     image: string;
     badge: string | null;
-    stock: number;
+    stock: number | null;
     active: number;
     sort_order: number;
     description: string | null;
@@ -724,6 +785,55 @@ export async function getOrderWithItems(
   return { order, items };
 }
 
+/* Vista publica de una orden por su codigo (para el link que
+   se manda por WhatsApp). Solo necesita el codigo, que es
+   aleatorio y unico. */
+export async function getPublicOrderByCode(code: string): Promise<{
+  order: Order;
+  items: Array<
+    OrderItem & { image: string | null }
+  >;
+} | undefined> {
+  await ensureSchema();
+
+  const result = await database.execute({
+    sql: "SELECT id FROM orders WHERE order_code = ? LIMIT 1",
+    args: [code.trim().toUpperCase()],
+  });
+
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+
+  if (!row) return undefined;
+
+  const full = await getOrderWithItems(Number(row.id));
+
+  if (!full) return undefined;
+
+  /* La imagen viene del producto por si el pedido guarda
+     el nombre pero el producto luego cambia o se borra. */
+  const withImages = await Promise.all(
+    full.items.map(async (item) => {
+      if (!item.product_id) {
+        return { ...item, image: null };
+      }
+
+      const product = await getProductById(
+        item.product_id
+      );
+
+      return {
+        ...item,
+        image: product?.image ?? null,
+      };
+    })
+  );
+
+  return {
+    order: full.order,
+    items: withImages,
+  };
+}
+
 export async function updateOrderStatus(orderId: number, status: string): Promise<void> {
   await ensureSchema();
   await database.execute({
@@ -1017,4 +1127,493 @@ export async function listOrdersByCustomerEmail(
       item_count: Number(r.item_count),
     };
   });
+}
+
+/* ==========================================
+   CARRITOS COMPARTIDOS
+   ========================================== */
+
+export type SharedCartItem = {
+  id: number;
+  product_id: number | null;
+  product_name: string;
+  image: string | null;
+  unit_price: number;
+  quantity: number;
+};
+
+export type SharedCart = {
+  id: number;
+  code: string;
+  sender_name: string | null;
+  sender_phone: string | null;
+  recipient_name: string | null;
+  note: string | null;
+  status: "pending" | "confirmed" | "declined" | "ordered";
+  subtotal: number;
+  total: number;
+  created_at: string;
+  updated_at: string;
+  items: SharedCartItem[];
+};
+
+/* Sin letras ni numeros que se confundan al leerlos en voz alta
+   (0/O, 1/I/L, 5/S, 8/B, 2/Z). */
+const CODE_ALPHABET = "34679ACDEFGHJKMNPQRTUVWXY";
+
+export function generateSharedCartCode(): string {
+  let code = "";
+
+  for (let i = 0; i < 6; i += 1) {
+    code += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
+  }
+
+  return `SCZ-${code}`;
+}
+
+export async function createSharedCart(data: {
+  sender_name?: string | null;
+  sender_phone?: string | null;
+  recipient_name?: string | null;
+  note?: string | null;
+  items: Array<{
+    product_id: number | null;
+    product_name: string;
+    image?: string | null;
+    unit_price: number;
+    quantity: number;
+  }>;
+}): Promise<SharedCart> {
+  await ensureSchema();
+
+  const subtotal = data.items.reduce(
+    (sum, item) => sum + item.unit_price * item.quantity,
+    0
+  );
+
+  /* Reintenta por si el codigo aleatorio ya existe (colision). */
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const code = generateSharedCartCode();
+
+    const existing = await database.execute({
+      sql: "SELECT 1 AS found FROM shared_carts WHERE code = ? LIMIT 1",
+      args: [code],
+    });
+
+    if (existing.rows.length > 0) continue;
+
+    let result;
+
+    try {
+      result = await database.execute({
+        sql: `
+          INSERT INTO shared_carts
+            (code, sender_name, sender_phone, recipient_name, note, subtotal, total)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `,
+        args: [
+          code,
+          data.sender_name?.trim() || null,
+          data.sender_phone?.trim() || null,
+          data.recipient_name?.trim() || null,
+          data.note?.trim() || null,
+          subtotal,
+          subtotal,
+        ],
+      });
+    } catch {
+      continue;
+    }
+
+    const cartId = Number(result.lastInsertRowid);
+
+    for (const item of data.items) {
+      await database.execute({
+        sql: `
+          INSERT INTO shared_cart_items
+            (cart_id, product_id, product_name, image, unit_price, quantity)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `,
+        args: [
+          cartId,
+          item.product_id,
+          item.product_name,
+          item.image ?? null,
+          item.unit_price,
+          item.quantity,
+        ],
+      });
+    }
+
+    const created = await getSharedCartByCode(code);
+
+    if (created) return created;
+
+    throw new Error("No se pudo leer el carrito recien creado.");
+  }
+
+  throw new Error("No se pudo generar un codigo de pedido unico.");
+}
+
+export async function getSharedCartByCode(
+  code: string
+): Promise<SharedCart | undefined> {
+  await ensureSchema();
+
+  const result = await database.execute({
+    sql: "SELECT * FROM shared_carts WHERE code = ? LIMIT 1",
+    args: [code.trim().toUpperCase()],
+  });
+
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+
+  if (!row) return undefined;
+
+  const cartId = Number(row.id);
+
+  const itemsResult = await database.execute({
+    sql: `
+      SELECT id, product_id, product_name, image, unit_price, quantity
+      FROM shared_cart_items
+      WHERE cart_id = ?
+      ORDER BY id ASC
+    `,
+    args: [cartId],
+  });
+
+  return {
+    id: cartId,
+    code: String(row.code),
+    sender_name: row.sender_name == null ? null : String(row.sender_name),
+    sender_phone: row.sender_phone == null ? null : String(row.sender_phone),
+    recipient_name:
+      row.recipient_name == null ? null : String(row.recipient_name),
+    note: row.note == null ? null : String(row.note),
+    status: String(row.status) as SharedCart["status"],
+    subtotal: Number(row.subtotal),
+    total: Number(row.total),
+    created_at: String(row.created_at),
+    updated_at: String(row.updated_at),
+    items: itemsResult.rows.map((itemRow) => {
+      const r = itemRow as Record<string, unknown>;
+      return {
+        id: Number(r.id),
+        product_id: r.product_id == null ? null : Number(r.product_id),
+        product_name: String(r.product_name),
+        image: r.image == null ? null : String(r.image),
+        unit_price: Number(r.unit_price),
+        quantity: Number(r.quantity),
+      };
+    }),
+  };
+}
+
+export async function updateSharedCartStatus(
+  code: string,
+  status: SharedCart["status"]
+): Promise<SharedCart | undefined> {
+  await ensureSchema();
+
+  await database.execute({
+    sql: `
+      UPDATE shared_carts
+      SET status = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE code = ?
+    `,
+    args: [status, code.trim().toUpperCase()],
+  });
+
+  return getSharedCartByCode(code);
+}
+
+export async function listSharedCarts(
+  limit = 50
+): Promise<Array<SharedCart & { item_count: number; unit_count: number }>> {
+  await ensureSchema();
+
+  const result = await database.execute({
+    sql: `
+      SELECT c.*,
+        COUNT(i.id) AS item_count,
+        COALESCE(SUM(i.quantity), 0) AS unit_count
+      FROM shared_carts c
+      LEFT JOIN shared_cart_items i ON i.cart_id = c.id
+      GROUP BY c.id
+      ORDER BY c.created_at DESC, c.id DESC
+      LIMIT ?
+    `,
+    args: [limit],
+  });
+
+  const carts: Array<
+    SharedCart & { item_count: number; unit_count: number }
+  > = [];
+
+  for (const row of result.rows) {
+    const r = row as Record<string, unknown>;
+
+    const full = await getSharedCartByCode(String(r.code));
+
+    if (!full) continue;
+
+    carts.push({
+      ...full,
+      item_count: Number(r.item_count),
+      unit_count: Number(r.unit_count),
+    });
+  }
+
+  return carts;
+}
+
+/* ==========================================
+   MAGIC LINKS (acceso directo al panel)
+   ========================================== */
+
+import {
+  createHash,
+  randomBytes,
+} from "crypto";
+
+import { getAdminSession } from "@/lib/admin-auth";
+
+/* SHA-256 del token. El token en claro nunca se guarda. */
+export function hashLoginToken(token: string): string {
+  return createHash("sha256")
+    .update(token)
+    .digest("hex");
+}
+
+export type AdminLoginLink = {
+  id: number;
+  user_id: number;
+  label: string | null;
+  expires_at: string;
+  revoked_at: string | null;
+  last_used_at: string | null;
+  created_at: string;
+};
+
+export function generateLoginToken(): string {
+  /* 32 bytes = 256 bits de entropia. */
+  return randomBytes(32).toString("base64url");
+}
+
+export type NewLoginLink = {
+  token: string;
+  link: AdminLoginLink;
+};
+
+/**
+ * Crea un link de acceso y devuelve el token en claro.
+ * El token solo existe en esta respuesta: despues solo queda su hash.
+ */
+export async function createAdminLoginLink(data: {
+  userId: number;
+  label?: string | null;
+  expiresInDays: number;
+}): Promise<NewLoginLink> {
+  await ensureSchema();
+
+  const days = Math.min(
+    Math.max(1, Math.floor(data.expiresInDays)),
+    90
+  );
+
+  const token = generateLoginToken();
+  const tokenHash = hashLoginToken(token);
+
+  const expiresAt = new Date(
+    Date.now() + days * 24 * 60 * 60 * 1000
+  ).toISOString();
+
+  const result = await database.execute({
+    sql: `
+      INSERT INTO admin_login_links (user_id, token_hash, label, expires_at)
+      VALUES (?, ?, ?, ?)
+    `,
+    args: [
+      data.userId,
+      tokenHash,
+      data.label?.trim() || null,
+      expiresAt,
+    ],
+  });
+
+  const linkId = Number(result.lastInsertRowid);
+
+  return {
+    token,
+    link: {
+      id: linkId,
+      user_id: data.userId,
+      label: data.label?.trim() || null,
+      expires_at: expiresAt,
+      revoked_at: null,
+      last_used_at: null,
+      created_at: new Date().toISOString(),
+    },
+  };
+}
+
+/**
+ * Valida un token y devuelve el admin asociado.
+ * NULL si no existe, esta revocado o expiro.
+ */
+export async function consumeAdminLoginToken(token: string): Promise<{
+  userId: number;
+  email: string;
+} | null> {
+  await ensureSchema();
+
+  if (!token || token.length < 20 || token.length > 200) {
+    return null;
+  }
+
+  const tokenHash = hashLoginToken(token);
+
+  const result = await database.execute({
+    sql: "SELECT * FROM admin_login_links WHERE token_hash = ? LIMIT 1",
+    args: [tokenHash],
+  });
+
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+
+  if (!row) return null;
+
+  if (row.revoked_at != null) return null;
+
+  const expiresAt = Date.parse(String(row.expires_at));
+
+  if (!Number.isFinite(expiresAt) || expiresAt < Date.now()) {
+    return null;
+  }
+
+  const userResult = await database.execute({
+    sql: "SELECT id, email, active FROM users WHERE id = ? LIMIT 1",
+    args: [Number(row.user_id)],
+  });
+
+  const user = userResult.rows[0] as Record<string, unknown> | undefined;
+
+  if (!user || Number(user.active) !== 1) return null;
+
+  await database.execute({
+    sql: `
+      UPDATE admin_login_links
+      SET last_used_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `,
+    args: [Number(row.id)],
+  });
+
+  return {
+    userId: Number(user.id),
+    email: String(user.email),
+  };
+}
+
+/** Invalida un link puntual. */
+export async function revokeAdminLoginLink(id: number): Promise<void> {
+  await ensureSchema();
+
+  await database.execute({
+    sql: `
+      UPDATE admin_login_links
+      SET revoked_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND revoked_at IS NULL
+    `,
+    args: [id],
+  });
+}
+
+/** Invalida todos los links de un admin. */
+export async function revokeAllAdminLoginLinks(
+  userId: number
+): Promise<void> {
+  await ensureSchema();
+
+  await database.execute({
+    sql: `
+      UPDATE admin_login_links
+      SET revoked_at = CURRENT_TIMESTAMP
+      WHERE user_id = ? AND revoked_at IS NULL
+    `,
+    args: [userId],
+  });
+}
+
+export type LinkState =
+  | "activo"
+  | "usado"
+  | "vencido"
+  | "revocado";
+
+export async function listAdminLoginLinks(
+  userId: number
+): Promise<Array<AdminLoginLink & { state: LinkState }>> {
+  await ensureSchema();
+
+  const result = await database.execute({
+    sql: `
+      SELECT * FROM admin_login_links
+      WHERE user_id = ?
+      ORDER BY created_at DESC, id DESC
+      LIMIT 50
+    `,
+    args: [userId],
+  });
+
+  const now = Date.now();
+
+  return result.rows.map((row) => {
+    const r = row as Record<string, unknown>;
+
+    const expiresAt = Date.parse(String(r.expires_at));
+
+    let state: LinkState;
+
+    if (r.revoked_at != null) {
+      state = "revocado";
+    } else if (Number.isFinite(expiresAt) && expiresAt < now) {
+      state = "vencido";
+    } else if (r.last_used_at != null) {
+      state = "usado";
+    } else {
+      state = "activo";
+    }
+
+    return {
+      id: Number(r.id),
+      user_id: Number(r.user_id),
+      label: r.label == null ? null : String(r.label),
+      expires_at: String(r.expires_at),
+      revoked_at: r.revoked_at == null ? null : String(r.revoked_at),
+      last_used_at: r.last_used_at == null ? null : String(r.last_used_at),
+      created_at: String(r.created_at),
+      state,
+    };
+  });
+}
+
+/* ------------------------------------------------------------
+   Guard de la pagina de accesos: solo un admin con sesion
+   activa puede crear o revocar links.
+   ------------------------------------------------------------ */
+
+export async function requireAdminForLinks() {
+  const session = await getAdminSession();
+
+  if (!session) return null;
+
+  const result = await database.execute({
+    sql: "SELECT id, email FROM users WHERE email = ? AND active = 1 LIMIT 1",
+    args: [session.email.trim().toLowerCase()],
+  });
+
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+
+  if (!row) return null;
+
+  return { id: Number(row.id), email: String(row.email) };
 }
