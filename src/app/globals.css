@@ -125,6 +125,57 @@ button {
   mix-blend-mode: difference;
 }
 
+/*
+ * Ya desplazada la página, el contenido pasa por debajo
+ * del navbar y el logo se cruzaba con el texto (ambos
+ * invertidos por el blend). A partir de 40px se apaga el
+ * blend y se pone un fondo traslúcido: se sigue viendo
+ * la página detrás, pero el logo queda siempre legible.
+ */
+.future-nav.future-nav-solid {
+  mix-blend-mode: normal;
+
+  background:
+    var(--sp-nav-scrim);
+
+  backdrop-filter:
+    blur(18px)
+    saturate(160%);
+  -webkit-backdrop-filter:
+    blur(18px)
+    saturate(160%);
+
+  box-shadow:
+    0 1px 0 0
+    var(--sp-sep);
+}
+
+/*
+ * Con el blend activo el texto es blanco y el navegador lo
+ * invierte segun el fondo, por eso siempre se leia. Al apagar
+ * el blend hay que volver a colorear: en tema claro el logo
+ * blanco sobre fondo claro desapareceria.
+ */
+/* Los links y el logo traen !important en su regla base,
+   asi que este bloque tambien lo necesita para ganar. */
+.future-nav.future-nav-solid .future-logo,
+.future-nav.future-nav-solid .future-logo:hover,
+.future-nav.future-nav-solid .future-link,
+.future-nav.future-nav-solid .future-link:visited,
+.future-nav.future-nav-solid .future-link:focus,
+.future-nav.future-nav-solid .future-link:active,
+.future-nav.future-nav-solid .future-link:hover {
+  color: var(--sp-label) !important;
+}
+
+.future-nav.future-nav-solid .future-menu-button {
+  color: var(--sp-label);
+}
+
+.future-nav.future-nav-solid .future-menu-button span {
+  background: var(--sp-label);
+}
+
 .future-nav-inner {
   width:
     min(

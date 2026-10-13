@@ -10,6 +10,14 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] =
     useState(false);
 
+  /* Arriba el navbar usa mix-blend-mode: difference y se
+     invierte contra el fondo: ese es el efecto original.
+     Al bajar, el contenido pasa por debajo y el logo se
+     cruzaba con el texto de la pagina. A partir de cierto
+     punto se pasa a fondo solido para que siempre se lea. */
+  const [scrolled, setScrolled] =
+    useState(false);
+
   const links = [
     {
       href: "/",
@@ -40,6 +48,27 @@ export default function Navbar() {
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+
+    onScroll();
+
+    window.addEventListener(
+      "scroll",
+      onScroll,
+      { passive: true }
+    );
+
+    return () => {
+      window.removeEventListener(
+        "scroll",
+        onScroll
+      );
+    };
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) {
@@ -81,7 +110,13 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="future-nav">
+      <header
+        className={`future-nav ${
+          scrolled
+            ? "future-nav-solid"
+            : ""
+        }`}
+      >
         <div className="future-nav-inner">
           <Link
             href="/"
