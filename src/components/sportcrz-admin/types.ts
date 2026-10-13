@@ -42,7 +42,8 @@ export interface ProductDraft {
   old_price: number | null;
   image: string;
   badge: string | null;
-  stock: number;
+  /** NULL = sin control de inventario. 0 = agotado. */
+  stock: number | null;
   active: number;
   sort_order: number;
   description: string | null;

@@ -767,7 +767,13 @@
 
   flex-shrink: 0;
 
-  background: var(--sp-label);
+  /*
+    BUG CORREGIDO: usaba var(--sp-label) como fondo.
+    En tema dark esa variable es #f2f1ec (claro), asi que el
+    texto blanco quedaba invisible sobre fondo blanco.
+    Ahora el pie es siempre oscuro, en los dos temas.
+  */
+  background: #101010;
 
   color: #ffffff;
 
@@ -867,7 +873,7 @@
 
   background: #ffffff;
 
-  color: var(--sp-label);
+  color: #101010;
 
   border: 0;
 

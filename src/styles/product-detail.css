@@ -166,11 +166,22 @@
   letter-spacing: 0.26em;
 }
 
+/* El verde/rojo claros estaban pensados para fondo oscuro.
+   Sobre el crema del tema claro quedaban casi invisibles
+   (contraste ~1.2:1). Cada tema usa su propio tono. */
 .pd-stock.in {
-  color: #7fd98a;
+  color: #16713a;
 }
 
 .pd-stock.out {
+  color: #c0362c;
+}
+
+[data-theme="dark"] .pd-stock.in {
+  color: #7fd98a;
+}
+
+[data-theme="dark"] .pd-stock.out {
   color: #ff5d4d;
 }
 

@@ -22,7 +22,11 @@ export async function getOverviewMetrics(): Promise<OverviewMetrics> {
   const ordersToPrepare = orders.filter(
     (o) => o.status === "pending" || o.status === "paid"
   ).length;
-  const lowStockCount = products.filter((p) => p.stock > 0 && p.stock <= 5).length;
+  /* Un producto con stock NULL no tiene control de inventario:
+   no cuenta ni como bajo ni como agotado. */
+  const lowStockCount = products.filter(
+    (p) => p.stock !== null && p.stock > 0 && p.stock <= 5
+  ).length;
   return {
     products: products.length,
     activeProducts,

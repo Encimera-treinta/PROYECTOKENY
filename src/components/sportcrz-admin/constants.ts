@@ -38,7 +38,7 @@ export const PAYMENT_OPTIONS: PaymentOption[] = [
 ];
 
 /* Mismo criterio que getOverviewMetrics() en @/lib/overview:
-   stock > 0 && stock <= 5. */
+   stock > 0 && stock <= 5. Un stock NULL no cuenta como bajo. */
 export const LOW_STOCK_THRESHOLD = 5;
 
 export const PAGE_SIZE = 20;

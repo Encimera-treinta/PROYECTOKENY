@@ -28,7 +28,8 @@ export default function ProductDetail({
     CATEGORY_LABELS[product.category] ?? product.category.toUpperCase();
   const hasDiscount =
     product.old_price != null && product.old_price > product.price;
-  const outOfStock = product.stock <= 0;
+  /* stock null = sin control de inventario: nunca se marca agotado. */
+  const outOfStock = product.stock !== null && product.stock <= 0;
 
   /* GSAP: entrada tipo Apple/Pagani — imagen revelada,
      texto escalonado, parallax sutil al scroll. */
@@ -182,7 +183,9 @@ export default function ProductDetail({
             <p className={`pd-stock ${outOfStock ? "out" : "in"}`}>
               {outOfStock
                 ? "AGOTADO"
-                : `EN EXISTENCIA — ${product.stock} UNIDADES`}
+                : product.stock === null
+                  ? "EN EXISTENCIA"
+                  : `EN EXISTENCIA — ${product.stock} UNIDADES`}
             </p>
 
             {/* TALLES */}
@@ -276,7 +279,13 @@ export default function ProductDetail({
             </div>
             <div>
               <dt>DISPONIBILIDAD</dt>
-              <dd>{outOfStock ? "AGOTADO" : `${product.stock} EN EXISTENCIA`}</dd>
+              <dd>
+                {outOfStock
+                  ? "AGOTADO"
+                  : product.stock === null
+                    ? "EN EXISTENCIA"
+                    : `${product.stock} EN EXISTENCIA`}
+              </dd>
             </div>
           </dl>
         </section>
