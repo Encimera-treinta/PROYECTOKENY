@@ -1,0 +1,169 @@
+/* ==========================================
+   404
+   ========================================== */
+
+.nf-page {
+  width: 100%;
+  min-width: 0;
+
+  min-height: 100vh;
+  min-height: 100svh;
+
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  /* clip, no hidden: hidden convertiria esta pagina en
+     contenedor de scroll y el gesto tactil no llegaria
+     al documento. */
+  overflow-x: clip;
+  overflow-y: visible;
+
+  background: #080808;
+  color: #ffffff;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.nf-page *,
+.nf-page *::before,
+.nf-page *::after {
+  box-sizing: border-box;
+}
+
+.nf-top,
+.nf-footer {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 24px 5%;
+
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+}
+
+.nf-top {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nf-footer {
+  margin-top: auto;
+
+  color: rgba(255, 255, 255, 0.3);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nf-top a {
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+
+  touch-action: manipulation;
+}
+
+.nf-top a:active {
+  opacity: 0.6;
+}
+
+.nf-body {
+  width: min(560px, 100%);
+
+  margin: 0 auto;
+
+  padding: 10px 5% 60px;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 26px;
+}
+
+.nf-code {
+  color: rgba(255, 255, 255, 0.4);
+
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+}
+
+.nf-body h1 {
+  margin: 0;
+
+  font-size: clamp(2.6rem, 13vw, 5rem);
+  font-weight: 900;
+  line-height: 0.88;
+  letter-spacing: -0.05em;
+}
+
+.nf-body p {
+  margin: 0;
+
+  max-width: 32ch;
+
+  color: rgba(255, 255, 255, 0.55);
+
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.nf-btn {
+  min-height: 60px;
+
+  padding: 0 26px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  align-self: flex-start;
+
+  background: #ffffff;
+  color: #080808;
+
+  text-decoration: none;
+
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+
+  touch-action: manipulation;
+
+  transition: opacity 0.2s ease;
+}
+
+.nf-btn:hover { opacity: 0.85; }
+
+.nf-btn:active { opacity: 0.7; }
+
+/* ---------- TOUCH ---------- */
+
+.nf-page {
+  overscroll-behavior-y: auto;
+  touch-action: pan-x pan-y;
+}
+
+body:has(.nf-page) {
+  overflow-x: clip;
+  overflow-y: visible;
+  overscroll-behavior-y: auto;
+}
+
+.nf-page a {
+  -webkit-tap-highlight-color: transparent;
+}

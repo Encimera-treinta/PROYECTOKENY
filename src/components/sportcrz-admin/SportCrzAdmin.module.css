@@ -623,15 +623,29 @@
 ====================== */
 
 @media (max-width: 860px) {
+  /* BUG CORREGIDO: la base es flex: 0 0 232px y .root es nowrap.
+     En pantallas chicas el sidebar ocupaba 100% y empujaba .main
+     fuera de la pantalla (385px de desborde, main con ancho 0).
+     Con wrap + flex:1 1 100% el sidebar toma su propia fila y el
+     contenido pasa abajo. */
+  .root {
+    flex-wrap: wrap;
+  }
+
   .sidebar {
     width: 100%;
-    flex-basis: auto;
+    flex: 1 1 100%;
     position: static;
     height: auto;
     flex-direction: row;
     align-items: center;
     overflow: visible;
     flex-wrap: wrap;
+  }
+
+  .main {
+    flex: 1 1 100%;
+    min-width: 0;
   }
 
   .brand { border-bottom: 0; margin-bottom: 0; }
