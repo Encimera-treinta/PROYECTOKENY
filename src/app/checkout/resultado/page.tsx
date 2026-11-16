@@ -4,36 +4,25 @@ import {
   markOrderPaid,
   markOrderCancelled,
 } from "@/lib/database";
+import { consultPayment } from "@/lib/tilopay";
 import "../checkout.css";
 
 export const dynamic = "force-dynamic";
 
 type ResultParams = {
-  code?: string;
   description?: string;
-  auth?: string;
   order?: string;
-  tilopay_transaction?: string;
 };
 
 function parseParams(search: string): ResultParams {
   const params = new URLSearchParams(search);
   const result: ResultParams = {};
 
-  const code = params.get("code");
-  if (code !== null) result.code = code;
-
   const description = params.get("description");
   if (description !== null) result.description = description;
 
-  const auth = params.get("auth");
-  if (auth !== null) result.auth = auth;
-
   const order = params.get("order");
   if (order !== null) result.order = order;
-
-  const transaction = params.get("tilopay-transaction");
-  if (transaction !== null) result.tilopay_transaction = transaction;
 
   return result;
 }
@@ -52,23 +41,70 @@ export default async function CheckoutResultPage({
   }
 
   const params = parseParams(`?${search.toString()}`);
-  const approved = params.code === "1";
   const orderCode = params.order;
 
   let orderState: "paid" | "pending" | "cancelled" | "unknown" = "unknown";
+  const order = orderCode ? await getOrderByCode(orderCode) : undefined;
 
-  if (orderCode) {
-    if (approved) {
-      const reference = params.auth || params.tilopay_transaction || "";
-      const ok = await markOrderPaid(orderCode, "card", reference);
-      orderState = ok ? "paid" : "unknown";
-    } else {
-      await markOrderCancelled(orderCode);
-      orderState = "cancelled";
+  if (
+    order?.status === "paid" ||
+    order?.status === "shipped" ||
+    order?.status === "delivered"
+  ) {
+    orderState = "paid";
+  } else if (order?.status === "cancelled") {
+    orderState = "cancelled";
+  } else if (orderCode && order) {
+    try {
+      const transaction = await consultPayment(orderCode);
+
+      if (
+        transaction?.orderNumber === orderCode &&
+        transaction.code === "1" &&
+        transaction.capture?.toLowerCase() === "capture" &&
+        Number.isFinite(Number(transaction.amount)) &&
+        Math.round(Number(transaction.amount) * 100) ===
+          Math.round(order.total * 100) &&
+        transaction.currency?.toUpperCase() ===
+          (process.env.TILOPAY_CURRENCY || "USD").toUpperCase() &&
+        (process.env.NODE_ENV !== "production" ||
+          transaction.environment?.toLowerCase() === "production")
+      ) {
+        const reference =
+          transaction.auth || String(transaction.id_tilopay ?? "");
+        const methodHint = [
+          transaction.payment_method,
+          transaction.paymentMethod,
+          transaction.method,
+        ]
+          .find((value) => typeof value === "string" && value.length > 0)
+          ?.toLowerCase();
+        const paymentMethod =
+          methodHint?.includes("yappy") ||
+          (!methodHint && !transaction.card && !transaction.last)
+            ? "yappy"
+            : "card";
+        const ok = await markOrderPaid(
+          orderCode,
+          paymentMethod,
+          reference
+        );
+        orderState = ok ? "paid" : "unknown";
+      } else if (
+        transaction?.orderNumber === orderCode &&
+        transaction.code !== undefined &&
+        transaction.code !== "1"
+      ) {
+        await markOrderCancelled(orderCode);
+        orderState = "cancelled";
+      } else {
+        orderState = order.status === "paid" ? "paid" : "pending";
+      }
+    } catch (error) {
+      console.error("[tilopay] no se pudo verificar el resultado:", error);
+      orderState = order.status === "paid" ? "paid" : "pending";
     }
   }
-
-  const order = orderCode ? await getOrderByCode(orderCode) : undefined;
 
   return (
     <main className="checkout-result">
@@ -90,7 +126,9 @@ export default async function CheckoutResultPage({
               ? "PAGO EXITOSO."
               : orderState === "cancelled"
                 ? "PAGO NO COMPLETADO."
-                : "ORDEN NO ENCONTRADA."}
+                : orderState === "pending"
+                  ? "PAGO PENDIENTE DE VERIFICACIÓN."
+                  : "ORDEN NO ENCONTRADA."}
           </h1>
 
           <p>
@@ -99,6 +137,8 @@ export default async function CheckoutResultPage({
               : orderState === "cancelled"
                 ? params.description ||
                   "La transacción fue rechazada o cancelada. No se realizó ningún cobro."
+                : orderState === "pending"
+                  ? "Aún no pudimos confirmar la transacción con TiloPay. No vuelvas a pagar; revisaremos el estado del pedido."
                 : "No pudimos identificar la orden. Si fuiste cobrado, escríbenos."}
           </p>
 

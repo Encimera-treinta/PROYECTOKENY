@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCustomerSession } from "@/lib/customer-auth";
 import CheckoutClient from "@/components/CheckoutClient";
+import { isTiloPayConfigured } from "@/lib/tilopay";
 
 export const dynamic = "force-dynamic";
 
@@ -15,5 +16,14 @@ export default async function CheckoutPage() {
     redirect("/cuenta/login?next=/checkout");
   }
 
-  return <CheckoutClient />;
+  const whatsappEnabled = Boolean(
+    (process.env.NEXT_PUBLIC_STORE_WHATSAPP || "").replace(/\D/g, "")
+  );
+
+  return (
+    <CheckoutClient
+      onlinePaymentEnabled={isTiloPayConfigured()}
+      whatsappEnabled={whatsappEnabled}
+    />
+  );
 }

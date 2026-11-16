@@ -66,7 +66,8 @@ los datos de tarjeta nunca pasan por este servidor.
 
 1. Crea tu cuenta en [admin.tilopay.com](https://admin.tilopay.com/) y
    obtén tus credenciales en *Admin · Tilopay Checkout*.
-2. Añade a `.env.local`:
+2. Añade las variables a `.env.local` para desarrollo y como **Secret**
+   en el entorno Production del proyecto `sportcrz-shop` en Vercel:
 
 ```
 TILOPAY_CHECKOUT_KEY=tu_key
@@ -75,12 +76,23 @@ TILOPAY_API_PASSWORD=tu_password
 TILOPAY_CURRENCY=USD
 ```
 
-3. Reinicia la app. El carrito → *Finalizar compra* → `/checkout`
-   completa los datos y redirige a TiloPay.
+3. Configura `NEXT_PUBLIC_STORE_WHATSAPP` con el número internacional de la
+   tienda, sin `+`, para que el pedido tenga un canal de respaldo cuando
+   TiloPay no esté configurado.
+4. Reinicia la app. El carrito → *Finalizar compra* → `/checkout`
+   completa los datos y redirige a la página segura de TiloPay. El método Yappy
+   debe estar habilitado para la cuenta y la llave de checkout de TiloPay.
 
-Al aprobarse el pago, TiloPay redirige a `/checkout/resultado`, la
-orden queda `paid`, se guarda la referencia y se descuenta el stock.
-Si el pago falla, la orden se cancela y el stock no cambia.
+TiloPay redirige a `/checkout/resultado`; el servidor consulta la transacción
+con TiloPay antes de cambiar la orden a `paid` y descontar stock. El resultado
+del navegador por sí solo no confirma un cobro. Si TiloPay no está configurado,
+el checkout registra la orden para coordinación manual; el correo automático
+de confirmación todavía no está implementado.
+
+Si faltan tanto TiloPay como el WhatsApp de la tienda, el checkout queda
+desactivado para no guardar pedidos sin un canal de pago o contacto. El teléfono
+Yappy que un cliente guarda en su perfil es solo información de perfil; todavía
+no inicia una solicitud de cobro.
 
 ## Pendiente para la siguiente fase
 - Webhooks de TiloPay (confirmación servidor a servidor)

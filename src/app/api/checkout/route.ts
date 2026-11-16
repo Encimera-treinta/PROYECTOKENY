@@ -78,6 +78,16 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!isTiloPayConfigured() && !STORE_WHATSAPP) {
+    return NextResponse.json(
+      {
+        error:
+          "Los pedidos están temporalmente desactivados porque falta configurar el pago online o el WhatsApp de la tienda.",
+      },
+      { status: 503 }
+    );
+  }
+
   let body: CheckoutBody;
 
   try {

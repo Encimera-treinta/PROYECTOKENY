@@ -699,6 +699,11 @@ export async function markOrderPaid(
       return true;
     }
 
+    if (order.status !== "pending") {
+      await tx.rollback();
+      return false;
+    }
+
     const orderId = order.id;
 
     const itemsResult = await tx.execute({

@@ -147,3 +147,57 @@ export async function createPaymentPage(
 
   return data.url;
 }
+
+export type TiloPayTransaction = {
+  orderNumber?: string;
+  amount?: string | number;
+  currency?: string;
+  code?: string;
+  auth?: string;
+  id_tilopay?: string | number;
+  capture?: string;
+  environment?: string;
+  card?: string;
+  last?: string;
+  payment_method?: string;
+  paymentMethod?: string;
+  method?: string;
+};
+
+/**
+ * The redirect back to our site is customer-controlled. Query Tilopay's API
+ * from the server before changing an order to paid or cancelled.
+ */
+export async function consultPayment(
+  orderNumber: string
+): Promise<TiloPayTransaction | undefined> {
+  if (!isTiloPayConfigured()) return undefined;
+
+  const token = await getApiToken();
+  const response = await fetch(`${API_BASE}/api/v1/consult`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `bearer ${token}`,
+    },
+    body: JSON.stringify({ key: CHECKOUT_KEY, orderNumber }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`TiloPay consult falló: ${response.status}`);
+  }
+
+  const data = (await response.json()) as {
+    type?: string;
+    response?: TiloPayTransaction[];
+  };
+
+  if (data.type !== "200" || !Array.isArray(data.response)) {
+    throw new Error("TiloPay consult devolvió una respuesta inválida.");
+  }
+
+  return data.response.find(
+    (transaction) => transaction.orderNumber === orderNumber
+  );
+}

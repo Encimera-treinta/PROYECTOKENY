@@ -278,8 +278,8 @@ export default async function CuentaPage({
               </label>
               <button type="submit">VINCULAR YAPPY</button>
               <p className="cuenta-form-hint">
-                Al pagar con Yappy, el teléfono vinculado recibe la solicitud
-                de pago en la app de Banco General.
+                El teléfono se guarda en tu perfil. Todavía no se usa para
+                enviar solicitudes de pago desde el checkout.
               </p>
             </form>
           </div>

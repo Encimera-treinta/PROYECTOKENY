@@ -15,7 +15,13 @@ type Me = {
   lastName?: string;
 };
 
-export default function CheckoutClient() {
+export default function CheckoutClient({
+  onlinePaymentEnabled,
+  whatsappEnabled,
+}: {
+  onlinePaymentEnabled: boolean;
+  whatsappEnabled: boolean;
+}) {
   const cart = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -166,7 +172,10 @@ export default function CheckoutClient() {
     : `$${cart.total.toFixed(2)}`;
 
   const submitDeshabilitado =
-    loading || !cart.hydrated || cart.items.length === 0;
+    loading ||
+    !cart.hydrated ||
+    cart.items.length === 0 ||
+    (!onlinePaymentEnabled && !whatsappEnabled);
 
   return (
     <main className="checkout-page">
@@ -176,12 +185,24 @@ export default function CheckoutClient() {
       </header>
 
       <section className="checkout-hero">
-        <span>{orderCode ? "02 / CONFIRMADO" : "01 / PAGO SEGURO"}</span>
+        <span>
+          {orderCode
+            ? "02 / CONFIRMADO"
+            : onlinePaymentEnabled
+              ? "01 / PAGO SEGURO"
+              : whatsappEnabled
+                ? "01 / PEDIDO MANUAL"
+                : "01 / NO DISPONIBLE"}
+        </span>
         <h1>{orderCode ? "LISTO." : "CHECKOUT."}</h1>
         <p>
           {orderCode
             ? "Tu pedido ya quedó registrado en el sistema."
-            : "Completa tus datos y paga con tarjeta o Yappy a través de TiloPay."}
+            : onlinePaymentEnabled
+              ? "Completa tus datos y paga en la página segura de TiloPay."
+              : whatsappEnabled
+                ? "El pago se coordina manualmente por WhatsApp después de registrar el pedido."
+                : "No podemos recibir pedidos hasta que la tienda configure pagos o su WhatsApp de contacto."}
         </p>
       </section>
 
@@ -265,6 +286,15 @@ export default function CheckoutClient() {
       <div className="checkout-layout">
         <section className="checkout-form-section">
           <form className="checkout-form" onSubmit={handleSubmit}>
+            {!onlinePaymentEnabled && !whatsappEnabled && (
+              <div className="checkout-error" role="status">
+                <span>PEDIDOS DESACTIVADOS</span>
+                <p>
+                  El pago online y el contacto de la tienda no están configurados.
+                  No se registrará ningún pedido hasta que estén disponibles.
+                </p>
+              </div>
+            )}
             {error && (
               <div className="checkout-error">
                 <span>ERROR</span>
@@ -314,7 +344,13 @@ export default function CheckoutClient() {
               type="submit"
               disabled={submitDeshabilitado}
             >
-              <span>{loading ? "PROCESANDO..." : `PAGAR ${totalTexto}`}</span>
+              <span>
+                {loading
+                  ? "PROCESANDO..."
+                  : onlinePaymentEnabled
+                    ? `PAGAR ${totalTexto}`
+                    : `REGISTRAR PEDIDO ${totalTexto}`}
+              </span>
               <span></span>
             </button>
 
