@@ -81,7 +81,7 @@ export async function createYappyPaymentOrder(
     orderId,
     domain: DOMAIN,
     paymentDate: Date.now(),
-    ipnUrl: `https://${DOMAIN}/api/yappy/ipn`,
+    ipnUrl: `${DOMAIN}/api/yappy/ipn`,
     discount: "0.00",
     taxes: "0.00",
     subtotal: subtotal.toFixed(2),
