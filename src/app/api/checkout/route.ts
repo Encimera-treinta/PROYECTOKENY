@@ -8,12 +8,9 @@ import {
 } from "@/lib/database";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { allowCheckout } from "@/lib/rate-limit";
-import {
-  createPaymentPage,
-  isTiloPayConfigured,
-} from "@/lib/tilopay";
+import { createYappyPaymentOrder, isYappyConfigured } from "@/lib/yappy";
 
-/* Numero de WhatsApp de la tienda. Si no hay TiloPay configurado,
+/* Numero de WhatsApp de la tienda. Si no hay Yappy configurado,
    el checkout no se bloquea: registra la orden y el cliente confirma
    por WhatsApp. */
 const STORE_WHATSAPP = (
@@ -78,11 +75,11 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isTiloPayConfigured() && !STORE_WHATSAPP) {
+  if (!isYappyConfigured() && !STORE_WHATSAPP) {
     return NextResponse.json(
       {
         error:
-          "Los pedidos están temporalmente desactivados porque falta configurar el pago online o el WhatsApp de la tienda.",
+          "Los pedidos están temporalmente desactivados porque falta configurar Yappy Comercial o el WhatsApp de la tienda.",
       },
       { status: 503 }
     );
@@ -226,10 +223,10 @@ export async function POST(request: Request) {
      sin sesion y muestra los articulos con imagen y total. */
   const orderUrl = `${origin}/orden/${orderCode}`;
 
-  /* Sin TiloPay no se cobra online: la orden ya quedo registrada y el
+  /* Sin Yappy no se cobra online: la orden ya quedo registrada y el
      cliente confirma por WhatsApp. La tienda la ve en el admin como
      "pending" y coordina el pago a mano. */
-  if (!isTiloPayConfigured()) {
+  if (!isYappyConfigured()) {
     const whatsappText = [
       `Hola! Quiero confirmar mi pedido en SportCrz.`,
       ``,
@@ -266,40 +263,30 @@ export async function POST(request: Request) {
     });
   }
 
-  let paymentUrl: string;
-
   try {
-    paymentUrl = await createPaymentPage({
-      amount: subtotal.toFixed(2),
-      orderNumber: orderCode,
-      redirectUrl: `${origin}/checkout/resultado`,
-      customer: {
-        firstName,
-        lastName,
-        email,
-        phone,
-        address,
-        city,
-        state,
-        zip,
-        country,
-      },
+    const yappyPayment = await createYappyPaymentOrder(
+      String(orderId),
+      subtotal,
+      subtotal
+    );
+    return NextResponse.json({
+      orderId,
+      orderCode,
+      total: subtotal,
+      orderUrl,
+      descartados,
+      yappyPayment,
     });
   } catch (error) {
-    console.error("[tilopay] processPayment falló:", error);
+    console.error("[yappy] No se pudo iniciar el pago.", error);
     return NextResponse.json(
       {
-        error:
-          "No fue posible iniciar el pago con TiloPay. Intenta de nuevo.",
+        error: "No se pudo iniciar Yappy. Tu pedido quedó pendiente; no crees otro todavía.",
         orderCode,
+        orderUrl,
+        pendingPayment: true,
       },
       { status: 502 }
     );
   }
-
-  return NextResponse.json({
-    orderId,
-    orderCode,
-    paymentUrl,
-  });
 }

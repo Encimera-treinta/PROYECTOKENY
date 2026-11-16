@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import Script from "next/script";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import "../app/checkout/checkout.css";
 import "../app/checkout/checkout-done.css";
@@ -18,17 +19,45 @@ type Me = {
 export default function CheckoutClient({
   onlinePaymentEnabled,
   whatsappEnabled,
+  yappyScriptUrl,
 }: {
   onlinePaymentEnabled: boolean;
   whatsappEnabled: boolean;
+  yappyScriptUrl: string;
 }) {
   const cart = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [me, setMe] = useState<Me | null>(null);
+  const [yappyReady, setYappyReady] = useState(false);
+  const yappyButton = useRef<HTMLElement | null>(null);
+  const yappyPending = useRef(false);
+  const checkoutForm = useRef<HTMLFormElement | null>(null);
+  const createCheckoutPayload = (formElement: HTMLFormElement) => {
+    const form = new FormData(formElement);
+    return {
+      customer: {
+        firstName: String(form.get("firstName") || "").trim() || me?.firstName || "",
+        lastName: String(form.get("lastName") || "").trim() || me?.lastName || "",
+        email: String(form.get("email") || "").trim() || me?.email || "",
+        phone: String(form.get("phone") || "").trim() || me?.phone || "",
+        address: String(form.get("address") || ""),
+        city: String(form.get("city") || ""),
+        state: "PA",
+        zip: String(form.get("zip") || ""),
+        country: "PA",
+      },
+      items: cart.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+    };
+  };
 
-  /* Pedido registrado sin pago online (TiloPay sin configurar). */
+  /* Pedido registrado sin pago online (Yappy sin configurar). */
   const [orderCode, setOrderCode] = useState<string | null>(null);
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
   const [orderUrl, setOrderUrl] = useState<string | null>(null);
@@ -41,6 +70,87 @@ export default function CheckoutClient({
       .then((data: Me) => setMe(data))
       .catch(() => setMe({ authenticated: false }));
   }, []);
+
+  useEffect(() => {
+    const button = yappyButton.current as (HTMLElement & {
+      eventPayment?: (payment: { transactionId: string; token: string; documentName: string }) => void;
+      isButtonLoading?: boolean;
+    }) | null;
+    if (!button || !onlinePaymentEnabled) return;
+
+    const onClick = async () => {
+      if (yappyPending.current || !checkoutForm.current) return;
+      if (!checkoutForm.current.reportValidity()) return;
+      if (cart.items.length === 0) {
+        setError("Tu carrito está vacío.");
+        return;
+      }
+      yappyPending.current = true;
+      sessionStorage.removeItem("sportcrz-yappy-order");
+      button.isButtonLoading = true;
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(createCheckoutPayload(checkoutForm.current)),
+        });
+        const data = await response.json();
+        if (response.status === 401) {
+          yappyPending.current = false;
+          button.isButtonLoading = false;
+          setLoading(false);
+          router.push("/cuenta/login?next=/checkout");
+          return;
+        }
+        if (data.pendingPayment && data.orderCode) {
+          cart.clear();
+          router.push(`/checkout/resultado?order=${encodeURIComponent(data.orderCode)}`);
+          return;
+        }
+        if (!response.ok || !data.yappyPayment || !button.eventPayment) {
+          yappyPending.current = false;
+          button.isButtonLoading = false;
+          setLoading(false);
+          setError(data.error || "No se pudo iniciar el pago con Yappy.");
+          return;
+        }
+        cart.clear();
+        sessionStorage.setItem("sportcrz-yappy-order", data.orderCode);
+        button.isButtonLoading = false;
+        button.eventPayment(data.yappyPayment);
+      } catch {
+        yappyPending.current = false;
+        button.isButtonLoading = false;
+        setLoading(false);
+        setError("Error de conexión al iniciar Yappy. Revisa tu pedido antes de intentarlo otra vez.");
+      }
+    };
+
+    const onSuccess = () => {
+      const code = sessionStorage.getItem("sportcrz-yappy-order");
+      if (code) router.push(`/checkout/resultado?order=${encodeURIComponent(code)}`);
+    };
+    const onError = () => {
+      const code = sessionStorage.getItem("sportcrz-yappy-order");
+      if (code) router.push(`/checkout/resultado?order=${encodeURIComponent(code)}`);
+      else {
+        yappyPending.current = false;
+          button.isButtonLoading = false;
+        setLoading(false);
+        setError("Yappy no completó el proceso. Si autorizaste el pago, revisa el estado de tu pedido.");
+      }
+    };
+    button.addEventListener("eventClick", onClick);
+    button.addEventListener("eventSuccess", onSuccess);
+    button.addEventListener("eventError", onError);
+    return () => {
+      button.removeEventListener("eventClick", onClick);
+      button.removeEventListener("eventSuccess", onSuccess);
+      button.removeEventListener("eventError", onError);
+    };
+  }, [onlinePaymentEnabled, cart.items, cart.clear, router, me]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -116,15 +226,7 @@ export default function CheckoutClient({
         return;
       }
 
-      /* Pago online (TiloPay configurado). */
-      if (data.paymentUrl) {
-        pending?.close();
-        cart.clear();
-        window.location.href = data.paymentUrl;
-        return;
-      }
-
-      /* Sin TiloPay: la orden quedo registrada y el cliente
+      /* Sin Yappy: la orden quedo registrada y el cliente
          confirma por WhatsApp. */
       if (!response.ok || !data.orderCode) {
         pending?.close();
@@ -199,7 +301,7 @@ export default function CheckoutClient({
           {orderCode
             ? "Tu pedido ya quedó registrado en el sistema."
             : onlinePaymentEnabled
-              ? "Completa tus datos y paga en la página segura de TiloPay."
+              ? "Completa tus datos y paga de forma segura con Yappy."
               : whatsappEnabled
                 ? "El pago se coordina manualmente por WhatsApp después de registrar el pedido."
                 : "No podemos recibir pedidos hasta que la tienda configure pagos o su WhatsApp de contacto."}
@@ -285,7 +387,7 @@ export default function CheckoutClient({
         <>
       <div className="checkout-layout">
         <section className="checkout-form-section">
-          <form className="checkout-form" onSubmit={handleSubmit}>
+          <form className="checkout-form" ref={checkoutForm} onSubmit={handleSubmit}>
             {!onlinePaymentEnabled && !whatsappEnabled && (
               <div className="checkout-error" role="status">
                 <span>PEDIDOS DESACTIVADOS</span>
@@ -339,7 +441,13 @@ export default function CheckoutClient({
               <input id="address" name="address" type="text" maxLength={200} autoComplete="street-address" />
             </div>
 
-            <button
+            {onlinePaymentEnabled ? (
+              <>
+                <Script src={yappyScriptUrl} type="module" strategy="afterInteractive" onLoad={() => setYappyReady(true)} />
+                {!yappyReady && <p className="checkout-note">Cargando el botón seguro de Yappy…</p>}
+                <btn-yappy ref={yappyButton as React.Ref<HTMLElement>} theme="blue" />
+              </>
+            ) : <button
               className="checkout-submit"
               type="submit"
               disabled={submitDeshabilitado}
@@ -352,11 +460,10 @@ export default function CheckoutClient({
                     : `REGISTRAR PEDIDO ${totalTexto}`}
               </span>
               <span></span>
-            </button>
+            </button>}
 
             <p className="checkout-note">
-              Serás redirigido a la plataforma segura de TiloPay para
-              completar el pago con tarjeta o Yappy.
+              El pago se procesa en el botón oficial de Yappy Comercial.
             </p>
           </form>
         </section>
@@ -404,7 +511,7 @@ export default function CheckoutClient({
 
       <footer className="checkout-footer">
         <span>SPORTCRZ / 2026</span>
-        <span>TARJETAS · YAPPY · TILOPAY</span>
+        <span>PAGOS SEGUROS · YAPPY</span>
       </footer>
     </main>
   );

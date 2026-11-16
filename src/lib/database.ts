@@ -509,7 +509,7 @@ export async function deleteProduct(id: number): Promise<void> {
 }
 
 /* =====================================
-   PEDIDOS (TiloPay/Yappy)
+   PEDIDOS (Yappy)
 ===================================== */
 
 export type Order = {
@@ -594,6 +594,16 @@ export async function getOrderByCode(code: string): Promise<Order | undefined> {
     notes: row.notes == null ? null : String(row.notes),
     created_at: String(row.created_at),
   };
+}
+
+export async function getOrderCodeById(id: number): Promise<string | undefined> {
+  await ensureSchema();
+  const result = await database.execute({
+    sql: "SELECT order_code FROM orders WHERE id = ?",
+    args: [id],
+  });
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  return row?.order_code == null ? undefined : String(row.order_code);
 }
 
 export function generateOrderCode(): string {

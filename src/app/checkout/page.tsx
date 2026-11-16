@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCustomerSession } from "@/lib/customer-auth";
 import CheckoutClient from "@/components/CheckoutClient";
-import { isTiloPayConfigured } from "@/lib/tilopay";
+import { getYappyButtonScriptUrl, isYappyConfigured } from "@/lib/yappy";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +22,8 @@ export default async function CheckoutPage() {
 
   return (
     <CheckoutClient
-      onlinePaymentEnabled={isTiloPayConfigured()}
+      onlinePaymentEnabled={isYappyConfigured()}
+      yappyScriptUrl={getYappyButtonScriptUrl()}
       whatsappEnabled={whatsappEnabled}
     />
   );

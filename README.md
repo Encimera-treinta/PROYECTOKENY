@@ -58,42 +58,31 @@ El proyecto `sportcrz-shop` debe estar conectado al repositorio
 conexión está activa, cada `git push` a `main` crea un nuevo despliegue. Revisa
 el resultado en Vercel → Deployments antes de dar el cambio por publicado.
 
-## Pagos con TiloPay (tarjetas y Yappy)
+## Pagos con Yappy Comercial
 
-El checkout usa la plataforma **TiloPay**, que procesa tarjetas, Yappy y
-Banco General en Panamá. El cliente paga en la página segura de TiloPay;
-los datos de tarjeta nunca pasan por este servidor.
-
-1. Crea tu cuenta en [admin.tilopay.com](https://admin.tilopay.com/) y
-   obtén tus credenciales en *Admin · Tilopay Checkout*.
-2. Añade las variables a `.env.local` para desarrollo y como **Secret**
-   en el entorno Production del proyecto `sportcrz-shop` en Vercel:
+El checkout usa directamente la nueva integración del botón Yappy. En Yappy
+Comercial activa el botón para el sitio, registra el dominio de producción y
+genera el `merchantId` y la clave secreta. Configura estos valores como secretos
+de producción en Vercel y en `.env.local` para desarrollo:
 
 ```
-TILOPAY_CHECKOUT_KEY=tu_key
-TILOPAY_API_USER=tu_usuario
-TILOPAY_API_PASSWORD=tu_password
-TILOPAY_CURRENCY=USD
+YAPPY_MERCHANT_ID=tu_merchant_id
+YAPPY_SECRET_KEY=tu_clave_secreta
+YAPPY_DOMAIN=https://tu-dominio-verificado
+YAPPY_ENVIRONMENT=production
 ```
 
-3. Configura `NEXT_PUBLIC_STORE_WHATSAPP` con el número internacional de la
-   tienda, sin `+`, para que el pedido tenga un canal de respaldo cuando
-   TiloPay no esté configurado.
-4. Reinicia la app. El carrito → *Finalizar compra* → `/checkout`
-   completa los datos y redirige a la página segura de TiloPay. El método Yappy
-   debe estar habilitado para la cuenta y la llave de checkout de TiloPay.
+El servidor valida el comercio y crea la solicitud de pago con la API oficial.
+El endpoint `/api/yappy/ipn` comprueba la firma de Yappy antes de marcar un
+pedido como pagado; el resultado visual en el navegador no confirma por sí solo
+el cobro. Para UAT configura `YAPPY_ENVIRONMENT=test` y el alias de prueba
+autorizado por Yappy en `YAPPY_TEST_ALIAS`.
 
-TiloPay redirige a `/checkout/resultado`; el servidor consulta la transacción
-con TiloPay antes de cambiar la orden a `paid` y descontar stock. El resultado
-del navegador por sí solo no confirma un cobro. Si TiloPay no está configurado,
-el checkout registra la orden para coordinación manual; el correo automático
-de confirmación todavía no está implementado.
-
-Si faltan tanto TiloPay como el WhatsApp de la tienda, el checkout queda
-desactivado para no guardar pedidos sin un canal de pago o contacto. El teléfono
-Yappy que un cliente guarda en su perfil es solo información de perfil; todavía
-no inicia una solicitud de cobro.
+Los pagos reales requieren una cuenta comercial aprobada y credenciales activas.
+Si Yappy no está configurado, se puede registrar un pedido para coordinación
+manual cuando `NEXT_PUBLIC_STORE_WHATSAPP` está configurado; si no hay Yappy ni
+WhatsApp de la tienda, el checkout permanece desactivado. El teléfono Yappy que
+un cliente guarda en su perfil no se usa para iniciar un cobro.
 
 ## Pendiente para la siguiente fase
-- Webhooks de TiloPay (confirmación servidor a servidor)
 - Envío de correos de confirmación
